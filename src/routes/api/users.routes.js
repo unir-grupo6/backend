@@ -5,7 +5,7 @@ const router = require('express').Router();
 
 router.get('/', checkToken, getAll);
 
-router.post('/registro', registro);
+router.post('/register', registro);
 router.post('/login', login); 
 
 module.exports = router;
