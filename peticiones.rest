@@ -1,6 +1,8 @@
 @host = http://localhost:3000
+@token = 
 
 GET {{host}}/api/users
+Authorization: {{token}}
 
 ###
 POST {{host}}/api/users/login
