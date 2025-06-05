@@ -6,6 +6,15 @@ const selectAll = async () => {
     return result;
 }
 
+const getById = async (userId) => {
+    const [result] = await db.query(
+        'SELECT * FROM usuario WHERE id = ?',
+        [userId],
+    );
+    if (result.length === 0) return null;
+    return result[0];
+}
+
 const getByEmail = async (email) => {
     const [result] = await db.query(
         'SELECT * FROM usuario WHERE email = ?',
@@ -17,5 +26,6 @@ const getByEmail = async (email) => {
 
 module.exports = {
     selectAll,
+    getById,
     getByEmail
 };

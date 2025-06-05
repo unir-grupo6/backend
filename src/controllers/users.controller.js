@@ -1,8 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const dayjs = require('dayjs');
 
 require('dotenv').config();
-const { JWT_SECRET_KEY } = process.env;
+const { JWT_SECRET_KEY, JWT_EXPIRES_IN_UNIT, JWT_EXPIRES_IN_AMOUNT } = process.env;
 
 const User = require('../models/users.model');
 
@@ -26,7 +27,8 @@ const login = async (req, res) => {
     return res.json({ 
         message: 'Login successful',
         token: jwt.sign({
-            user_id: user.id
+            user_id: user.id,
+            exp: dayjs().add(JWT_EXPIRES_IN_AMOUNT, JWT_EXPIRES_IN_UNIT).unix()
         }, JWT_SECRET_KEY)
     });
 }
