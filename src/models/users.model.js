@@ -24,8 +24,17 @@ const getByEmail = async (email) => {
     return result[0];
 }
 
+const insert = async ({ username, email, password }) => {
+    const [result] = await db.query(
+        'INSERT INTO usuario (username, email, password) VALUES (?, ?, ?)',
+        [username, email, password]
+    );
+    return result;
+}
+
 module.exports = {
     selectAll,
     getById,
-    getByEmail
+    getByEmail,
+    insert
 };
