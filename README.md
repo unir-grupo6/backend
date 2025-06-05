@@ -21,6 +21,10 @@ Este proyecto es el backend de una aplicación desarrollada con Express.js.
 1. Crea un archivo `.env` en la raíz del proyecto para definir variables de entorno. Ejemplo:
    ```env
    PORT=3000
+   JWT_SECRET_KEY=your_jwt_secret
+   JWT_EXPIRES_IN_UNIT=day
+   JWT_EXPIRES_IN_AMOUNT=7
+   BCRYPT_SALT_ROUNDS=8
    # Otras variables de entorno
    ```
    El archivo `.env` nunca debe subirse al repositorio, ya que puede contener información sensible. El archivo `.gitignore` ya está configurado para ignorarlo.
@@ -58,3 +62,6 @@ backend/
    npm run dev
    ```
    El servidor estará disponible en `http://localhost:3000` (o el puerto que definas).
+
+## Documentación de la API
+Consulta el archivo `api-endpoints.md` para ver los endpoints disponibles y sus detalles.
