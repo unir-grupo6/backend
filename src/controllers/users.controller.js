@@ -14,7 +14,10 @@ const getAll = async (req, res) => {
 
 const registro = async (req, res) => {
     req.body.password = bcrypt.hashSync(req.body.password, Number(BCRYPT_SALT_ROUNDS));
-    //TODO: Validar que el email no exista ya en la BBDD
+    const existingUser = await User.getByEmail(req.body.email);
+    if (existingUser) {
+        return res.status(403).json({ message: 'Email already exists' });
+    }
     const result = await User.insert(req.body);
     const newUser = await User.getById(result.insertId);
     res.json(newUser);
