@@ -1,4 +1,4 @@
-const { selectAll, getAll } = require('../../controllers/users.controller');
+const { getAll } = require('../../controllers/users.controller');
 
 const router = require('express').Router();
 
