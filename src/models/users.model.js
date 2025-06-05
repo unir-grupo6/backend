@@ -6,6 +6,16 @@ const selectAll = async () => {
     return result;
 }
 
+const getByEmail = async (email) => {
+    const [result] = await db.query(
+        'SELECT * FROM usuario WHERE email = ?',
+        [email]
+    );
+    if (result.length === 0) return null;
+    return result[0];
+}
+
 module.exports = {
-    selectAll
+    selectAll,
+    getByEmail
 };
