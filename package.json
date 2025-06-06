@@ -1,20 +1,20 @@
 {
-  "name": "express-init-template",
+  "name": "rutina-go-api",
   "version": "1.5.0",
-  "description": "This is a basic Express application template designed to help you create APIs quickly. It includes essential configurations and setup for starting an Express server.",
+  "description": "Sports routines API",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "lint": "biome lint",
-    "format": "biome check --write"
+    "lint": "biome lint .",
+    "format": "biome format ."
   },
   "keywords": [
     "express",
     "init",
     "template"
   ],
-  "author": "Mario Girón Martín",
+  "author": "RutinaGo",
   "license": "MIT",
   "dependencies": {
     "bcryptjs": "^3.0.2",
