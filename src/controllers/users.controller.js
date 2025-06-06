@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const dayjs = require('dayjs');
 
+const { transporter } = require('../config/mailer');
+
 require('dotenv').config();
 const { JWT_SECRET_KEY, JWT_RESET_SECRET_KEY, JWT_EXPIRES_IN_UNIT, JWT_RESET_EXPIRES_IN_UNIT, JWT_EXPIRES_IN_AMOUNT, JWT_RESET_EXPIRES_IN_AMOUNT, BCRYPT_SALT_ROUNDS, FRONTEND_URL } = process.env;
 
@@ -65,12 +67,18 @@ const forgotPassword = async (req, res) => {
 
     
 
-    // TODO: Send email with verification link
     // OPTIMIZE: send verification link via email when a new user registers
     try {
-        console.log(`Verification link: ${verificationLink}`);
+        await transporter.sendMail({
+            from: `"Rutina Go" <${process.env.GMAIL_APP_USER}>`,
+            to: email,
+            subject: 'Rutina Go - Password Reset',
+            text: 'Click the link below to reset your password',
+            html: `<p>Click the link below to reset your password:</p><a href="${verificationLink}">${verificationLink}</a>`
+            })
+
     } catch (error) {
-        return res.status(500).json({ message: 'Failed to send verification email' });
+        return res.status(500).json({ error, message: 'Failed to send verification email' });
     }
 
 
