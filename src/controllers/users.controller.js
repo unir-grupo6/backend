@@ -21,6 +21,9 @@ const registro = async (req, res) => {
         return res.status(403).json({ message: 'Email already exists' });
     }
     const result = await User.insert(req.body);
+
+    // OPTIMIZE: send verification link via email when a new user registers
+
     const newUser = await User.getById(result.insertId);
     res.json(newUser);
 };
