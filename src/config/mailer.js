@@ -19,6 +19,17 @@ transporter.verify().then(() => {
     console.error("Error setting up mailer:", error);
 });
 
+const sendResetPasswordEmail = async (to_email, verificationLink) => {
+    transporter.sendMail({
+            from: `"Rutina Go" <${process.env.GMAIL_APP_USER}>`,
+            to: to_email,
+            subject: 'Rutina Go - Password Reset',
+            text: 'Click the link below to reset your password',
+            html: `<p>Click the link below to reset your password:</p><a href="${verificationLink}">${verificationLink}</a>`
+            })
+}
+
 module.exports = {
     transporter,
+    sendResetPasswordEmail,
 };
