@@ -22,3 +22,21 @@ Content-Type: application/json
     "email": "",
     "password": ""
 }
+
+###
+PUT {{host}}/api/users/forgot-password
+Content-Type: application/json
+
+{
+    "email": ""
+}
+
+
+###
+PUT {{host}}/api/users/reset-password
+reset-token: 
+Content-Type: application/json
+
+{
+    "newPassword": ""
+}
