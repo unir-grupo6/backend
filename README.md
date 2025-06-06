@@ -18,17 +18,31 @@ Este proyecto es el backend de una aplicación desarrollada con Express.js.
    ```
 
 ## Configuración
-1. Crea un archivo `.env` en la raíz del proyecto para definir variables de entorno. Ejemplo:
+ - Crea un archivo `.env` en la raíz del proyecto para definir variables de entorno. Ejemplo:
    ```env
    PORT=3000
    JWT_SECRET_KEY=your_jwt_secret
    JWT_EXPIRES_IN_UNIT=day
    JWT_EXPIRES_IN_AMOUNT=7
    BCRYPT_SALT_ROUNDS=8
-   # Otras variables de entorno
+   DB_HOST=localhost
+   DB_USER=root
+   DB_PASSWORD=1234567890
+   DB_PORT=3306
+   DB_NAME=restaurante
+   JWT_RESET_SECRET_KEY=your_jwt_secret
+   JWT_RESET_EXPIRES_IN_UNIT=minutes
+   JWT_RESET_EXPIRES_IN_AMOUNT=5
+   FRONTEND_URL=http://localhost:3000
+   GMAIL_APP_USER=your_gmail_user
+   GMAIL_APP_PASSWORD=your_gmail_app_password
    ```
-   El archivo `.env` nunca debe subirse al repositorio, ya que puede contener información sensible. El archivo `.gitignore` ya está configurado para ignorarlo.
-2. Puedes modificar el puerto cambiando la variable `PORT`.
+
+>[!TIP]
+>Puedes copiar y renombrar el archivo `.env.example` incluido en el repositorio como punto de partida.
+
+>[!CAUTION]
+>El archivo `.env` nunca debe subirse al repositorio, ya que puede contener información sensible. El archivo `.gitignore` ya está configurado para ignorarlo.
 
 ## Scripts disponibles
 - `npm start`: Inicia el servidor en modo producción.
@@ -40,18 +54,24 @@ Este proyecto es el backend de una aplicación desarrollada con Express.js.
 - [express](https://www.npmjs.com/package/express)
 - [cors](https://www.npmjs.com/package/cors)
 - [dotenv](https://www.npmjs.com/package/dotenv)
+- [mysql2](https://www.npmjs.com/package/mysql2)
+- [bcryptjs](https://www.npmjs.com/package/bcryptjs)
+- [jsonwebtoken](https://www.npmjs.com/package/jsonwebtoken)
+- [nodemailer](https://www.npmjs.com/package/nodemailer)
+- [dayjs](https://www.npmjs.com/package/dayjs)
 
 ## Estructura del proyecto
 ```
 backend/
-├── index.js           # Punto de entrada del servidor
 ├── src/
-│   ├── app.js         # Configuración de la app Express
+│   ├── config/        # Configuración de base de datos y mailer
 │   ├── controllers/   # Controladores (lógica de negocio)
+│   ├── middlewares/   # Middlewares personalizados
 │   ├── models/        # Modelos de datos
-│   └── routes/        # Definición de rutas
-├── package.json       # Dependencias y scripts
+│   ├── routes/        # Definición de rutas
+│   └── app.js         # Configuración de la app Express
 ├── .env               # Variables de entorno
+├── package.json       # Dependencias y scripts
 └── README.md          # Este archivo
 ```
 
