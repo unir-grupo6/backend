@@ -15,7 +15,7 @@ const getAll = async (req, res) => {
 }
 
 const registro = async (req, res) => {
-    req.body.password = bcrypt.hashSync(req.body.password, Number(BCRYPT_SALT_ROUNDS));
+    req.body.contraseña = bcrypt.hashSync(req.body.contraseña, Number(BCRYPT_SALT_ROUNDS));
     const existingUser = await User.getByEmail(req.body.email);
     if (existingUser) {
         return res.status(403).json({ message: 'Email already exists' });
@@ -36,9 +36,14 @@ const login = async (req, res) => {
         return res.status(401).json({ message: 'Error in email and/or password' });
     }
 
-    const isValidPassword = bcrypt.compareSync(password, user.password);
-    if (!isValidPassword) {
-        return res.status(401).json({ message: 'Error in email and/or password' });
+    try {
+        const isValidPassword = bcrypt.compareSync(password, user.contraseña);
+        if (!isValidPassword) {
+            return res.status(401).json({ message: 'Error in email and/or password' });
+        }
+    } catch (error) {
+        return res.status(500).json({ message: 'Error validating password', error: error.message });
+        
     }
     return res.json({ 
         message: 'Login successful',

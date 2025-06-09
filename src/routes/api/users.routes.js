@@ -3,7 +3,8 @@ const { checkToken } = require('../../middlewares/auth.middlewares');
 
 const router = require('express').Router();
 
-router.get('/', checkToken, getAll);
+// router.get('/', checkToken, getAll);
+router.get('/', getAll);
 
 router.post('/register', registro);
 router.post('/login', login); 
