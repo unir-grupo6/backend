@@ -1,14 +1,15 @@
 const db = require('../config/db');
 
-//TODO: Editar en base a las tablas de la BBDD. Eliminarlo si no es necesario
-const selectAll = async () => {
-    const [result] = await db.query('SELECT * FROM usuarios');
-    return result;
-}
-
 const getById = async (userId) => {
     const [result] = await db.query(
-        'SELECT * FROM usuarios WHERE id = ?',
+        `
+            SELECT U.id, nombre, apellidos, email, fecha_alta, peso, altura, imc
+            FROM usuarios U
+		        INNER JOIN medidas_usuarios MU on U.id = MU.id_usuario
+            WHERE U.id = ?
+            ORDER BY MU.fecha desc
+            LIMIT 1;
+        `,
         [userId],
     );
     if (result.length === 0) return null;
@@ -31,6 +32,25 @@ const getByResetToken = async (resetToken) => {
     );
     if (result.length === 0) return null;
     return result[0];
+}
+
+const selectRoutinesByUserId = async (userId) => {
+    const [result] = await db.query(
+        `
+        SELECT R.id as rutina_id, R.nombre, 
+		    RU.inicio as fecha_inicio_rutina, RU.inicio as fecha_fin_rutina, R.dia, RU.compartida as rutina_compartida,
+            R.observaciones as rutina_observaciones, R.sexo, D.nivel-- , 
+            ,M.nombre as metodo_nombre, M.tiempo_aerobicos, M.tiempo_anaerobicos, M.descanso, M.observaciones as metodo_observaciones
+        FROM usuarios U
+            INNER JOIN rutinas_usuarios RU ON U.id = RU.usuarios_id
+            INNER JOIN rutinas R ON R.id = RU.rutinas_id
+            INNER JOIN metodos M ON M.id = R.metodos_id
+            INNER JOIN dificultad D ON D.id = R.dificultad_id
+        WHERE U.id = ?
+        `,
+        [userId]
+    );
+    return result;
 }
 
 const insert = async ({ nombre, apellidos, email, contraseña, sexo }) => {
@@ -58,10 +78,10 @@ const updateResetToken = async (userId, resetToken) => {
 }
 
 module.exports = {
-    selectAll,
     getById,
     getByEmail,
     getByResetToken,
+    selectRoutinesByUserId,
     insert,
     updatePassword,
     updateResetToken

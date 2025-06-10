@@ -9,9 +9,15 @@ const { JWT_SECRET_KEY, JWT_RESET_SECRET_KEY, JWT_EXPIRES_IN_UNIT, JWT_RESET_EXP
 
 const User = require('../models/users.model');
 
-const getAll = async (req, res) => {
-    const users = await User.selectAll();
-    res.json(users);
+const getUserRoutinesByUserId = async (req, res) => {
+    const user = req.user;
+    // recuperar las rutinas del usuario
+    const userRoutines = await User.selectRoutinesByUserId(user.id);
+    if (!userRoutines || userRoutines.length === 0) {
+        return res.status(404).json({ message: 'No routines found for this user' });
+    }
+    user.rutinas = userRoutines;
+    res.json(user);
 }
 
 const registro = async (req, res) => {
@@ -129,4 +135,10 @@ const resetPassword = async (req, res) => {
     return res.json({ message: 'Password reset successfully' });
 }
 
-module.exports = { getAll, registro, login, forgotPassword, resetPassword };
+module.exports = {
+    getUserRoutinesByUserId,
+    registro,
+    login,
+    forgotPassword,
+    resetPassword 
+};
