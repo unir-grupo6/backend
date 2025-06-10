@@ -74,6 +74,20 @@ const selectActiveRoutinesByUserId = async (userId, page, limit) => {
     return result;
 }
 
+const selectExercisesByUserRoutineId = async (routineId) => {
+    const [result] = await db.query(
+        `
+        SELECT E.nombre, E.tipo, E.inicio as step_1, E.fin as step_2, GM.nombre as grupos_musculares, EU.series, EU.repeticiones, EU.comentario
+FROM ejercicios_usuarios EU
+        INNER JOIN ejercicios E ON E.id = EU.ejercicios_id
+        INNER JOIN grupos_musculares GM ON GM.id = E.grupos_musculares_id
+WHERE EU.rutinas_usuarios_id = ?
+        `,
+        [routineId]
+    );
+    return result;
+}
+
 const insert = async ({ nombre, apellidos, email, contraseña, sexo }) => {
     const [result] = await db.query(
         'INSERT INTO usuarios (nombre, apellidos, email, contraseña, fecha_alta, sexo) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?)',
@@ -104,6 +118,7 @@ module.exports = {
     getByResetToken,
     selectRoutinesByUserId,
     selectActiveRoutinesByUserId,
+    selectExercisesByUserRoutineId,
     insert,
     updatePassword,
     updateResetToken

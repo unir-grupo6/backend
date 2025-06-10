@@ -9,7 +9,7 @@ const { JWT_SECRET_KEY, JWT_RESET_SECRET_KEY, JWT_EXPIRES_IN_UNIT, JWT_RESET_EXP
 
 const User = require('../models/users.model');
 
-const getUserRoutinesByUserId = async (req, res) => {
+const getRoutinesByUserId = async (req, res) => {
     const user = req.user;
     const { page = 1, limit = 5, active = false } = req.query;
     
@@ -34,6 +34,43 @@ const getUserRoutinesByUserId = async (req, res) => {
 
         // BOOLEANS
         routine.rutina_compartida = routine.rutina_compartida === 1;
+    }
+
+    user.fecha_alta = dayjs(user.fecha_alta).format('DD-MM-YYYY HH:mm:ss');
+
+    user.rutinas = userRoutines;
+    res.json(user);
+}
+
+const getRoutinesExercisesByUserId = async (req, res) => {
+    const user = req.user;
+    const { page = 1, limit = 5, active = false } = req.query;
+    
+    const userRoutines = active === 'true' ?
+        await User.selectActiveRoutinesByUserId(user.id, Number(page), Number(limit))
+        :
+        await User.selectRoutinesByUserId(user.id, Number(page), Number(limit));
+
+    if (!userRoutines || userRoutines.length === 0) {
+        return res.status(404).json({ message: 'No routines found for this user' });
+    }
+
+    for (const routine of userRoutines) {
+        // DATES
+        const fechaInicio = dayjs(routine.fecha_inicio_rutina);
+        const fechaFin = dayjs(routine.fecha_fin_rutina);
+        const today = dayjs();
+        routine.rutina_activa = today >= fechaInicio && today <= fechaFin;
+        
+        routine.fecha_inicio_rutina = fechaInicio.format('DD-MM-YYYY');
+        routine.fecha_fin_rutina = fechaFin.format('DD-MM-YYYY');
+
+        // BOOLEANS
+        routine.rutina_compartida = routine.rutina_compartida === 1;
+
+        // OPTIMIZE: Fetch exercises for each routine
+        const exercises = await User.selectExercisesByUserRoutineId(routine.rutina_id);
+        routine.ejercicios = exercises;
     }
 
     user.fecha_alta = dayjs(user.fecha_alta).format('DD-MM-YYYY HH:mm:ss');
@@ -158,7 +195,8 @@ const resetPassword = async (req, res) => {
 }
 
 module.exports = {
-    getUserRoutinesByUserId,
+    getRoutinesByUserId,
+    getRoutinesExercisesByUserId,
     registro,
     login,
     forgotPassword,
