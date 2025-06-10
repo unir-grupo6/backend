@@ -2,27 +2,16 @@
 
 ## Users
 
-### Get all users
-- **Method**: GET
-- **URL**: /api/users
-- **Headers**: Authorization: <token>
-- **Body**: ---
-- **Response**: An array with all the users
-- **Possible errors**:
-  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
-  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
-  - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
-  - **404 Not Found**: `{ "message": "Not found" }` — The endpoint does not exist.
-  - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
-
 ### Registration
 - **Method**: POST
 - **URL**: /api/users/register
 - **Headers**: Content-Type: application/json
 - **Body**: 
-  - `username` (string, required)
+  - `nombre` (string, required)
+  - `apellidos` (string, required)
   - `email` (string, required)
-  - `password` (string, required)
+  - `contraseña` (string, required)
+  - `sexo` (string, required)
 - **Response**: The created user object
 - **Possible errors**:
   - **400 Bad Request**: `{ "message": "Failed to update reset token" }` — There was a problem updating the reset token (rare, internal error).
@@ -73,7 +62,7 @@
 ### Reset Password
 - **Method**: PUT
 - **URL**: /api/users/reset-password
-- **Headers**: reset-token: <token>, Content-Type: application/json
+- **Headers**: reset-token: `{token}`, Content-Type: application/json
 - **Body**: 
   - `newPassword` (string, required)
 - **Response**: On success:
@@ -85,5 +74,24 @@
   - **403 Forbidden**: `{ "message": "User not found" }` — No user is associated with the provided reset token.
   - **403 Forbidden**: `{ "message": "<jwt error message>" }` — The reset token is invalid or expired.
   - **400 Bad Request**: `{ "message": "Failed to reset password" }` — There was a problem updating the password in the database.
+  - **404 Not Found**: `{ "message": "Not found" }` — The endpoint does not exist.
+  - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
+
+### Get logged-in user's routines (paginated)
+- **Method**: GET
+- **URL**: /api/users/routines?page=1&limit=10&active=true
+- **Headers**: Authorization: `{token}`
+- **Body**: ---
+- **Query Parameters**:
+  - `page` (number, optional): Page number of the results. Default: 1.
+  - `limit` (number, optional): Maximum number of routines per page. Default: 5.
+  - `active` (boolean, optional): If `true`, only returns active routines (for the current date). If `false` or not specified, returns all routines for the user.
+- **Response**: User object with the routines belonging to the authenticated user (paginated, optionally only active routines)
+- **Notes**: This endpoint returns only the routines of the user identified by the JWT token provided in the Authorization header. It does not return routines for other users.
+- **Possible errors**:
+  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
+  - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
+  - **404 Not Found**: `{ "message": "No routines found for this user" }` — The user has no routines.
   - **404 Not Found**: `{ "message": "Not found" }` — The endpoint does not exist.
   - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
