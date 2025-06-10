@@ -57,7 +57,7 @@ const selectRoutinesByUserId = async (userId, page, limit) => {
 const selectActiveRoutinesByUserId = async (userId, page, limit) => {
     const [result] = await db.query(
         `
-        SELECT R.id as rutina_id, R.nombre, 
+        SELECT RU.id as rutina_id, R.nombre, 
 		    RU.inicio as fecha_inicio_rutina, RU.fin as fecha_fin_rutina, R.dia, RU.compartida as rutina_compartida,
             R.observaciones as rutina_observaciones, R.sexo, D.nivel,
             M.nombre as metodo_nombre, M.tiempo_aerobicos, M.tiempo_anaerobicos, M.descanso, M.observaciones as metodo_observaciones
