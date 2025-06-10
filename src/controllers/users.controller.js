@@ -11,7 +11,7 @@ const User = require('../models/users.model');
 
 const getUserRoutinesByUserId = async (req, res) => {
     const user = req.user;
-    const { page = 1, limit = 3, active = false } = req.query;
+    const { page = 1, limit = 5, active = false } = req.query;
     
     const userRoutines = active === 'true' ?
         await User.selectActiveRoutinesByUserId(user.id, Number(page), Number(limit))
