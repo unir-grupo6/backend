@@ -34,21 +34,42 @@ const getByResetToken = async (resetToken) => {
     return result[0];
 }
 
-const selectRoutinesByUserId = async (userId) => {
+const selectRoutinesByUserId = async (userId, page, limit) => {
     const [result] = await db.query(
         `
         SELECT R.id as rutina_id, R.nombre, 
-		    RU.inicio as fecha_inicio_rutina, RU.inicio as fecha_fin_rutina, R.dia, RU.compartida as rutina_compartida,
-            R.observaciones as rutina_observaciones, R.sexo, D.nivel-- , 
-            ,M.nombre as metodo_nombre, M.tiempo_aerobicos, M.tiempo_anaerobicos, M.descanso, M.observaciones as metodo_observaciones
+		    RU.inicio as fecha_inicio_rutina, RU.fin as fecha_fin_rutina, R.dia, RU.compartida as rutina_compartida,
+            R.observaciones as rutina_observaciones, R.sexo, D.nivel,
+            M.nombre as metodo_nombre, M.tiempo_aerobicos, M.tiempo_anaerobicos, M.descanso, M.observaciones as metodo_observaciones
         FROM usuarios U
             INNER JOIN rutinas_usuarios RU ON U.id = RU.usuarios_id
             INNER JOIN rutinas R ON R.id = RU.rutinas_id
             INNER JOIN metodos M ON M.id = R.metodos_id
             INNER JOIN dificultad D ON D.id = R.dificultad_id
         WHERE U.id = ?
+        LIMIT ? OFFSET ?
         `,
-        [userId]
+        [userId, limit, (page - 1) * limit]
+    );
+    return result;
+}
+
+const selectActiveRoutinesByUserId = async (userId, page, limit) => {
+    const [result] = await db.query(
+        `
+        SELECT R.id as rutina_id, R.nombre, 
+		    RU.inicio as fecha_inicio_rutina, RU.fin as fecha_fin_rutina, R.dia, RU.compartida as rutina_compartida,
+            R.observaciones as rutina_observaciones, R.sexo, D.nivel,
+            M.nombre as metodo_nombre, M.tiempo_aerobicos, M.tiempo_anaerobicos, M.descanso, M.observaciones as metodo_observaciones
+        FROM usuarios U
+            INNER JOIN rutinas_usuarios RU ON U.id = RU.usuarios_id
+            INNER JOIN rutinas R ON R.id = RU.rutinas_id
+            INNER JOIN metodos M ON M.id = R.metodos_id
+            INNER JOIN dificultad D ON D.id = R.dificultad_id
+        WHERE U.id = ? AND (RU.inicio <= CURDATE() AND (RU.fin IS NULL OR RU.fin >= CURDATE()))
+        LIMIT ? OFFSET ?
+        `,
+        [userId, limit, (page - 1) * limit]
     );
     return result;
 }
@@ -82,6 +103,7 @@ module.exports = {
     getByEmail,
     getByResetToken,
     selectRoutinesByUserId,
+    selectActiveRoutinesByUserId,
     insert,
     updatePassword,
     updateResetToken
