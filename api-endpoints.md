@@ -108,3 +108,22 @@
   - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
   - **404 Not Found**: `{ "message": "Routine not found" }` — The routine does not exist or does not belong to the user.
   - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
+
+### Update password for the logged-in user
+- **Method**: PUT
+- **URL**: /api/users/update-password
+- **Headers**: Authorization: `{token}`, Content-Type: application/json
+- **Body**:
+  - `password` (string, required): The new password to set
+- **Response**: On success:
+  ```json
+  { "message": "Password updated successfully" }
+  ```
+- **Possible errors**:
+  - **400 Bad Request**: `{ "message": "Password is required" }` — The password field is missing.
+  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
+  - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
+  - **500 Internal Server Error**: `{ "message": "Error updating password" }` — There was a problem updating the password in the database.
+  - **404 Not Found**: `{ "message": "Not found" }` — The endpoint does not exist.
+  - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
