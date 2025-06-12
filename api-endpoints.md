@@ -10,7 +10,7 @@
   - `nombre` (string, required)
   - `apellidos` (string, required)
   - `email` (string, required)
-  - `contraseña` (string, required)
+  - `password` (string, required)
   - `sexo` (string, required)
 - **Response**: The created user object
 - **Possible errors**:

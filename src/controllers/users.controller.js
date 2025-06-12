@@ -67,7 +67,7 @@ const getRoutineById = async (req, res) => {
 }
 
 const registro = async (req, res) => {
-    req.body.contraseña = bcrypt.hashSync(req.body.contraseña, Number(BCRYPT_SALT_ROUNDS));
+    req.body.password = bcrypt.hashSync(req.body.password, Number(BCRYPT_SALT_ROUNDS));
     const existingUser = await User.getByEmail(req.body.email);
     if (existingUser) {
         return res.status(403).json({ message: 'Email already exists' });
@@ -166,10 +166,10 @@ const forgotPassword = async (req, res) => {
 }
 
 const resetPassword = async (req, res) => {
-    const { contraseña } = req.body;
+    const { password } = req.body;
     const resetToken = req.headers['reset-token']
 
-    if (!resetToken || !contraseña) {
+    if (!resetToken || !password) {
         return res.status(403).json({ message: 'Reset token and new password are required' });
     }
 
@@ -188,7 +188,7 @@ const resetPassword = async (req, res) => {
     //TODO: Validate new password (e.g., length, complexity)
 
     try {
-        await User.updatePassword(user.id, bcrypt.hashSync(contraseña, Number(BCRYPT_SALT_ROUNDS)));
+        await User.updatePassword(user.id, bcrypt.hashSync(password, Number(BCRYPT_SALT_ROUNDS)));
     } catch (error) {
         return res.status(400).json({ message: 'Failed to reset password' });
     }    
