@@ -95,3 +95,16 @@
   - **404 Not Found**: `{ "message": "No routines found for this user" }` — The user has no routines.
   - **404 Not Found**: `{ "message": "Not found" }` — The endpoint does not exist.
   - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
+
+### Get a specific routine of the logged-in user
+- **Method**: GET
+- **URL**: /api/users/routines/{routineId}
+- **Headers**: Authorization: `{token}`
+- **Body**: ---
+- **Response**: Routine object belonging to the authenticated user with the specified routineId
+- **Possible errors**:
+  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
+  - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
+  - **404 Not Found**: `{ "message": "Routine not found" }` — The routine does not exist or does not belong to the user.
+  - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
