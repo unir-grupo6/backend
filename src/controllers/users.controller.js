@@ -106,7 +106,7 @@ const login = async (req, res) => {
     });
 }
 
-const updatePassword = async (req, res) => {
+const changePassword = async (req, res) => {
     const user = req.user;
     const { password } = req.body;
     if (!password) {
@@ -201,7 +201,7 @@ module.exports = {
     getRoutineById,
     registro,
     login,
-    updatePassword,
+    changePassword,
     forgotPassword,
     resetPassword 
 };
