@@ -1,4 +1,4 @@
-const { login, registro, forgotPassword, resetPassword, getRoutinesExercisesByUserId, getRoutinesByUserId } = require('../../controllers/users.controller');
+const { login, registro, forgotPassword, resetPassword, getRoutinesByUserId, getRoutineById } = require('../../controllers/users.controller');
 const { checkToken } = require('../../middlewares/auth.middlewares');
 
 const router = require('express').Router();
@@ -12,6 +12,6 @@ router.put('/reset-password', resetPassword);
 
 // USER ROUTINES
 router.get('/routines', checkToken, getRoutinesByUserId);
-router.get('/routines/exercises', checkToken, getRoutinesExercisesByUserId);
+router.get('/routines/:routineId', checkToken, getRoutineById);
 
 module.exports = router;

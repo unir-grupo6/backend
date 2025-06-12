@@ -27,48 +27,12 @@ const getRoutinesByUserId = async (req, res) => {
         const fechaInicio = dayjs(routine.fecha_inicio_rutina);
         const fechaFin = dayjs(routine.fecha_fin_rutina);
         const today = dayjs();
+
         routine.rutina_activa = today >= fechaInicio && today <= fechaFin;
-        
         routine.fecha_inicio_rutina = fechaInicio.format('DD-MM-YYYY');
         routine.fecha_fin_rutina = fechaFin.format('DD-MM-YYYY');
-
-        // BOOLEANS
-        routine.rutina_compartida = routine.rutina_compartida === 1;
-    }
-
-    user.fecha_alta = dayjs(user.fecha_alta).format('DD-MM-YYYY HH:mm:ss');
-
-    user.rutinas = userRoutines;
-    res.json(user);
-}
-
-const getRoutinesExercisesByUserId = async (req, res) => {
-    const user = req.user;
-    const { page = 1, limit = 5, active = false } = req.query;
-    
-    const userRoutines = active === 'true' ?
-        await User.selectActiveRoutinesByUserId(user.id, Number(page), Number(limit))
-        :
-        await User.selectRoutinesByUserId(user.id, Number(page), Number(limit));
-
-    if (!userRoutines || userRoutines.length === 0) {
-        return res.status(404).json({ message: 'No routines found for this user' });
-    }
-
-    for (const routine of userRoutines) {
-        // DATES
-        const fechaInicio = dayjs(routine.fecha_inicio_rutina);
-        const fechaFin = dayjs(routine.fecha_fin_rutina);
-        const today = dayjs();
-        routine.rutina_activa = today >= fechaInicio && today <= fechaFin;
-        
-        routine.fecha_inicio_rutina = fechaInicio.format('DD-MM-YYYY');
-        routine.fecha_fin_rutina = fechaFin.format('DD-MM-YYYY');
-
-        // BOOLEANS
         routine.rutina_compartida = routine.rutina_compartida === 1;
 
-        // OPTIMIZE: Fetch exercises for each routine
         const exercises = await User.selectExercisesByUserRoutineId(routine.rutina_id);
         routine.ejercicios = exercises;
     }
@@ -77,6 +41,29 @@ const getRoutinesExercisesByUserId = async (req, res) => {
 
     user.rutinas = userRoutines;
     res.json(user);
+}
+
+const getRoutineById = async (req, res) => {
+    const user = req.user;
+    const { routineId } = req.params;
+    const userRoutine = await User.selectRoutineByUserIdRoutineId(user.id, routineId);
+    if (!userRoutine) {
+        return res.status(404).json({ message: 'Routine not found for this user' });
+    }
+    // DATES
+    const fechaInicio = dayjs(userRoutine.fecha_inicio_rutina);
+    const fechaFin = dayjs(userRoutine.fecha_fin_rutina);
+    const today = dayjs();
+    userRoutine.rutina_activa = today >= fechaInicio && today <= fechaFin;
+    userRoutine.fecha_inicio_rutina = fechaInicio.format('DD-MM-YYYY');
+    userRoutine.fecha_fin_rutina = fechaFin.format('DD-MM-YYYY');
+    // BOOLEANS
+    userRoutine.rutina_compartida = userRoutine.rutina_compartida === 1;
+
+    const exercises = await User.selectExercisesByUserRoutineId(userRoutine.rutina_id);
+    userRoutine.ejercicios = exercises;
+    
+    res.json(userRoutine);
 }
 
 const registro = async (req, res) => {
@@ -163,11 +150,10 @@ const forgotPassword = async (req, res) => {
 }
 
 const resetPassword = async (req, res) => {
-    console.log('Resetting password');
-    const { newPassword } = req.body;
+    const { contraseña } = req.body;
     const resetToken = req.headers['reset-token']
 
-    if (!resetToken || !newPassword) {
+    if (!resetToken || !contraseña) {
         return res.status(403).json({ message: 'Reset token and new password are required' });
     }
 
@@ -186,7 +172,7 @@ const resetPassword = async (req, res) => {
     //TODO: Validate new password (e.g., length, complexity)
 
     try {
-        await User.updatePassword(user.id, bcrypt.hashSync(newPassword, Number(BCRYPT_SALT_ROUNDS)));
+        await User.updatePassword(user.id, bcrypt.hashSync(contraseña, Number(BCRYPT_SALT_ROUNDS)));
     } catch (error) {
         return res.status(400).json({ message: 'Failed to reset password' });
     }    
@@ -196,7 +182,7 @@ const resetPassword = async (req, res) => {
 
 module.exports = {
     getRoutinesByUserId,
-    getRoutinesExercisesByUserId,
+    getRoutineById,
     registro,
     login,
     forgotPassword,

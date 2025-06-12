@@ -74,14 +74,34 @@ const selectActiveRoutinesByUserId = async (userId, page, limit) => {
     return result;
 }
 
+const selectRoutineByUserIdRoutineId = async (userId, routineId) => {
+    const [result] = await db.query(
+        `
+        SELECT RU.id as rutina_id, R.nombre, 
+            RU.inicio as fecha_inicio_rutina, RU.fin as fecha_fin_rutina, R.dia, RU.compartida as rutina_compartida,
+            R.observaciones as rutina_observaciones, R.sexo, D.nivel
+            ,M.nombre as metodo_nombre, M.tiempo_aerobicos, M.tiempo_anaerobicos, M.descanso, M.observaciones as metodo_observaciones
+        FROM usuarios U
+            INNER JOIN rutinas_usuarios RU ON U.id = RU.usuarios_id
+            INNER JOIN rutinas R ON R.id = RU.rutinas_id
+            INNER JOIN metodos M ON M.id = R.metodos_id
+            INNER JOIN dificultad D ON D.id = R.dificultad_id
+        WHERE U.id = ? and RU.id = ?
+        `,
+        [userId, routineId]
+    );
+    return result[0];
+}
+
 const selectExercisesByUserRoutineId = async (routineId) => {
     const [result] = await db.query(
         `
-        SELECT E.nombre, E.tipo, E.inicio as step_1, E.fin as step_2, GM.nombre as grupos_musculares, EU.series, EU.repeticiones, EU.comentario
+        SELECT EU.orden, E.nombre, E.tipo, E.inicio as step_1, E.fin as step_2, GM.nombre as grupos_musculares, EU.series, EU.repeticiones, EU.comentario
 FROM ejercicios_usuarios EU
         INNER JOIN ejercicios E ON E.id = EU.ejercicios_id
         INNER JOIN grupos_musculares GM ON GM.id = E.grupos_musculares_id
 WHERE EU.rutinas_usuarios_id = ?
+ORDER BY EU.orden ASC
         `,
         [routineId]
     );
@@ -113,13 +133,14 @@ const updateResetToken = async (userId, resetToken) => {
 }
 
 module.exports = {
-    getById,
-    getByEmail,
-    getByResetToken,
-    selectRoutinesByUserId,
-    selectActiveRoutinesByUserId,
-    selectExercisesByUserRoutineId,
-    insert,
-    updatePassword,
-    updateResetToken
+    getById, // get user by ID
+    getByEmail, // get user by email
+    getByResetToken, // get user by reset token
+    selectRoutinesByUserId, // select routines by user ID
+    selectActiveRoutinesByUserId, // select active routines by user ID
+    selectRoutineByUserIdRoutineId, // select routine by user ID and routine ID
+    selectExercisesByUserRoutineId, // select exercises by user routine ID
+    insert, // insert a new user
+    updatePassword, // update user password
+    updateResetToken // update user reset token
 };
