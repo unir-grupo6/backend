@@ -117,9 +117,7 @@ const resetPassword = async (req, res) => {
     if(!user) {
         return res.status(403).json({ message: 'User not found' });
     }
-
-    //TODO: Validate new password (e.g., length, complexity)
-
+    
     try {
         await User.updatePassword(user.id, bcrypt.hashSync(newPassword, Number(BCRYPT_SALT_ROUNDS)));
     } catch (error) {
