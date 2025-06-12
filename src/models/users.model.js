@@ -133,14 +133,14 @@ const updateResetToken = async (userId, resetToken) => {
 }
 
 module.exports = {
-    getById, // get user by ID
-    getByEmail, // get user by email
-    getByResetToken, // get user by reset token
-    selectRoutinesByUserId, // select routines by user ID
-    selectActiveRoutinesByUserId, // select active routines by user ID
-    selectRoutineByUserIdRoutineId, // select routine by user ID and routine ID
-    selectExercisesByUserRoutineId, // select exercises by user routine ID
-    insert, // insert a new user
-    updatePassword, // update user password
-    updateResetToken // update user reset token
+    getById,
+    getByEmail,
+    getByResetToken,
+    selectRoutinesByUserId,
+    selectActiveRoutinesByUserId,
+    selectRoutineByUserIdRoutineId,
+    selectExercisesByUserRoutineId,
+    insert,
+    updatePassword,
+    updateResetToken
 };

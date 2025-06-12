@@ -106,6 +106,22 @@ const login = async (req, res) => {
     });
 }
 
+const updatePassword = async (req, res) => {
+    const user = req.user;
+    const { password } = req.body;
+    if (!password) {
+        return res.status(400).json({ message: 'Password is required' });
+    }
+
+    try {
+        const hashedPassword = bcrypt.hashSync(password, Number(BCRYPT_SALT_ROUNDS));
+        await User.updatePassword(user.id, hashedPassword);
+    } catch (error) {
+        return res.status(500).json({ message: 'Error updating password' });
+    }
+    return res.json({ message: 'Password updated successfully' });
+}
+
 const forgotPassword = async (req, res) => {
     const { email } = req.body;
     if (!email) {
@@ -185,6 +201,7 @@ module.exports = {
     getRoutineById,
     registro,
     login,
+    updatePassword,
     forgotPassword,
     resetPassword 
 };
