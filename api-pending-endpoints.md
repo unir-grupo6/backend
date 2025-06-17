@@ -46,6 +46,16 @@
 - **Headers**: Authorization: {token}
 - **Body**: ---
 
+///////////////////////////
+### Obtener ejercicios relacionados con un objetivo
+- **Description**: Lista todos los ejercicios asociados indirectamente a un objetivo, a través de las rutinas y métodos de entrenamiento.
+- **Method**: GET
+- **URL**: /api/exercises/goal/{goalId}
+- **Headers**: Authorization: {token}
+- **Body**: ---
+///////////////////////////
+
+
 ## Rutinas & rutinas_ejercicios
 
 ### Recuperar todas las rutinas
@@ -68,6 +78,15 @@
 - **URL**: /api/routines/exercises/
 - **Headers**: Authorization: {token}
 - **Body**: ---
+
+//////////////////////////////
+### Obtener rutinas asociadas a un objetivo
+- **Description**: Devuelve todas las rutinas diseñadas para alcanzar un objetivo específico.
+- **Method**: GET
+- **URL**: /api/routines/goal/{goalId}
+- **Headers**: Authorization: {token}
+- **Body**: ---
+//////////////////////////////
 
 ### Recuperar rutinas con ejercicios por ID
 - **Description**: Recuperar una rutina con sus ejercicios por su ID. Consulta a la tabla `rutinas` con `rutina_ejercicios`
@@ -182,6 +201,24 @@
 - **Headers**: Authorization: {token}
 - **Body**: ---
 
+///////////////////////////////
+### Obtener objetivo por ID
+- **Description**: Recuperar los datos de un objetivo específico usando su ID.
+- **Method**: GET
+- **URL**: /api/goals/{id}
+- **Headers**: Authorization: {token}
+- **Body**: ---
+
+
+### Actualizar un objetivo
+- **Description**: Editar un objetivo existente
+- **Method**: PUT
+- **URL**: /api/goals/{id}
+- **Headers**: Authorization: {token}
+- **Body**:
+
+
+//////////////////////////////
 ## Métodos
 
 ### Recuperar todos los métodos
@@ -190,6 +227,16 @@
 - **URL**: /api/methods
 - **Headers**: Authorization: {token}
 - **Body**: ---
+
+//////////////////////////////
+### Obtener método de entrenamiento por objetivo
+- **Description**: Dado un objetivo específico, obtener el método de entrenamiento asociado.
+- **Method**: GET
+- **URL**: /api/methods/goal/{goalId}
+- **Headers**: Authorization: {token}
+- **Body**
+//////////////////////////////
+
 
 ## Dificultad
 
