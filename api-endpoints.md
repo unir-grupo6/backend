@@ -144,3 +144,24 @@
   - **400 Bad Request**: `{ "message": "Invalid ID" }` — The ID is not valid.
   - **404 Not Found**: `{ "message": "Muscle group not found" }` — The muscle group does not exist.
   - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
+
+
+  ## Goals
+
+  ### Get all goals
+  - **Method**: GET
+  - **URL**: /api/goals
+  - **Headers**: None
+  - **Response**: An array with all the goals
+  - **Possible errors**:
+    - **500 Internal Server Error**: `{ "message": "Error retrieving goals" }` — An unexpected server error occurred.
+
+  ### Get goal by ID
+  - **Method**: GET
+  - **URL**: /api/goals/{id}
+  - **Headers**: None
+  - **Response**: The goal object with the specified ID
+  - **Possible errors**:
+    - **400 Bad Request**: `{ "message": "Invalid ID" }` — The ID is not valid.
+    - **404 Not Found**: `{ "message": "Goal not found" }` — The goal does not exist.
+    - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
