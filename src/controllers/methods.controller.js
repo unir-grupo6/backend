@@ -5,27 +5,25 @@ const getAll = async (req, res) => {
         const data = await MethodsModel.selectAll();
         res.json(data);
     } catch (error) {
-        console.error('Error al obtener los métodos:', error);
-        res.status(500).json({ message: 'Error al obtener los métodos' });
+        res.status(500).json({ message: 'Error retrieving methods' });
     }
 };
 
 const getById = async (req, res) => {
     try {
-        const id = parseInt(req.params.id);
+        const id = Number(req.params.id);
         if (isNaN(id)) {
-            return res.status(400).json({ message: 'ID inválido' });
+            return res.status(400).json({ message: 'Invalid ID' });
         }
 
         const metodo = await MethodsModel.getById(id);
         if (!metodo) {
-            return res.status(404).json({ message: 'Método no encontrado' });
+            return res.status(404).json({ message: 'Method not found' });
         }
 
         res.json(metodo);
     } catch (error) {
-        console.error('Error al obtener el método por ID:', error);
-        res.status(500).json({ message: 'Error interno del servidor' });
+        res.status(500).json({ message: 'Internal server error' });
     }
 };
 

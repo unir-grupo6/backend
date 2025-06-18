@@ -88,3 +88,59 @@
   - **400 Bad Request**: `{ "message": "Failed to reset password" }` — There was a problem updating the password in the database.
   - **404 Not Found**: `{ "message": "Not found" }` — The endpoint does not exist.
   - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
+
+## Basic Gets
+
+### Get all methods
+- **Method**: GET
+- **URL**: /api/methods
+- **Headers**: None
+- **Response**: An array with all the methods
+- **Possible errors**:
+  - **500 Internal Server Error**: `{ "message": "Error retrieving methods" }` — An unexpected server error occurred.
+
+### Get method by ID
+- **Method**: GET
+- **URL**: /api/methods/{id}
+- **Headers**: None
+- **Response**: The method object with the specified ID
+- **Possible errors**:
+  - **400 Bad Request**: `{ "message": "Invalid ID" }` — The ID is not valid.
+  - **404 Not Found**: `{ "message": "Method not found" }` — The method does not exist.
+  - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
+
+### Get all difficulties
+- **Method**: GET
+- **URL**: /api/difficulties
+- **Headers**: None
+- **Response**: An array with all the difficulties
+- **Possible errors**:
+  - **500 Internal Server Error**: `{ "message": "Error retrieving difficulties" }` — An unexpected server error occurred.
+
+### Get difficulty by ID
+- **Method**: GET
+- **URL**: /api/difficulties/{id}
+- **Headers**: None
+- **Response**: The difficulty object with the specified ID
+- **Possible errors**:
+  - **400 Bad Request**: `{ "message": "Invalid ID" }` — The ID is not valid.
+  - **404 Not Found**: `{ "message": "Difficulty not found" }` — The difficulty does not exist.
+  - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
+
+### Get all muscle groups
+- **Method**: GET
+- **URL**: /api/muscle-groups
+- **Headers**: None
+- **Response**: An array with all the muscle groups
+- **Possible errors**:
+  - **500 Internal Server Error**: `{ "message": "Error retrieving muscle groups" }` — An unexpected server error occurred.
+
+### Get muscle group by ID
+- **Method**: GET
+- **URL**: /api/muscle-groups/{id}
+- **Headers**: None
+- **Response**: The muscle group object with the specified ID
+- **Possible errors**:
+  - **400 Bad Request**: `{ "message": "Invalid ID" }` — The ID is not valid.
+  - **404 Not Found**: `{ "message": "Muscle group not found" }` — The muscle group does not exist.
+  - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
