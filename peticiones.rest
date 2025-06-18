@@ -9,9 +9,10 @@ POST {{host}}/api/users/register
 Content-Type: application/json
 
 {
-    "username": "username",
-    "email": "newPassword",
-    "password": "newPassword"
+    "nombre": "prueba",
+    "apellidos": "prueba",
+    "email": "prueba@si.com",
+    "password": "12345"
 }
 
 ###
@@ -19,8 +20,8 @@ POST {{host}}/api/users/login
 Content-Type: application/json
 
 {
-    "email": "email@example.com",
-    "password": "newPassword"
+    "email": "prueba@si.com",
+    "password": "12345"
 }
 
 ###
@@ -39,4 +40,64 @@ Content-Type: application/json
 
 {
     "newPassword": "newPassword"
+}
+
+### Catálogo de ejercicios
+GET {{host}}/api/exercises
+Authorization: {{token}}
+
+###
+GET {{host}}/api/exercises/1
+Authorization: {{token}}
+
+### Rutinas & rutinas_ejercicios
+GET {{host}}/api/routines/
+Authorization: {{token}}
+
+###
+GET {{host}}/api/routines/1
+Authorization: {{token}}
+
+###
+GET {{host}}/api/routines/exercises/
+Authorization: {{token}}
+
+###
+GET {{host}}/api/routines/1/exercises
+Authorization: {{token}}
+
+###
+PUT {{host}}/api/routines/1
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "dificultad_id": 1,
+  "metodos_id": 1,
+  "nombre": "Rutina actualizada",
+  "observaciones": "Observaciones actualizadas"
+}
+
+###
+POST {{host}}/api/routines/
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "dificultad_id": 1,
+  "metodos_id": 1,
+  "nombre": "Nueva rutina",
+  "observaciones": "Observaciones de la rutina"
+}
+
+###
+POST {{host}}/api/routines/1/exercises
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "ejercicios_id": 1,
+  "rutinas_id": 1,
+  "series": 3,
+  "repeticiones": 12
 }

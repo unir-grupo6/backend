@@ -1,19 +1,26 @@
 const db = require('../config/db');
 
 const getById = async (userId) => {
+    // Primero intenta obtener los datos completos con join
     const [result] = await db.query(
         `
             SELECT U.id, nombre, apellidos, email, fecha_alta, peso, altura, imc
             FROM usuarios U
-		        INNER JOIN medidas_usuarios MU on U.id = MU.id_usuario
+                INNER JOIN medidas_usuarios MU on U.id = MU.id_usuario
             WHERE U.id = ?
             ORDER BY MU.fecha desc
             LIMIT 1;
         `,
         [userId],
     );
-    if (result.length === 0) return null;
-    return result[0];
+    if (result.length > 0) return result[0];
+    // Si no hay datos en medidas_usuarios, devuelve los datos básicos del usuario
+    const [basic] = await db.query(
+        'SELECT id, nombre, apellidos, email, fecha_alta FROM usuarios WHERE id = ?',
+        [userId]
+    );
+    if (basic.length === 0) return null;
+    return basic[0];
 }
 
 const getByEmail = async (email) => {
@@ -108,10 +115,10 @@ ORDER BY EU.orden ASC
     return result;
 }
 
-const insert = async ({ nombre, apellidos, email, password, sexo }) => {
+const insert = async ({ nombre, apellidos = '', email, password }) => {
     const [result] = await db.query(
-        'INSERT INTO usuarios (nombre, apellidos, email, contraseña, fecha_alta, sexo) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?)',
-        [nombre, apellidos, email, password, sexo]
+        'INSERT INTO usuarios (nombre, apellidos, email, password, fecha_alta) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)',
+        [nombre, apellidos, email, password]
     );
     return result;
 }
