@@ -17,7 +17,7 @@ const resetPasswordTemplate = ({ name, verificationLink }) => `
   <mj-body background-color="#000000">
     <mj-section padding="20px">
       <mj-column>
-        <mj-image width="120px" src="https://rutina-go.com/logo.png" alt="Rutina Go Logo" />
+        <mj-image width="120px" src="http://localhost:3000/rutina-go-logo-white.png" alt="Rutina Go Logo" />
         <mj-text font-size="20px" font-weight="bold" padding-top="20px">Hola ${name},</mj-text>
         <mj-text font-size="16px">
           Hemos recibido una solicitud para restablecer tu contraseña. Para continuar, haz clic en el botón de abajo.

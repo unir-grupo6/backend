@@ -6,7 +6,8 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.use(express.static('public'));
+// FIXME: Not working
+app.use(express.static("public/logo"));
 
 app.use('/api', require('./routes/api.routes'));
 
