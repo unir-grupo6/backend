@@ -20,7 +20,8 @@
 - **URL**: /api/users/register
 - **Headers**: Content-Type: application/json
 - **Body**: 
-  - `username` (string, required)
+  - `nombre` (string, required)
+  - `apellidos` (string, required)
   - `email` (string, required)
   - `password` (string, required)
 - **Response**: The created user object
