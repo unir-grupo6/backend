@@ -1,11 +1,11 @@
-const MuscleGroupsModel = require('../models/muscle-groups.model');
+const DifficultyModel = require('../models/difficulties.model');
 
 const getAll = async (req, res) => {
     try {
-        const data = await MuscleGroupsModel.selectAll();
+        const data = await DifficultyModel.selectAll();
         res.json(data);
     } catch (error) {
-        res.status(500).json({ message: 'Error retrieving muscle groups' });
+        res.status(500).json({ message: 'Error retrieving difficulties' });
     }
 };
 
@@ -16,12 +16,12 @@ const getById = async (req, res) => {
             return res.status(400).json({ message: 'Invalid ID' });
         }
 
-        const group = await MuscleGroupsModel.getById(id);
-        if (!group) {
-            return res.status(404).json({ message: 'Muscle group not found' });
+        const difficulty = await DifficultyModel.getById(id);
+        if (!difficulty) {
+            return res.status(404).json({ message: 'Difficulty not found' });
         }
 
-        res.json(group);
+        res.json(difficulty);
     } catch (error) {
         res.status(500).json({ message: 'Internal server error' });
     }

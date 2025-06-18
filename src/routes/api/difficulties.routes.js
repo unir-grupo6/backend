@@ -1,4 +1,4 @@
-const { getAll, getById } = require('../../controllers/difficulty.controller');
+const { getAll, getById } = require('../../controllers/difficulties.controller');
 const router = require('express').Router();
 
 router.get('/', getAll);
