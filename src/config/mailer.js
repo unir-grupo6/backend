@@ -21,6 +21,7 @@ transporter.verify()
   .catch(error => console.error("Error setting up mailer:", error));
 
 const sendResetPasswordEmail = async (to_email, verificationLink, name) => {
+
   const htmlContent = renderTemplate(resetPasswordTemplate, { name, verificationLink });
 
   await transporter.sendMail({
