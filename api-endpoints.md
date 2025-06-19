@@ -6,7 +6,7 @@
 - **Method**: GET
 - **URL**: /api/users
 - **Headers**: Authorization: `{token}`
-- **Body**: ---
+- **Body**: None
 - **Response**: Logged-in user object
 - **Possible errors**:
   - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
