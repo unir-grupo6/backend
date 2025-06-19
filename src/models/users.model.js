@@ -35,10 +35,10 @@ const getByResetToken = async (resetToken) => {
     return result[0];
 }
 
-const insertUser = async ({ nombre, apellidos, email, password, sexo, fechaNacimiento }) => {
+const insertUser = async ({ nombre, apellidos, email, password, sexo, fecha_nacimiento }) => {
     const [result] = await db.query(
         'INSERT INTO usuarios (nombre, apellidos, email, password, fecha_alta, sexo, fecha_nacimiento) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?)',
-        [nombre, apellidos, email, password, sexo, fechaNacimiento]
+        [nombre, apellidos, email, password, sexo, fecha_nacimiento]
     );
     return result;
 }
