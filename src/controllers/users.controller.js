@@ -14,6 +14,12 @@ const getAll = async (req, res) => {
     res.json(users);
 }
 
+const getById = async (req, res) => {
+    req.user.fecha_nacimiento = dayjs(req.user.fecha_nacimiento).format('YYYY-MM-DD');
+    req.user.fecha_alta = dayjs(req.user.fecha_alta).format('YYYY-MM-DD');
+    res.json(req.user);
+}
+
 const registro = async (req, res) => {
     req.body.password = bcrypt.hashSync(req.body.password, Number(BCRYPT_SALT_ROUNDS));
     const existingUser = await User.getByEmail(req.body.email);
@@ -21,7 +27,7 @@ const registro = async (req, res) => {
         return res.status(403).json({ message: 'Email already exists' });
     }
 
-    req.body.fechaNacimiento = dayjs(req.body.fechaNacimiento).format('YYYY-MM-DD');
+    req.body.fecha_nacimiento = dayjs(req.body.fechaNacimiento).format('YYYY-MM-DD');
 
     const result = await User.insertUser(req.body);
 
@@ -45,6 +51,13 @@ const registro = async (req, res) => {
     // OPTIMIZE: send verification link via email when a new user registers
 
     const newUser = await User.getById(result.insertId);
+
+    if (!newUser) {
+        return res.status(400).json({ message: 'Failed to retrieve new user' });
+    }
+
+    newUser.fecha_nacimiento = dayjs(newUser.fechaNacimiento).format('YYYY-MM-DD');
+    newUser.fecha_alta = dayjs(newUser.fechaAlta).format('YYYY-MM-DD');
     res.json(newUser);
 };
 
@@ -147,4 +160,4 @@ const resetPassword = async (req, res) => {
     return res.json({ message: 'Password reset successfully' });
 }
 
-module.exports = { getAll, registro, login, forgotPassword, resetPassword };
+module.exports = { getAll, getById, registro, login, forgotPassword, resetPassword };
