@@ -89,7 +89,7 @@ const login = async (req, res) => {
     }
 
     try {
-        const isValidPassword = bcrypt.compareSync(password, user.contraseña);
+        const isValidPassword = bcrypt.compareSync(password, user.password);
         if (!isValidPassword) {
             return res.status(401).json({ message: 'Error in email and/or password' });
         }

@@ -2,7 +2,7 @@
 @token = 
 
 GET {{host}}/api/users
-Authorization: {{token}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo5LCJleHAiOjE3NTA5MzU1NjgsImlhdCI6MTc1MDMzMDc2OH0.vLc37rg3Ak2LMWoUyv2-f1nmZ6TyT0ybq15GTr3A3o0
 
 ###
 POST {{host}}/api/users/register
@@ -29,7 +29,7 @@ PUT {{host}}/api/users/forgot-password
 Content-Type: application/json
 
 {
-    "email": "email@example.com"
+    "email": "prueba@si.com"
 }
 
 
