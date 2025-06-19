@@ -9,9 +9,10 @@ const { JWT_SECRET_KEY, JWT_RESET_SECRET_KEY, JWT_EXPIRES_IN_UNIT, JWT_RESET_EXP
 
 const User = require('../models/users.model');
 
-const getAll = async (req, res) => {
-    const users = await User.selectAll();
-    res.json(users);
+const getById = async (req, res) => {
+    req.user.fecha_nacimiento = dayjs(req.user.fecha_nacimiento).format('YYYY-MM-DD');
+    req.user.fecha_alta = dayjs(req.user.fecha_alta).format('YYYY-MM-DD');
+    res.json(req.user);
 }
 
 const registro = async (req, res) => {
@@ -20,11 +21,38 @@ const registro = async (req, res) => {
     if (existingUser) {
         return res.status(403).json({ message: 'Email already exists' });
     }
-    const result = await User.insert(req.body);
+
+    req.body.fecha_nacimiento = dayjs(req.body.fecha_nacimiento).format('YYYY-MM-DD');
+
+    const result = await User.insertUser(req.body);
+
+    if (!result || !result.insertId) {
+        return res.status(400).json({ message: 'Failed to register user' });
+    }
+
+    const { peso, altura } = req.body;
+
+    const metricsResult = await User.insertUserMetrics(
+            result.insertId,
+            peso,
+            altura,
+            peso && altura ? Number(peso) / ((Number(altura) / 100) ** 2) : null
+    );
+
+    if (!metricsResult || !metricsResult.insertId) {
+        return res.status(400).json({ message: 'Failed to register user metrics' });
+    }
 
     // OPTIMIZE: send verification link via email when a new user registers
 
     const newUser = await User.getById(result.insertId);
+
+    if (!newUser) {
+        return res.status(400).json({ message: 'Failed to retrieve new user' });
+    }
+
+    newUser.fecha_nacimiento = dayjs(newUser.fecha_nacimiento).format('YYYY-MM-DD');
+    newUser.fecha_alta = dayjs(newUser.fecha_alta).format('YYYY-MM-DD');
     res.json(newUser);
 };
 
@@ -117,9 +145,7 @@ const resetPassword = async (req, res) => {
     if(!user) {
         return res.status(403).json({ message: 'User not found' });
     }
-
-    //TODO: Validate new password (e.g., length, complexity)
-
+    
     try {
         await User.updatePassword(user.id, bcrypt.hashSync(newPassword, Number(BCRYPT_SALT_ROUNDS)));
     } catch (error) {
@@ -129,4 +155,4 @@ const resetPassword = async (req, res) => {
     return res.json({ message: 'Password reset successfully' });
 }
 
-module.exports = { getAll, registro, login, forgotPassword, resetPassword };
+module.exports = { getById, registro, login, forgotPassword, resetPassword };
