@@ -165,3 +165,26 @@
     - **400 Bad Request**: `{ "message": "Invalid ID" }` — The ID is not valid.
     - **404 Not Found**: `{ "message": "Goal not found" }` — The goal does not exist.
     - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
+
+    ## Exercises
+
+    ### Get all exercises
+    - **Method**: GET
+    - **URL**: /api/exercises
+    - **Headers**: None
+    - **Response**: An array with all the exercises
+    - **Possible errors**:
+      - **500 Internal Server Error**: `{ "message": "Error retrieving exercises" }` — An unexpected server error occurred.
+
+      ### Get exercises by muscle group and difficulty
+      - **Method**: GET
+      - **URL**: /api/exercises/grupo_muscular/:grupos_musculares_id/dificultad/:dificultad_id
+      - **Headers**: None
+      - **Query Parameters**:
+        - `grupos_musculares_id` (int, required): The ID of the muscle group
+        - `dificultad_id` (int, required): The ID of the difficulty
+      - **Response**: An array with the exercises matching the specified muscle group and difficulty
+      - **Possible errors**:
+        - **400 Bad Request**: `{ "message": "muscleGroupId and difficultyId are required" }` — One or both query parameters are missing.
+        - **404 Not Found**: `{ "message": "No exercises found for the given criteria" }` — No exercises match the given criteria.
+        - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.

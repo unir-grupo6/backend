@@ -41,3 +41,15 @@ Content-Type: application/json
 {
     "newPassword": "newPassword"
 }
+
+### Todos los ejercicios
+GET {{host}}/api/exercises/filter
+
+### Ejercicios por grupo muscular
+GET {{host}}/api/exercises/filter?grupos_musculares_id=1
+
+### Ejercicios por dificultad
+GET {{host}}/api/exercises/filter?dificultad_id=2
+
+### Ejercicios por ambos filtros
+GET {{host}}/api/exercises/filter?grupos_musculares_id=1&dificultad_id=2
