@@ -189,7 +189,7 @@
 
       ### Get exercises by muscle group and difficulty
       - **Method**: GET
-      - **URL**: /api/exercises/grupo_muscular/:grupos_musculares_id/dificultad/:dificultad_id
+      - **URL**: /api/exercises/filter?grupos_musculares_id=?&dificultad_id=?
       - **Headers**: None
       - **Query Parameters**:
         - `grupos_musculares_id` (int, required): The ID of the muscle group
