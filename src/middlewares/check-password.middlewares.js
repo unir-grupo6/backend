@@ -6,39 +6,27 @@ const passwordValidator = (password) => {
   const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/;
 
   if (password.length < minLength ) {
-    return { valid: false, message: 'La contraseña debe tener al menos 8 caracteres.' };
+    return { valid: false, message: 'Password must be at least 8 characters long.' };
   }
   if (!hasUpperCase.test(password)) {
-    return { valid: false, message: 'La contraseña debe contener al menos una letra mayúscula.' };
+    return { valid: false, message: 'Password must contain at least one uppercase letter.' };
   }
   if (!hasLowerCase.test(password)) {
-    return { valid: false, message: 'La contraseña debe contener al menos una letra minúscula.' };
+    return { valid: false, message: 'Password must contain at least one lowercase letter.' };
   }
   if (!hasDigits.test(password)) {
-    return { valid: false, message: 'La contraseña debe contener al menos un número.' };
+    return { valid: false, message: 'Password must contain at least one number.' };
   }
   if (!hasSpecialChar.test(password)) {
-    return { valid: false, message: 'La contraseña debe contener al menos un carácter especial.' };
+    return { valid: false, message: 'Password must contain at least one special character.' };
   }
   return { valid: true };
 };
 
-const checkRegisterPassword = (req, res, next) => {
- const { contraseña } = req.body;
+const checkPassword = (req, res, next) => {
+  const { password } = req.body;
 
-  const validated = passwordValidator(contraseña);
-
-  if (!validated.valid) {
-    return res.status(400).json({ message: validated.message });
-  }
-
-  next();
-};
-
-const checkUpdatePassword = (req, res, next) => {
- const { newPassword } = req.body;
-
-  const validated = passwordValidator(newPassword);
+  const validated = passwordValidator(password);
 
   if (!validated.valid) {
     return res.status(400).json({ message: validated.message });
@@ -48,6 +36,5 @@ const checkUpdatePassword = (req, res, next) => {
 };
 
 module.exports = {
-    checkRegisterPassword,
-    checkUpdatePassword
+  checkPassword
 };
