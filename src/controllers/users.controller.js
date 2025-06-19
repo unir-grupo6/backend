@@ -145,7 +145,7 @@ const forgotPassword = async (req, res) => {
 
     // OPTIMIZE: send verification link via email when a new user registers
     try {
-        sendResetPasswordEmail(user.email, verificationLink);
+        sendResetPasswordEmail(user.email, verificationLink, user.nombre);
 
     } catch (error) {
         return res.status(500).json({ message: 'Failed to send verification email' });
