@@ -22,7 +22,7 @@ const registro = async (req, res) => {
         return res.status(403).json({ message: 'Email already exists' });
     }
 
-    req.body.fecha_nacimiento = dayjs(req.body.fechaNacimiento).format('YYYY-MM-DD');
+    req.body.fecha_nacimiento = dayjs(req.body.fecha_nacimiento).format('YYYY-MM-DD');
 
     const result = await User.insertUser(req.body);
 
@@ -51,8 +51,8 @@ const registro = async (req, res) => {
         return res.status(400).json({ message: 'Failed to retrieve new user' });
     }
 
-    newUser.fecha_nacimiento = dayjs(newUser.fechaNacimiento).format('YYYY-MM-DD');
-    newUser.fecha_alta = dayjs(newUser.fechaAlta).format('YYYY-MM-DD');
+    newUser.fecha_nacimiento = dayjs(newUser.fecha_nacimiento).format('YYYY-MM-DD');
+    newUser.fecha_alta = dayjs(newUser.fecha_alta).format('YYYY-MM-DD');
     res.json(newUser);
 };
 
