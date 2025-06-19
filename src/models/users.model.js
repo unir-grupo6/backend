@@ -68,7 +68,6 @@ const updateResetToken = async (userId, resetToken) => {
 }
 
 module.exports = {
-    selectAll,
     getById,
     getByEmail,
     getByResetToken,

@@ -155,4 +155,4 @@ const resetPassword = async (req, res) => {
     return res.json({ message: 'Password reset successfully' });
 }
 
-module.exports = { getAll, getById, registro, login, forgotPassword, resetPassword };
+module.exports = { getById, registro, login, forgotPassword, resetPassword };
