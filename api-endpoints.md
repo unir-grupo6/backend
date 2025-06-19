@@ -2,12 +2,12 @@
 
 ## Users
 
-### Get all users
+### Get logged-in user information
 - **Method**: GET
 - **URL**: /api/users
-- **Headers**: Authorization: <token>
+- **Headers**: Authorization: `{token}`
 - **Body**: ---
-- **Response**: An array with all the users
+- **Response**: Logged-in user object
 - **Possible errors**:
   - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
   - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
@@ -24,6 +24,13 @@
   - `apellidos` (string, required)
   - `email` (string, required)
   - `password` (string, required)
+  - `sexo` (number, required)
+    - 1: Hombre
+    - 2: Mujer
+    - 3: Otro / Prefiero no responder
+  - `fecha_nacimiento` (string, required, format: YYYY-MM-DD)
+  - `peso` (number, required)
+  - `altura` (number, required)
 - **Response**: The created user object
 - **Possible errors**:
   - **400 Bad Request**: `{ "message": "Failed to update reset token" }` — There was a problem updating the reset token (rare, internal error).
@@ -89,7 +96,7 @@
   - **404 Not Found**: `{ "message": "Not found" }` — The endpoint does not exist.
   - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
 
-## Basic Gets
+## Methods
 
 ### Get all methods
 - **Method**: GET
@@ -109,6 +116,8 @@
   - **404 Not Found**: `{ "message": "Method not found" }` — The method does not exist.
   - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
 
+## Difficulties
+
 ### Get all difficulties
 - **Method**: GET
 - **URL**: /api/difficulties
@@ -126,6 +135,8 @@
   - **400 Bad Request**: `{ "message": "Invalid ID" }` — The ID is not valid.
   - **404 Not Found**: `{ "message": "Difficulty not found" }` — The difficulty does not exist.
   - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
+
+## Muscle groups
 
 ### Get all muscle groups
 - **Method**: GET
@@ -146,22 +157,22 @@
   - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
 
 
-  ## Goals
+## Goals
 
-  ### Get all goals
-  - **Method**: GET
-  - **URL**: /api/goals
-  - **Headers**: None
-  - **Response**: An array with all the goals
-  - **Possible errors**:
-    - **500 Internal Server Error**: `{ "message": "Error retrieving goals" }` — An unexpected server error occurred.
+### Get all goals
+- **Method**: GET
+- **URL**: /api/goals
+- **Headers**: None
+- **Response**: An array with all the goals
+- **Possible errors**:
+  - **500 Internal Server Error**: `{ "message": "Error retrieving goals" }` — An unexpected server error occurred.
 
-  ### Get goal by ID
-  - **Method**: GET
-  - **URL**: /api/goals/{id}
-  - **Headers**: None
-  - **Response**: The goal object with the specified ID
-  - **Possible errors**:
-    - **400 Bad Request**: `{ "message": "Invalid ID" }` — The ID is not valid.
-    - **404 Not Found**: `{ "message": "Goal not found" }` — The goal does not exist.
-    - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
+### Get goal by ID
+- **Method**: GET
+- **URL**: /api/goals/{id}
+- **Headers**: None
+- **Response**: The goal object with the specified ID
+- **Possible errors**:
+  - **400 Bad Request**: `{ "message": "Invalid ID" }` — The ID is not valid.
+  - **404 Not Found**: `{ "message": "Goal not found" }` — The goal does not exist.
+  - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
