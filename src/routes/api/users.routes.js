@@ -4,8 +4,6 @@ const { checkPassword } = require('../../middlewares/check-password.middlewares'
 
 const router = require('express').Router();
 
-// router.get('/', checkToken, getAll);
-// router.get('/', getAll);
 router.get('/', checkToken, getById);
 
 router.post('/register', checkPassword, registro);

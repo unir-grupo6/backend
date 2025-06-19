@@ -1,11 +1,6 @@
 const db = require('../config/db');
 
 //TODO: Editar en base a las tablas de la BBDD. Eliminarlo si no es necesario
-const selectAll = async () => {
-    const [result] = await db.query('SELECT * FROM usuarios');
-    return result;
-}
-
 const getById = async (userId) => {
     const [result] = await db.query(
         `

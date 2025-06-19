@@ -9,11 +9,6 @@ const { JWT_SECRET_KEY, JWT_RESET_SECRET_KEY, JWT_EXPIRES_IN_UNIT, JWT_RESET_EXP
 
 const User = require('../models/users.model');
 
-const getAll = async (req, res) => {
-    const users = await User.selectAll();
-    res.json(users);
-}
-
 const getById = async (req, res) => {
     req.user.fecha_nacimiento = dayjs(req.user.fecha_nacimiento).format('YYYY-MM-DD');
     req.user.fecha_alta = dayjs(req.user.fecha_alta).format('YYYY-MM-DD');
