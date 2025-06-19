@@ -89,7 +89,7 @@ const login = async (req, res) => {
     }
 
     try {
-        const isValidPassword = bcrypt.compareSync(password, user.contraseña);
+        const isValidPassword = bcrypt.compareSync(password, user.password);
         if (!isValidPassword) {
             return res.status(401).json({ message: 'Error in email and/or password' });
         }
@@ -145,7 +145,7 @@ const forgotPassword = async (req, res) => {
 
     // OPTIMIZE: send verification link via email when a new user registers
     try {
-        sendResetPasswordEmail(user.email, verificationLink);
+        sendResetPasswordEmail(user.email, verificationLink, user.nombre);
 
     } catch (error) {
         return res.status(500).json({ message: 'Failed to send verification email' });

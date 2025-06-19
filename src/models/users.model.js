@@ -110,7 +110,7 @@ ORDER BY EU.orden ASC
 
 const insert = async ({ nombre, apellidos, email, password, sexo }) => {
     const [result] = await db.query(
-        'INSERT INTO usuarios (nombre, apellidos, email, contraseña, fecha_alta, sexo) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?)',
+        'INSERT INTO usuarios (nombre, apellidos, email, password, fecha_alta, sexo) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?)',
         [nombre, apellidos, email, password, sexo]
     );
     return result;
