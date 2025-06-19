@@ -20,7 +20,27 @@ const registro = async (req, res) => {
     if (existingUser) {
         return res.status(403).json({ message: 'Email already exists' });
     }
-    const result = await User.insert(req.body);
+
+    req.body.fechaNacimiento = dayjs(req.body.fechaNacimiento).format('YYYY-MM-DD');
+
+    const result = await User.insertUser(req.body);
+
+    if (!result || !result.insertId) {
+        return res.status(400).json({ message: 'Failed to register user' });
+    }
+
+    const { peso, altura } = req.body;
+
+    const metricsResult = await User.insertUserMetrics(
+            result.insertId,
+            peso,
+            altura,
+            peso && altura ? Number(peso) / ((Number(altura) / 100) ** 2) : null
+    );
+
+    if (!metricsResult || !metricsResult.insertId) {
+        return res.status(400).json({ message: 'Failed to register user metrics' });
+    }
 
     // OPTIMIZE: send verification link via email when a new user registers
 
