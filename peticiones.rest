@@ -70,7 +70,7 @@ GET {{host}}/api/rutines/filter?objetivos_id=1
 GET {{host}}/api/rutines/filter?metodos_id=1
 
 ### Sin filtros (todas las rutinas)
-GET {{host}}/api/rutines/filter
+GET {{host}}/api/rutines
 
 
 
