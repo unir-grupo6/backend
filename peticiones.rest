@@ -46,6 +46,7 @@ Content-Type: application/json
     "newPassword": "newPassword"
 }
 
+
 ### Todos los ejercicios
 GET {{host}}/api/exercises/filter
 
@@ -57,3 +58,20 @@ GET {{host}}/api/exercises/filter?dificultad_id=2
 
 ### Ejercicios por ambos filtros
 GET {{host}}/api/exercises/filter?grupos_musculares_id=1&dificultad_id=2
+
+
+### Todos los filtros
+GET {{host}}/api/rutines/filter?objetivos_id=1&dificultad_id=1&metodos_id=1
+
+### Solo objetivo
+GET {{host}}/api/rutines/filter?objetivos_id=1
+
+### Solo método
+GET {{host}}/api/rutines/filter?metodos_id=1
+
+### Sin filtros (todas las rutinas)
+GET {{host}}/api/rutines/filter
+
+
+
+
