@@ -41,3 +41,23 @@ Content-Type: application/json
 {
     "newPassword": "newPassword"
 }
+###
+GET {{host}}/api/users/routines?page=1&limit=10&active=false
+reset-token: 
+Content-Type: application/json
+Authorization: {{token}}
+###
+GET {{host}}/api/users/routines?active=true
+reset-token: 
+Content-Type: application/json
+Authorization: {{token}}
+###
+GET {{host}}/api/users/routines/2407
+reset-token: 
+Content-Type: application/json
+Authorization: {{token}}
+###
+POST {{host}}/api/users/routines/2407/save
+reset-token: 
+Content-Type: application/json
+Authorization: {{token}}
