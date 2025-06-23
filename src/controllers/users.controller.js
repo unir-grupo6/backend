@@ -9,6 +9,12 @@ const { JWT_SECRET_KEY, JWT_RESET_SECRET_KEY, JWT_EXPIRES_IN_UNIT, JWT_RESET_EXP
 
 const User = require('../models/users.model');
 
+const getById = async (req, res) => {
+    req.user.fecha_nacimiento = dayjs(req.user.fecha_nacimiento).format('YYYY-MM-DD');
+    req.user.fecha_alta = dayjs(req.user.fecha_alta).format('YYYY-MM-DD');
+    res.json(req.user);
+}
+
 const getRoutinesByUserId = async (req, res) => {
     const user = req.user;
     const { page = 1, limit = 5, active = false } = req.query;
@@ -196,12 +202,30 @@ const resetPassword = async (req, res) => {
     return res.json({ message: 'Password reset successfully' });
 }
 
+const saveUserRoutine = async (req, res) => {
+    const user = req.user;
+    const { userRoutineId } = req.params;
+    const routineId = await User.selectUserRoutineById(userRoutineId);
+    if (!routineId) {
+        return res.status(404).json({ message: 'No routines found for the specified ID.' });
+    }
+
+    try {
+        await User.insertUserRoutine(routineId, user.id);
+    } catch (error) {
+        return res.status(500).json({ message: 'Error saving user routine' });
+    }
+    return res.json({ message: 'Routine saved successfully' });
+}
+
 module.exports = {
+    getById,
     getRoutinesByUserId,
     getRoutineById,
     registro,
     login,
     changePassword,
     forgotPassword,
-    resetPassword 
+    resetPassword,
+    saveUserRoutine
 };

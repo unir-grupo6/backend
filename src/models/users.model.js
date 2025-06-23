@@ -5,7 +5,7 @@ const getById = async (userId) => {
         `
             SELECT U.id, nombre, apellidos, email, fecha_alta, peso, altura, imc
             FROM usuarios U
-		        INNER JOIN medidas_usuarios MU on U.id = MU.id_usuario
+		        LEFT JOIN medidas_usuarios MU on U.id = MU.id_usuario
             WHERE U.id = ?
             ORDER BY MU.fecha desc
             LIMIT 1;
@@ -32,6 +32,15 @@ const getByResetToken = async (resetToken) => {
     );
     if (result.length === 0) return null;
     return result[0];
+}
+
+const selectUserRoutineById = async (id_user_routine) => {
+    const [result] = await db.query(
+        'SELECT rutinas_id FROM rutinas_usuarios WHERE id = ? LIMIT 1',
+        [id_user_routine]
+    );
+    if (result.length === 0) return null;
+    return result[0].rutinas_id;
 }
 
 const selectRoutinesByUserId = async (userId, page, limit) => {
@@ -72,6 +81,24 @@ const selectActiveRoutinesByUserId = async (userId, page, limit) => {
         [userId, limit, (page - 1) * limit]
     );
     return result;
+}
+
+const selectRoutineByRoutineId = async (routineId) => {
+    const [result] = await db.query(
+        `
+        SELECT RU.id as rutina_id, R.nombre, 
+            RU.inicio as fecha_inicio_rutina, RU.fin as fecha_fin_rutina, R.dia, RU.compartida as rutina_compartida,
+            R.observaciones as rutina_observaciones, R.sexo, D.nivel
+            ,M.nombre as metodo_nombre, M.tiempo_aerobicos, M.tiempo_anaerobicos, M.descanso, M.observaciones as metodo_observaciones
+        FROM rutinas_usuarios RU
+            INNER JOIN rutinas R ON R.id = RU.rutinas_id
+            INNER JOIN metodos M ON M.id = R.metodos_id
+            INNER JOIN dificultad D ON D.id = R.dificultad_id
+        WHERE RU.id = ?
+        `,
+        [routineId]
+    );
+    return result[0];
 }
 
 const selectRoutineByUserIdRoutineId = async (userId, routineId) => {
@@ -132,15 +159,26 @@ const updateResetToken = async (userId, resetToken) => {
     return result;
 }
 
+const insertUserRoutine = async (routineId, user_id) => {
+    const [result] = await db.query(
+        'INSERT INTO rutinas_usuarios (rutinas_id, usuarios_id, compartida) VALUES (?, ?, 0);',
+        [routineId, user_id]
+    );
+    return result;
+}
+
 module.exports = {
     getById,
     getByEmail,
     getByResetToken,
+    selectUserRoutineById,
     selectRoutinesByUserId,
     selectActiveRoutinesByUserId,
+    selectRoutineByRoutineId,
     selectRoutineByUserIdRoutineId,
     selectExercisesByUserRoutineId,
     insert,
     updatePassword,
-    updateResetToken
+    updateResetToken,
+    insertUserRoutine
 };

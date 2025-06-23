@@ -98,6 +98,20 @@
   - **404 Not Found**: `{ "message": "Not found" }` — The endpoint does not exist.
   - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
 
+### Get logged-in user information
+- **Method**: GET
+- **URL**: /api/users
+- **Headers**: Authorization: `{token}`
+- **Body**: ---
+- **Response**: The logged-in user object
+- **Possible errors**:
+  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
+  - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
+  - **404 Not Found**: `{ "message": "Not found" }` — The endpoint does not exist.
+  - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
+
+
 ### Get logged-in user's routines (paginated)
 - **Method**: GET
 - **URL**: /api/users/routines?page=1&limit=10&active=true
@@ -129,6 +143,22 @@
   - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
   - **404 Not Found**: `{ "message": "Routine not found" }` — The routine does not exist or does not belong to the user.
   - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
+
+### Save a user routine
+- **Method**: POST
+- **URL**: /api/users/routines/{userRoutineId}/save
+- **Headers**: Authorization: `{token}`, Content-Type: application/json
+- **Body**: ---
+- **Response**: On success:
+  ```json
+  { "message": "Routine saved successfully" }
+  ```
+- **Possible errors**:
+  - **403 Forbidden**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **403 Forbidden**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
+  - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
+  - **404 Not Found**: `{ "message": "No routines found for the specified ID." }` — The routine does not exist or does not belong to the user.
+  - **500 Internal Server Error**: `{ "message": "Error saving user routine" }` — There was a problem saving the routine.
 
 ## Basic Gets
 
