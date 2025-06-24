@@ -15,7 +15,7 @@
 - Rutinas & usuarios
   - [Actualizar los datos generales de una rutina asignada a un usuario](#actualizar-los-datos-generales-de-una-rutina-asignada-a-un-usuario)
   - [Crear rutina para un usuario](#crear-rutina-para-un-usuario)
-  - [Eliminar rutina para un usuario](#eliminar-rutina-para-un-usuario)
+  - [Añadir ejercicios a la rutina de un usuario](#añadir-ejercicios-a-la-rutina-de-un-usuario)
 - Objetivos
   - [Recuperar todos los objetivos](#recuperar-todos-los-objetivos)
 - Métodos
@@ -74,14 +74,12 @@
 - **Headers**: Authorization: {token}
 - **Body**: ---
 
-//////////////////////////////
 ### Obtener rutinas asociadas a un objetivo
 - **Description**: Devuelve todas las rutinas diseñadas para alcanzar un objetivo específico.
 - **Method**: GET
 - **URL**: /api/routines/goal/{goalId}
 - **Headers**: Authorization: {token}
 - **Body**: ---
-//////////////////////////////
 
 ### Recuperar rutinas con ejercicios por ID
 - **Description**: Recuperar una rutina con sus ejercicios por su ID. Consulta a la tabla `rutinas` con `rutina_ejercicios`
@@ -145,10 +143,10 @@
 - **Headers**: Authorization: {token}
 - **Body**: (_aclararlo_)
 
-### Eliminar rutina para un usuario
-- **Description**: Eliminar rutina para un usuario
-- **Method**: DELETE
-- **URL**: /api/users/{userId}/routines/{routineId}
+### Añadir ejercicios a la rutina de un usuario
+- **Description**: Insertar ejercicio en ejercicios_usuarios que esté asociado a la rutina indicada
+- **Method**: POST
+- **URL**: (_aclararlo_)
 - **Headers**: Authorization: {token}
 - **Body**: (_aclararlo_)
 
@@ -161,7 +159,6 @@
 - **Headers**: Authorization: {token}
 - **Body**: ---
 
-///////////////////////////////
 ### Obtener objetivo por ID
 - **Description**: Recuperar los datos de un objetivo específico usando su ID.
 - **Method**: GET
@@ -178,7 +175,6 @@
 - **Body**:
 
 
-//////////////////////////////
 ## Métodos
 
 ### Recuperar todos los métodos
@@ -188,14 +184,12 @@
 - **Headers**: Authorization: {token}
 - **Body**: ---
 
-//////////////////////////////
 ### Obtener método de entrenamiento por objetivo
 - **Description**: Dado un objetivo específico, obtener el método de entrenamiento asociado.
 - **Method**: GET
 - **URL**: /api/methods/goal/{goalId}
 - **Headers**: Authorization: {token}
 - **Body**
-//////////////////////////////
 
 
 ## Dificultad
