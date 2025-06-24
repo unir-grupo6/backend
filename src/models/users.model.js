@@ -36,7 +36,7 @@ const getByResetToken = async (resetToken) => {
 
 const selectUserRoutineById = async (id_user_routine) => {
     const [result] = await db.query(
-        'SELECT rutinas_id FROM rutinas_usuarios WHERE id = ? LIMIT 1',
+        'SELECT id, rutinas_id, usuarios_id, inicio, fin, compartida FROM rutinas_usuarios WHERE id = ? LIMIT 1',
         [id_user_routine]
     );
     if (result.length === 0) return null;
@@ -61,6 +61,15 @@ const selectRoutinesByUserId = async (userId, page, limit) => {
         [userId, limit, (page - 1) * limit]
     );
     return result;
+}
+
+const selectUserRoutineByIdUserId = async (user_id, id_user_routine) => {
+    const [result] = await db.query(
+        'SELECT id, rutinas_id, usuarios_id, inicio, fin, compartida FROM rutinas_usuarios WHERE id = ? AND usuarios_id = ? LIMIT 1',
+        [id_user_routine, user_id]
+    );
+    if (result.length === 0) return null;
+    return result[0].rutinas_id;
 }
 
 const selectActiveRoutinesByUserId = async (userId, page, limit) => {
@@ -167,12 +176,21 @@ const insertUserRoutine = async (routineId, user_id) => {
     return result;
 }
 
+const deleteUserRoutine = async (userRoutineId) => {
+    const [result] = await db.query(
+        'DELETE FROM rutinas_usuarios WHERE id = ?',
+        [userRoutineId]
+    );
+    return result;
+}
+
 module.exports = {
     getById,
     getByEmail,
     getByResetToken,
     selectUserRoutineById,
     selectRoutinesByUserId,
+    selectUserRoutineByIdUserId,
     selectActiveRoutinesByUserId,
     selectRoutineByRoutineId,
     selectRoutineByUserIdRoutineId,
@@ -180,5 +198,6 @@ module.exports = {
     insert,
     updatePassword,
     updateResetToken,
-    insertUserRoutine
+    insertUserRoutine,
+    deleteUserRoutine
 };

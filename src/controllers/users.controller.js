@@ -218,6 +218,22 @@ const saveUserRoutine = async (req, res) => {
     return res.json({ message: 'Routine saved successfully' });
 }
 
+const removeUserRoutine  = async (req, res) => {
+    const user = req.user;
+    const { userRoutineId } = req.params;
+    const routineId = await User.selectUserRoutineByIdUserId( user.id, userRoutineId);
+    if (!routineId) {
+        return res.status(404).json({ message: 'No routines found for the user.' });
+    }
+
+    try {
+        await User.deleteUserRoutine(userRoutineId);
+    } catch (error) {
+        return res.status(500).json({ message: 'Error deleting user routine' });
+    }
+    return res.json({ message: 'Routine deleted successfully' });
+}
+
 module.exports = {
     getById,
     getRoutinesByUserId,
@@ -227,5 +243,6 @@ module.exports = {
     changePassword,
     forgotPassword,
     resetPassword,
-    saveUserRoutine
+    saveUserRoutine,
+    removeUserRoutine
 };
