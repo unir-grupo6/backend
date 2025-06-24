@@ -41,14 +41,12 @@
 - **Headers**: Authorization: {token}
 - **Body**: ---
 
-///////////////////////////
 ### Obtener ejercicios relacionados con un objetivo
 - **Description**: Lista todos los ejercicios asociados indirectamente a un objetivo, a través de las rutinas y métodos de entrenamiento.
 - **Method**: GET
 - **URL**: /api/exercises/goal/{goalId}
 - **Headers**: Authorization: {token}
 - **Body**: ---
-///////////////////////////
 
 
 ## Rutinas & rutinas_ejercicios
