@@ -20,8 +20,8 @@ POST {{host}}/api/users/login
 Content-Type: application/json
 
 {
-    "email": "email@example.com",
-    "password": "newPassword"
+    "email": "markelkortajarena1@gmail.com",
+    "password": "123456"
 }
 
 ###
@@ -35,7 +35,6 @@ Content-Type: application/json
 
 ###
 PUT {{host}}/api/users/reset-password
-reset-token: 
 Content-Type: application/json
 
 {
@@ -43,21 +42,20 @@ Content-Type: application/json
 }
 ###
 GET {{host}}/api/users/routines?page=1&limit=10&active=false
-reset-token: 
 Content-Type: application/json
 Authorization: {{token}}
 ###
 GET {{host}}/api/users/routines?active=true
-reset-token: 
 Content-Type: application/json
 Authorization: {{token}}
 ###
-GET {{host}}/api/users/routines/2407
-reset-token: 
+GET {{host}}/api/users/routines/2418
 Content-Type: application/json
 Authorization: {{token}}
 ###
 POST {{host}}/api/users/routines/2407/save
-reset-token: 
 Content-Type: application/json
+Authorization: {{token}}
+###
+DELETE {{host}}/api/users/routines/2417
 Authorization: {{token}}

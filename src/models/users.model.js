@@ -40,7 +40,7 @@ const selectUserRoutineById = async (id_user_routine) => {
         [id_user_routine]
     );
     if (result.length === 0) return null;
-    return result[0].rutinas_id;
+    return result[0];
 }
 
 const selectRoutinesByUserId = async (userId, page, limit) => {
@@ -69,7 +69,7 @@ const selectUserRoutineByIdUserId = async (user_id, id_user_routine) => {
         [id_user_routine, user_id]
     );
     if (result.length === 0) return null;
-    return result[0].rutinas_id;
+    return result[0];
 }
 
 const selectActiveRoutinesByUserId = async (userId, page, limit) => {
@@ -132,12 +132,14 @@ const selectRoutineByUserIdRoutineId = async (userId, routineId) => {
 const selectExercisesByUserRoutineId = async (routineId) => {
     const [result] = await db.query(
         `
-        SELECT EU.orden, E.nombre, E.tipo, E.inicio as step_1, E.fin as step_2, GM.nombre as grupos_musculares, EU.series, EU.repeticiones, EU.comentario
-FROM ejercicios_usuarios EU
-        INNER JOIN ejercicios E ON E.id = EU.ejercicios_id
-        INNER JOIN grupos_musculares GM ON GM.id = E.grupos_musculares_id
-WHERE EU.rutinas_usuarios_id = ?
-ORDER BY EU.orden ASC
+        SELECT EU.rutinas_id, EU.ejercicios_id, EU.rutinas_usuarios_id, EU.dia,
+            EU.orden, E.nombre, E.tipo, E.inicio as step_1, E.fin as step_2, GM.nombre as grupos_musculares,
+            EU.series, EU.repeticiones, EU.comentario
+        FROM ejercicios_usuarios EU
+                INNER JOIN ejercicios E ON E.id = EU.ejercicios_id
+                INNER JOIN grupos_musculares GM ON GM.id = E.grupos_musculares_id
+        WHERE EU.rutinas_usuarios_id = ?
+        ORDER BY EU.orden ASC
         `,
         [routineId]
     );
@@ -176,6 +178,17 @@ const insertUserRoutine = async (routineId, user_id) => {
     return result;
 }
 
+const insertUserRoutineExercise = async (routine_id, exercise_id, user_routine_id, series, repetitions, day, order, comment) => {
+    const [result] = await db.query(
+        `
+        INSERT INTO ejercicios_usuarios (rutinas_id, ejercicios_id, rutinas_usuarios_id, dia, orden, series, repeticiones, comentario)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        `,
+        [routine_id, exercise_id, user_routine_id, day, order, series, repetitions, comment]
+    );
+    return result;
+}
+
 const deleteUserRoutine = async (userRoutineId) => {
     const [result] = await db.query(
         'DELETE FROM rutinas_usuarios WHERE id = ?',
@@ -199,5 +212,6 @@ module.exports = {
     updatePassword,
     updateResetToken,
     insertUserRoutine,
+    insertUserRoutineExercise,
     deleteUserRoutine
 };

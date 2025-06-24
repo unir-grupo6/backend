@@ -40,7 +40,21 @@ const getRoutinesByUserId = async (req, res) => {
         routine.rutina_compartida = routine.rutina_compartida === 1;
 
         const exercises = await User.selectExercisesByUserRoutineId(routine.rutina_id);
-        routine.ejercicios = exercises;
+
+        routine.ejercicios = [];
+        for (const exercise of exercises) {
+            routine.ejercicios.push({
+                orden: exercise.orden,
+                nombre: exercise.nombre,
+                tipo: exercise.tipo,
+                step_1: exercise.step_1,
+                step_2: exercise.step_2,
+                grupos_musculares: exercise.grupos_musculares,
+                series: exercise.series,
+                repeticiones: exercise.repeticiones,
+                comentario: exercise.comentario
+            });
+        }
     }
 
     user.fecha_alta = dayjs(user.fecha_alta).format('DD-MM-YYYY HH:mm:ss');
@@ -67,7 +81,21 @@ const getRoutineById = async (req, res) => {
     userRoutine.rutina_compartida = userRoutine.rutina_compartida === 1;
 
     const exercises = await User.selectExercisesByUserRoutineId(userRoutine.rutina_id);
-    userRoutine.ejercicios = exercises;
+    
+    userRoutine.ejercicios = [];
+    for (const exercise of exercises) {
+        userRoutine.ejercicios.push({
+            orden: exercise.orden,
+            nombre: exercise.nombre,
+            tipo: exercise.tipo,
+            step_1: exercise.step_1,
+            step_2: exercise.step_2,
+            grupos_musculares: exercise.grupos_musculares,
+            series: exercise.series,
+            repeticiones: exercise.repeticiones,
+            comentario: exercise.comentario
+        });
+    }
     
     res.json(userRoutine);
 }
@@ -205,17 +233,66 @@ const resetPassword = async (req, res) => {
 const saveUserRoutine = async (req, res) => {
     const user = req.user;
     const { userRoutineId } = req.params;
-    const routineId = await User.selectUserRoutineById(userRoutineId);
-    if (!routineId) {
+    const selectedRoutine = await User.selectUserRoutineById(userRoutineId);
+    if (!selectedRoutine) {
         return res.status(404).json({ message: 'No routines found for the specified ID.' });
     }
 
+    // Insert the user routine
+    let generatedUserRoutine;
     try {
-        await User.insertUserRoutine(routineId, user.id);
+        generatedUserRoutine = await User.insertUserRoutine(selectedRoutine.rutinas_id, user.id);
     } catch (error) {
         return res.status(500).json({ message: 'Error saving user routine' });
     }
-    return res.json({ message: 'Routine saved successfully' });
+    if (!generatedUserRoutine || !generatedUserRoutine.insertId) {
+        return res.status(500).json({ message: 'Error generating user routine' });
+    }
+
+    // Insert the exercises for the user routine
+    const exercises = await User.selectExercisesByUserRoutineId(userRoutineId);
+    if (!exercises || exercises.length === 0) {
+        return res.status(404).json({ message: 'No exercises found for the specified routine.' });
+    }
+    for (const exercise of exercises) {
+        const {rutinas_id, ejercicios_id, series, repeticiones, dia, orden, comentario } = exercise;
+        try {
+            await User.insertUserRoutineExercise(rutinas_id, ejercicios_id, generatedUserRoutine.insertId, series, repeticiones, dia, orden, comentario);
+        } catch (error) {
+            return res.status(500).json({ message: 'Error saving exercise for the routine' });
+        }
+    }
+
+    // Retrieve the saved routine with exercises
+    const savedRoutine = await User.selectRoutineByUserIdRoutineId(user.id, generatedUserRoutine.insertId);
+    if (!savedRoutine) {
+        return res.status(404).json({ message: 'Saved routine not found' });
+    }
+    // DATES
+    const fechaInicio = dayjs(savedRoutine.fecha_inicio_rutina);
+    const fechaFin = dayjs(savedRoutine.fecha_fin_rutina);
+    const today = dayjs();
+    savedRoutine.rutina_activa = today >= fechaInicio && today <= fechaFin;
+    savedRoutine.fecha_inicio_rutina = fechaInicio.format('DD-MM-YYYY');
+    savedRoutine.fecha_fin_rutina = fechaFin.format('DD-MM-YYYY');
+    // BOOLEANS
+    savedRoutine.rutina_compartida = savedRoutine.rutina_compartida === 1;
+    savedRoutine.ejercicios = [];
+    const exercisesForRoutine = await User.selectExercisesByUserRoutineId(savedRoutine.rutina_id);
+    for (const exercise of exercisesForRoutine) {
+        savedRoutine.ejercicios.push({
+            orden: exercise.orden,
+            nombre: exercise.nombre,
+            tipo: exercise.tipo,
+            step_1: exercise.step_1,
+            step_2: exercise.step_2,
+            grupos_musculares: exercise.grupos_musculares,
+            series: exercise.series,
+            repeticiones: exercise.repeticiones,
+            comentario: exercise.comentario
+        });
+    }
+    return res.json(savedRoutine);
 }
 
 const removeUserRoutine  = async (req, res) => {
