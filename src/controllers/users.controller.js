@@ -28,38 +28,23 @@ const getRoutinesByUserId = async (req, res) => {
         return res.status(404).json({ message: 'No routines found for this user' });
     }
 
+    const formattedRoutines = [];
     for (const routine of userRoutines) {
-        // DATES
-        const fechaInicio = dayjs(routine.fecha_inicio_rutina);
-        const fechaFin = dayjs(routine.fecha_fin_rutina);
-        const today = dayjs();
-
-        routine.rutina_activa = today >= fechaInicio && today <= fechaFin;
-        routine.fecha_inicio_rutina = fechaInicio.format('DD-MM-YYYY');
-        routine.fecha_fin_rutina = fechaFin.format('DD-MM-YYYY');
-        routine.rutina_compartida = routine.rutina_compartida === 1;
-
-        const exercises = await User.selectExercisesByUserRoutineId(routine.rutina_id);
-
-        routine.ejercicios = [];
-        for (const exercise of exercises) {
-            routine.ejercicios.push({
-                orden: exercise.orden,
-                nombre: exercise.nombre,
-                tipo: exercise.tipo,
-                step_1: exercise.step_1,
-                step_2: exercise.step_2,
-                grupos_musculares: exercise.grupos_musculares,
-                series: exercise.series,
-                repeticiones: exercise.repeticiones,
-                comentario: exercise.comentario
-            });
+        try {
+            const formattedRoutine = await formatRoutineWithExercises(routine);
+            if (formattedRoutine) {
+                formattedRoutines.push(formattedRoutine);
+            }else {
+                return res.status(500).json({ message: 'Error formatting routine with exercises' });
+            }
+        } catch (error) {
+            res.status(500).json({ message: 'Error formatting routine with exercises' });
         }
     }
+    user.rutinas = formattedRoutines;
 
     user.fecha_alta = dayjs(user.fecha_alta).format('DD-MM-YYYY HH:mm:ss');
 
-    user.rutinas = userRoutines;
     res.json(user);
 }
 
@@ -70,34 +55,12 @@ const getRoutineById = async (req, res) => {
     if (!userRoutine) {
         return res.status(404).json({ message: 'Routine not found for this user' });
     }
-    // DATES
-    const fechaInicio = dayjs(userRoutine.fecha_inicio_rutina);
-    const fechaFin = dayjs(userRoutine.fecha_fin_rutina);
-    const today = dayjs();
-    userRoutine.rutina_activa = today >= fechaInicio && today <= fechaFin;
-    userRoutine.fecha_inicio_rutina = fechaInicio.format('DD-MM-YYYY');
-    userRoutine.fecha_fin_rutina = fechaFin.format('DD-MM-YYYY');
-    // BOOLEANS
-    userRoutine.rutina_compartida = userRoutine.rutina_compartida === 1;
 
-    const exercises = await User.selectExercisesByUserRoutineId(userRoutine.rutina_id);
-    
-    userRoutine.ejercicios = [];
-    for (const exercise of exercises) {
-        userRoutine.ejercicios.push({
-            orden: exercise.orden,
-            nombre: exercise.nombre,
-            tipo: exercise.tipo,
-            step_1: exercise.step_1,
-            step_2: exercise.step_2,
-            grupos_musculares: exercise.grupos_musculares,
-            series: exercise.series,
-            repeticiones: exercise.repeticiones,
-            comentario: exercise.comentario
-        });
+    const formattedRoutine = await formatRoutineWithExercises(userRoutine);
+    if (!formattedRoutine) {
+        return res.status(500).json({ message: 'Error formatting routine with exercises' });
     }
-    
-    res.json(userRoutine);
+    res.json(formattedRoutine);
 }
 
 const registro = async (req, res) => {
@@ -219,8 +182,6 @@ const resetPassword = async (req, res) => {
         return res.status(403).json({ message: 'User not found' });
     }
 
-    //TODO: Validate new password (e.g., length, complexity)
-
     try {
         await User.updatePassword(user.id, bcrypt.hashSync(password, Number(BCRYPT_SALT_ROUNDS)));
     } catch (error) {
@@ -230,7 +191,7 @@ const resetPassword = async (req, res) => {
     return res.json({ message: 'Password reset successfully' });
 }
 
-const saveUserRoutine = async (req, res) => {
+const  saveUserRoutine = async (req, res) => {
     const user = req.user;
     const { userRoutineId } = req.params;
     const selectedRoutine = await User.selectUserRoutineById(userRoutineId);
@@ -250,17 +211,9 @@ const saveUserRoutine = async (req, res) => {
     }
 
     // Insert the exercises for the user routine
-    const exercises = await User.selectExercisesByUserRoutineId(userRoutineId);
-    if (!exercises || exercises.length === 0) {
-        return res.status(404).json({ message: 'No exercises found for the specified routine.' });
-    }
-    for (const exercise of exercises) {
-        const {rutinas_id, ejercicios_id, series, repeticiones, dia, orden, comentario } = exercise;
-        try {
-            await User.insertUserRoutineExercise(rutinas_id, ejercicios_id, generatedUserRoutine.insertId, series, repeticiones, dia, orden, comentario);
-        } catch (error) {
-            return res.status(500).json({ message: 'Error saving exercise for the routine' });
-        }
+    const insertedExercises = await copyExecrisesToRoutine(userRoutineId, generatedUserRoutine.insertId);
+    if (!insertedExercises) {
+        return res.status(500).json({ message: 'Error saving exercises for the routine' });
     }
 
     // Retrieve the saved routine with exercises
@@ -293,6 +246,71 @@ const saveUserRoutine = async (req, res) => {
         });
     }
     return res.json(savedRoutine);
+}
+
+const copyExecrisesToRoutine = async (userRoutineId, generatedUserRoutineId) => {
+    const exercises = await User.selectExercisesByUserRoutineId(userRoutineId);
+    if (!exercises || exercises.length === 0) {
+        return res.status(404).json({ message: 'No exercises found for the specified routine.' });
+    }
+    for (const exercise of exercises) {
+        const {rutinas_id, ejercicios_id, series, repeticiones, dia, orden, comentario } = exercise;
+        try {
+            await User.insertUserRoutineExercise(rutinas_id, ejercicios_id, generatedUserRoutineId, series, repeticiones, dia, orden, comentario);
+        } catch (error) {
+            return res.status(500).json({ message: 'Error saving exercise for the routine' });
+        }
+    }
+    return true;
+}
+
+const formatRoutineWithExercises = async (userRoutine) => {
+
+    const fechaInicio = userRoutine.fecha_inicio_rutina ? dayjs(userRoutine.fecha_inicio_rutina).format('DD-MM-YYYY') : null;
+    const fechaFin = userRoutine.fecha_fin_rutina ? dayjs(userRoutine.fecha_fin_rutina).format('DD-MM-YYYY') : null;
+
+    const formattedRoutine = {
+        rutina_id: userRoutine.rutina_id,
+        nombre: userRoutine.nombre|| '',
+        fecha_inicio_rutina: fechaInicio,
+        fecha_fin_rutina: fechaFin,
+        rutina_activa: userRoutine.rutina_activa === 1,
+        rutina_compartida: userRoutine.rutina_compartida === 1,
+        rutina_observaciones: userRoutine.rutina_observaciones || '',
+        nivel: userRoutine.nivel || '',
+        metodo_nombre: userRoutine.metodo_nombre || '',
+        tiempo_aerobicos: userRoutine.tiempo_aerobicos || '',
+        tiempo_anaerobicos: userRoutine.tiempo_anaerobicos || '',
+        descanso: userRoutine.descanso || '',
+        metodo_observaciones: userRoutine.metodo_observaciones || '',
+        dia: userRoutine.dia || 0,
+        ejercicios: []
+    };
+
+    try {
+        const exercises = await User.selectExercisesByUserRoutineId(userRoutine.rutina_id);
+        if (exercises && exercises.length > 0) {
+            for (const exercise of exercises) {
+                formattedRoutine.ejercicios.push({
+                    orden: exercise.orden,
+                    nombre: exercise.nombre || '',
+                    tipo: exercise.tipo || '',
+                    step_1: exercise.step_1 || '',
+                    step_2: exercise.step_2 || '',
+                    grupos_musculares: exercise.grupos_musculares || '',
+                    series: exercise.series || 0,
+                    repeticiones: exercise.repeticiones || 0,
+                    comentario: exercise.comentario || ''
+                });
+            }
+        }
+    } catch (error) {
+        return null;
+    }
+    
+    
+    
+    return formattedRoutine;
 }
 
 const removeUserRoutine  = async (req, res) => {
