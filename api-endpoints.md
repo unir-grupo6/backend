@@ -120,7 +120,7 @@
 - **Query Parameters**:
   - `page` (number, optional): Page number of the results. Default: 1.
   - `limit` (number, optional): Maximum number of routines per page. Default: 5.
-  - `active` (boolean, optional): If `true`, only returns active routines (for the current date). If `false` or not specified, returns all routines for the user.
+  - `active` (boolean, optional): If `true`, only returns active routines (for the current date). If `false` or not specified, returns all routines for the user. Default: `false`.
 - **Response**: User object with the routines belonging to the authenticated user (paginated, optionally only active routines)
 - **Notes**: This endpoint returns only the routines of the user identified by the JWT token provided in the Authorization header. It does not return routines for other users.
 - **Possible errors**:
