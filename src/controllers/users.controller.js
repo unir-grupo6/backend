@@ -12,8 +12,8 @@ const { JWT_SECRET_KEY, JWT_RESET_SECRET_KEY, JWT_EXPIRES_IN_UNIT, JWT_RESET_EXP
 const User = require('../models/users.model');
 
 const getById = async (req, res) => {
-    req.user.fecha_nacimiento = dayjs(req.user.fecha_nacimiento).format('YYYY-MM-DD');
-    req.user.fecha_alta = dayjs(req.user.fecha_alta).format('YYYY-MM-DD');
+    req.user.fecha_nacimiento = dayjs(req.user.fecha_nacimiento).format('DD-MM-YYYY');
+    req.user.fecha_alta = dayjs(req.user.fecha_alta).format('DD-MM-YYYY HH:mm:ss');
     res.json(req.user);
 }
 
@@ -203,12 +203,14 @@ const updateUserRoutine = async (req, res) => {
 
     // Validations
     if (
-        (fecha_inicio_rutina && !dayjs(fecha_inicio_rutina, 'YYYY-MM-DD', true).isValid()) ||
-        (fecha_fin_rutina && !dayjs(fecha_fin_rutina, 'YYYY-MM-DD', true).isValid())
+        (fecha_inicio_rutina && !dayjs(fecha_inicio_rutina, 'DD-MM-YYYY', true).isValid()) ||
+        (fecha_fin_rutina && !dayjs(fecha_fin_rutina, 'DD-MM-YYYY', true).isValid())
     ) {
         return res.status(400).json({ message: 'Invalid date format or non-existent date' });
     }
-    if ((fecha_inicio_rutina && fecha_fin_rutina) && dayjs(fecha_inicio_rutina).isAfter(dayjs(fecha_fin_rutina))) {
+    if (
+        (fecha_inicio_rutina && fecha_fin_rutina) && 
+        dayjs(fecha_inicio_rutina, 'DD-MM-YYYY', true).isAfter(dayjs(fecha_fin_rutina, 'DD-MM-YYYY', true))) {
         return res.status(400).json({ message: 'Start date cannot be after end date' });
     }
     if( rutina_compartida !== undefined && typeof rutina_compartida !== 'boolean') {
