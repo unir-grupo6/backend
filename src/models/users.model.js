@@ -154,6 +154,20 @@ const insert = async ({ nombre, apellidos, email, password, sexo }) => {
     return result;
 }
 
+const updateRoutineById = async (userRoutineId, fields) => {
+    const keys = Object.keys(fields);
+    const values = Object.values(fields);
+
+    const setClause = keys.map((key, index) => `${key} = ?`).join(', ');
+    const query = `UPDATE rutinas_usuarios SET ${setClause} WHERE id = ?`;
+
+    const [result] = await db.query(
+        query,
+        [...values, userRoutineId]
+    );
+    return result;
+}
+
 const updatePassword = async (userId, newPassword) => {
     const [result] = await db.query(
         'UPDATE usuarios SET password = ? WHERE id = ?',
@@ -209,6 +223,7 @@ module.exports = {
     selectRoutineByUserIdRoutineId,
     selectExercisesByUserRoutineId,
     insert,
+    updateRoutineById,
     updatePassword,
     updateResetToken,
     insertUserRoutine,

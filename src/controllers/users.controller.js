@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const dayjs = require('dayjs');
+const customParseFormat = require("dayjs/plugin/customParseFormat");
+dayjs.extend(customParseFormat);
 
 const { transporter, sendResetPasswordEmail } = require('../config/mailer');
 
@@ -191,7 +193,77 @@ const resetPassword = async (req, res) => {
     return res.json({ message: 'Password reset successfully' });
 }
 
-const  saveUserRoutine = async (req, res) => {
+const updateUserRoutine = async (req, res) => {
+    const user = req.user;
+    const { userRoutineId } = req.params;
+    const { fecha_inicio_rutina, fecha_fin_rutina, rutina_compartida } = req.body;
+    if ((fecha_inicio_rutina && !fecha_fin_rutina) || (!fecha_inicio_rutina && fecha_fin_rutina)) {
+        return res.status(400).json({ message: 'Both start and end dates are required in case one is provided' });
+    }
+
+    // Validations
+    if (
+        (fecha_inicio_rutina && !dayjs(fecha_inicio_rutina, 'YYYY-MM-DD', true).isValid()) ||
+        (fecha_fin_rutina && !dayjs(fecha_fin_rutina, 'YYYY-MM-DD', true).isValid())
+    ) {
+        return res.status(400).json({ message: 'Invalid date format or non-existent date' });
+    }
+    if ((fecha_inicio_rutina && fecha_fin_rutina) && dayjs(fecha_inicio_rutina).isAfter(dayjs(fecha_fin_rutina))) {
+        return res.status(400).json({ message: 'Start date cannot be after end date' });
+    }
+    if( rutina_compartida !== undefined && typeof rutina_compartida !== 'boolean') {
+        return res.status(400).json({ message: 'Invalid value for rutina_compartida, must be a boolean' });
+    }
+
+    // Check if the user routine exists
+    const userRoutine = await User.selectUserRoutineByIdUserId(user.id, userRoutineId);
+    if (!userRoutine) {
+        return res.status(404).json({ message: 'No routines found for the specified user.' });
+    }
+
+    // Add fields to update
+    const updateFields = {};
+    if (fecha_inicio_rutina  && fecha_fin_rutina) {
+        updateFields.inicio = fecha_inicio_rutina;
+        updateFields.fin = fecha_fin_rutina;
+    }
+    if (rutina_compartida === true || rutina_compartida === false) {
+        updateFields.compartida = rutina_compartida ? 1 : 0;
+    }
+
+    if (updateFields.length === 0) {
+        return res.status(400).json({ message: 'No fields to update' });
+    }
+
+    // Update the user routine
+    let updateResult;
+    try {
+        updateResult = await User.updateRoutineById(userRoutineId, updateFields);
+    } catch (error) {
+        return res.status(500).json({ message: 'Error updating user routine' });
+    }
+
+    if (!updateResult || updateResult.affectedRows === 0) {
+        return res.status(404).json({ message: 'No routines found for the specified user.' });
+    }
+
+    console.log(updateFields);
+
+    // Retrieve the updated routine
+    const updatedRoutine = await User.selectRoutineByUserIdRoutineId(user.id, userRoutineId);
+    if (!updatedRoutine) {
+        return res.status(404).json({ message: 'Updated routine not found' });
+    }
+
+    const formattedRoutine = await formatRoutineWithExercises(updatedRoutine);
+    if (!formattedRoutine) {
+        return res.status(500).json({ message: 'Error formatting routine with exercises' });
+    }
+    res.json(formattedRoutine);
+
+}
+
+const saveUserRoutine = async (req, res) => {
     const user = req.user;
     const { userRoutineId } = req.params;
     const selectedRoutine = await User.selectUserRoutineById(userRoutineId);
@@ -264,6 +336,38 @@ const copyExecrisesToRoutine = async (userRoutineId, generatedUserRoutineId) => 
     return true;
 }
 
+const removeUserRoutine  = async (req, res) => {
+    const user = req.user;
+    const { userRoutineId } = req.params;
+    const routineId = await User.selectUserRoutineByIdUserId( user.id, userRoutineId);
+    if (!routineId) {
+        return res.status(404).json({ message: 'No routines found for the user.' });
+    }
+
+    try {
+        await User.deleteUserRoutine(userRoutineId);
+    } catch (error) {
+        return res.status(500).json({ message: 'Error deleting user routine' });
+    }
+    return res.json({ message: 'Routine deleted successfully' });
+}
+
+module.exports = {
+    getById,
+    getRoutinesByUserId,
+    getRoutineById,
+    registro,
+    login,
+    changePassword,
+    forgotPassword,
+    resetPassword,
+    updateUserRoutine,
+    saveUserRoutine,
+    removeUserRoutine
+};
+
+
+
 const formatRoutineWithExercises = async (userRoutine) => {
 
     const fechaInicio = userRoutine.fecha_inicio_rutina ? dayjs(userRoutine.fecha_inicio_rutina).format('DD-MM-YYYY') : null;
@@ -312,32 +416,3 @@ const formatRoutineWithExercises = async (userRoutine) => {
     
     return formattedRoutine;
 }
-
-const removeUserRoutine  = async (req, res) => {
-    const user = req.user;
-    const { userRoutineId } = req.params;
-    const routineId = await User.selectUserRoutineByIdUserId( user.id, userRoutineId);
-    if (!routineId) {
-        return res.status(404).json({ message: 'No routines found for the user.' });
-    }
-
-    try {
-        await User.deleteUserRoutine(userRoutineId);
-    } catch (error) {
-        return res.status(500).json({ message: 'Error deleting user routine' });
-    }
-    return res.json({ message: 'Routine deleted successfully' });
-}
-
-module.exports = {
-    getById,
-    getRoutinesByUserId,
-    getRoutineById,
-    registro,
-    login,
-    changePassword,
-    forgotPassword,
-    resetPassword,
-    saveUserRoutine,
-    removeUserRoutine
-};
