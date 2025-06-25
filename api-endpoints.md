@@ -210,6 +210,29 @@
   - **404 Not Found**: `{ "message": "No routines found for the user." }` — The routine does not exist or does not belong to the user.
   - **500 Internal Server Error**: `{ "message": "Error deleting user routine" }` — There was a problem deleting the routine.
 
+### Update a user routine
+- **Method**: PATCH
+- **URL**: /api/users/routines/{userRoutineId}
+- **Headers**: Authorization: `{token}`
+- **Body**:
+  - `fecha_inicio_rutina` (string, nullable, formato `YYYY-MM-DD`)
+  - `fecha_fin_rutina` (string, nullable, formato `YYYY-MM-DD`)
+  - `rutina_compartida` (boolean, nullable)
+  - (At least one of these fields must be present)
+- **Response**: On success, returns the updated routine object (including exercises)
+- **Possible errors**:
+  - **403 Forbidden**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **403 Forbidden**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
+  - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
+  - **400 Bad Request**: `{ "message": "Both start and end dates are required in case one is provided" }` — Only one of the dates was provided.
+  - **400 Bad Request**: `{ "message": "Invalid date format or non-existent date" }` — The date is not in `YYYY-MM-DD` format or is not una fecha real.
+  - **400 Bad Request**: `{ "message": "Start date cannot be after end date" }` — The start date is after the end date.
+  - **400 Bad Request**: `{ "message": "Invalid value for rutina_compartida, must be a boolean" }` — The value for `rutina_compartida` is not boolean.
+  - **400 Bad Request**: `{ "message": "No fields to update" }` — No valid fields were provided in the request body.
+  - **404 Not Found**: `{ "message": "No routines found for the specified user." }` — The routine does not exist or does not belong to the user.
+  - **404 Not Found**: `{ "message": "Updated routine not found" }` — The routine could not be retrieved after updating.
+  - **500 Internal Server Error**: `{ "message": "Error updating user routine" }` — There was a problem updating the routine.
+  - **500 Internal Server Error**: `{ "message": "Error formatting routine with exercises" }` — There was a problem formatting the updated routine.
 
 
 ## Basic Gets

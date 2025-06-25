@@ -13,7 +13,6 @@
   - [Añadir nueva rutina](#añadir-nueva-rutina)
   - [Añadir nuevos ejercicios a una rutina](#añadir-nuevos-ejercicios-a-una-rutina)
 - Rutinas & usuarios
-  - [Actualizar los datos generales de una rutina asignada a un usuario](#actualizar-los-datos-generales-de-una-rutina-asignada-a-un-usuario)
   - [Crear rutina para un usuario](#crear-rutina-para-un-usuario)
   - [Añadir ejercicios a la rutina de un usuario](#añadir-ejercicios-a-la-rutina-de-un-usuario)
 - Objetivos
@@ -123,16 +122,6 @@
   - `...` (lo que se considere)
 
 ## Rutinas & usuarios
-
-### Actualizar los datos generales de una rutina asignada a un usuario
-- **Description**: Actualizar los datos generales de una rutina asignada a un usuario. Actualizar la tabla `rutinas_usuarios`
-- **Method**: PATCH (solo actualizará los campos que cambien. Si por ejemplo el campo `compartida` no va a cambiar de valor, lo detecta y no lo actualiza en la BBDD)
-- **URL**: /api/users/{userId}/routines/{routineId}
-- **Headers**: Authorization: {token}
-- **Body**: 
-  - `inicio` (date)
-  - `fin` (date)
-  - `compartida` (number, 0 o 1)
 
 ### Crear rutina para un usuario
 - **Description**: Crear rutina para un usuario
