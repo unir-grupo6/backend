@@ -3,11 +3,14 @@ const db = require('../config/db');
 const getById = async (userId) => {
     const [result] = await db.query(
         `
-            SELECT U.id, nombre, apellidos, email, fecha_alta, peso, altura, imc
+            SELECT U.id, U.nombre, U.apellidos, U.email, U.fecha_alta, MU.peso, MU.altura, MU.imc, O.id AS objetivo_id, O.nombre AS objetivo
             FROM usuarios U
-		        LEFT JOIN medidas_usuarios MU on U.id = MU.id_usuario
-            WHERE U.id = ?
-            ORDER BY MU.fecha desc
+            LEFT JOIN medidas_usuarios MU ON U.id = MU.id_usuario
+            LEFT JOIN objetivos_usuarios OU ON OU.id_usuarios = U.id
+            LEFT JOIN objetivos O ON OU.id_objetivos = O.id
+            LEFT JOIN objetivos_usuarios OU2 ON OU2.id_usuarios = OU.id_usuarios AND OU2.fecha > OU.fecha
+            WHERE U.id = 1 AND OU2.id IS NULL
+            ORDER BY MU.fecha DESC
             LIMIT 1;
         `,
         [userId],
