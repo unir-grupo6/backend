@@ -75,12 +75,20 @@ Authorization: {{token}}
 Content-Type: application/json
 
 {
-    "ejercicio_id": 13,
+    "ejercicio_id": 15,
     "series": 3,
     "repeticiones": 10,
     "orden": 5,
     "comentario": "Comentario del ejercicio"
 }
 ###
-DELETE {{host}}/api/users/routines/2430/exercises/67130
+DELETE {{host}}/api/users/routines/2430/exercises/67141
 Authorization: {{token}}
+###
+PATCH {{host}}/api/users/routines/2430/exercises/67129
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+    "orden": 2
+}
