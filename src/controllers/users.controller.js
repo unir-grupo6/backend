@@ -306,13 +306,25 @@ const updateUserRoutineExercise = async (req, res) => {
     if (orden) updateFields.orden = orden;
     if (comentario) updateFields.comentario = comentario;
 
-    // Check if orden is not repeated
+    // // Check if orden is not repeated
+    // if (orden) {
+    //     const exercisesInRoutine = await User.selectExercisesByUserRoutineId(userRoutineId);
+    //     if (exercisesInRoutine && exercisesInRoutine.length > 0) {
+    //         const existingOrder = exercisesInRoutine.find(ex => ex.orden === orden && ex.id !== exerciseId);
+    //         if (existingOrder) {
+    //             return res.status(400).json({ message: 'The order number is already assigned to another exercise in the routine.' });
+    //         }
+    //     }
+    // }
+
+    const exercisesInRoutine = await User.selectExercisesByUserRoutineId(userRoutineId);
+
+    // Check if orden is not less than 1 and not greater than the number of exercises in the routine
     if (orden) {
-        const exercisesInRoutine = await User.selectExercisesByUserRoutineId(userRoutineId);
         if (exercisesInRoutine && exercisesInRoutine.length > 0) {
-            const existingOrder = exercisesInRoutine.find(ex => ex.orden === orden && ex.id !== exerciseId);
-            if (existingOrder) {
-                return res.status(400).json({ message: 'The order number is already assigned to another exercise in the routine.' });
+            const maxOrder = exercisesInRoutine.length;
+            if (orden < 1 || orden > maxOrder) {
+                return res.status(400).json({ message: `The order number must be between 1 and ${maxOrder}.` });
             }
         }
     }
@@ -327,6 +339,37 @@ const updateUserRoutineExercise = async (req, res) => {
 
     if (!updateResult || updateResult.affectedRows === 0) {
         return res.status(404).json({ message: 'No exercises found for the specified routine.' });
+    }
+
+    // Check if the orden has changed and update the order of other exercises if necessary
+    if (orden) {
+        const exercisesInRoutine = await User.selectExercisesByUserRoutineId(userRoutineId);
+        if (exercisesInRoutine && exercisesInRoutine.length > 0) {
+            // Move the updated exercise to the desired position and reorder the rest
+            // Find the index of the exercise being updated
+            const updatedExerciseIndex = exercisesInRoutine.findIndex(ex => ex.id === Number(exerciseId));
+            if (updatedExerciseIndex === -1) {
+                return res.status(404).json({ message: 'Exercise not found in the routine' });
+            }
+
+            // Remove the exercise from its current position
+            const [updatedExercise] = exercisesInRoutine.splice(updatedExerciseIndex, 1);
+
+            // Insert the exercise at the new position (orden - 1, since array is 0-based)
+            exercisesInRoutine.splice(orden - 1, 0, updatedExercise);
+
+            // Update the orden for all exercises
+            for (let j = 0; j < exercisesInRoutine.length; j++) {
+                const exerciseToUpdate = exercisesInRoutine[j];
+                if (exerciseToUpdate.orden !== j + 1) {
+                    try {
+                        await User.updateExerciseOrder(exerciseToUpdate.id, userRoutineId, j + 1);
+                    } catch (error) {
+                        return res.status(500).json({ message: 'Error updating exercise order in user routine' });
+                    }
+                }
+            }
+        }
     }
     
     // Retrieve the updated routine with exercises
