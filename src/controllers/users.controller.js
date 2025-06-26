@@ -411,13 +411,24 @@ const removeExerciseFromRoutine = async (req, res) => {
         return res.status(404).json({ message: 'The specified exercise was not found.' });
     }
     try {
-        await User.deleteUserRoutineExercise(userRoutineId, exerciseId);
+        const deleteResult = await User.deleteUserRoutineExercise(exerciseId);
     } catch (error) {
         return res.status(500).json({ message: 'Error deleting exercise from user routine' });
     }
 
     // OPTIMIZE: update the order of the exercises in the routine
-    
+    // const exercisesInRoutine = await User.selectExercisesByUserRoutineId(userRoutineId);
+    // if (exercisesInRoutine && exercisesInRoutine.length > 0) {
+    //     for (let i = 0; i < exercisesInRoutine.length; i++) {
+    //         const exerciseToUpdate = exercisesInRoutine[i];
+    //         try {
+    //             await User.updateExerciseOrder(exerciseToUpdate.id, userRoutineId, i + 1);
+    //         } catch (error) {
+    //             return res.status(500).json({ message: 'Error updating exercise order in user routine' });
+    //         }
+    //     }
+    // }
+
     // Retrieve the updated routine with exercises
     const updatedRoutine = await User.selectRoutineByUserIdRoutineId(user.id, userRoutineId);
     if (!updatedRoutine) {

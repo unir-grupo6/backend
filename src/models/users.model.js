@@ -171,7 +171,7 @@ const selectUserExerciseById = async (exerciseId, userRoutineId) => {
                 INNER JOIN grupos_musculares GM ON GM.id = E.grupos_musculares_id
         WHERE EU.id = ? AND EU.rutinas_usuarios_id = ?
         `,
-        [userExerciseId, exerciseId, userRoutineId]
+        [exerciseId, userRoutineId]
     );
     if (result.length === 0) return null;
     return result[0];
@@ -242,10 +242,10 @@ const deleteUserRoutine = async (userRoutineId) => {
     return result;
 }
 
-const deleteUserRoutineExercise = async (userRoutineId, exerciseId) => {
+const deleteUserRoutineExercise = async (exerciseId) => {
     const [result] = await db.query(
-        'DELETE FROM ejercicios_usuarios WHERE rutinas_usuarios_id = ? AND ejercicios_id = ?',
-        [userRoutineId, exerciseId]
+        'DELETE FROM ejercicios_usuarios WHERE id = ?',
+        [exerciseId]
     );
     return result;
 }
@@ -269,5 +269,6 @@ module.exports = {
     updateResetToken,
     insertUserRoutine,
     insertUserRoutineExercise,
-    deleteUserRoutine
+    deleteUserRoutine,
+    deleteUserRoutineExercise
 };
