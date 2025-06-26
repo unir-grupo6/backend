@@ -33,10 +33,10 @@ const registro = async (req, res) => {
     const { peso, altura } = req.body;
 
     const metricsResult = await User.insertUserMetrics(
-            result.insertId,
-            peso,
-            altura,
-            peso && altura ? Number(peso) / ((Number(altura) / 100) ** 2) : null
+        result.insertId,
+        peso,
+        altura,
+        peso && altura ? Number(peso) / ((Number(altura) / 100) ** 2) : null
     );
 
     if (!metricsResult || !metricsResult.insertId) {
@@ -53,7 +53,18 @@ const registro = async (req, res) => {
 
     newUser.fecha_nacimiento = dayjs(newUser.fecha_nacimiento).format('YYYY-MM-DD');
     newUser.fecha_alta = dayjs(newUser.fecha_alta).format('YYYY-MM-DD');
-    res.json(newUser);
+
+    const token = jwt.sign(
+        { user_id: newUser.id },
+        JWT_SECRET_KEY,
+        { expiresIn: `${JWT_EXPIRES_IN_AMOUNT} ${JWT_EXPIRES_IN_UNIT}` }
+    );
+
+    res.json({
+        message: 'User registered successfully',
+        user: newUser,
+        token: token,
+    });
 };
 
 const login = async (req, res) => {
@@ -71,9 +82,9 @@ const login = async (req, res) => {
         }
     } catch (error) {
         return res.status(500).json({ message: 'Error validating password', error: error.message });
-        
+
     }
-    return res.json({ 
+    return res.json({
         message: 'Login successful',
         token: jwt.sign({
             user_id: user.id,
@@ -95,13 +106,13 @@ const forgotPassword = async (req, res) => {
     }
 
     const resetToken = jwt.sign({
-            user_id: user.id,
-            exp: dayjs().add(JWT_RESET_EXPIRES_IN_AMOUNT, JWT_RESET_EXPIRES_IN_UNIT).unix()
-        }, JWT_RESET_SECRET_KEY)
-    
+        user_id: user.id,
+        exp: dayjs().add(JWT_RESET_EXPIRES_IN_AMOUNT, JWT_RESET_EXPIRES_IN_UNIT).unix()
+    }, JWT_RESET_SECRET_KEY)
+
     verificationLink = `${FRONTEND_URL}/reset-password/${resetToken}`;
 
-    
+
 
     // OPTIMIZE: send verification link via email when a new user registers
     try {
@@ -142,17 +153,55 @@ const resetPassword = async (req, res) => {
     }
 
     const user = await User.getByResetToken(resetToken);
-    if(!user) {
+    if (!user) {
         return res.status(403).json({ message: 'User not found' });
     }
-    
+
     try {
         await User.updatePassword(user.id, bcrypt.hashSync(newPassword, Number(BCRYPT_SALT_ROUNDS)));
     } catch (error) {
         return res.status(400).json({ message: 'Failed to reset password' });
-    }    
+    }
 
     return res.json({ message: 'Password reset successfully' });
 }
 
-module.exports = { getById, registro, login, forgotPassword, resetPassword };
+const updateUser = async (req, res) => {
+    const userId = req.user.id;
+    const { nombre, apellidos, email, peso, altura, fecha_nacimiento } = req.body;
+
+    try {
+        const result = await User.updateUserData(userId, { nombre, apellidos, email, fecha_nacimiento });
+
+        if (!result.affectedRows) {
+            return res.status(400).json({ message: 'Failed to update user data' });
+        }
+
+        const currentMetrics = await User.getUserMetrics(userId);
+        let newImc = null;
+
+        if (peso && altura) {
+            newImc = Number(peso) / ((Number(altura) / 100) ** 2);
+        }
+
+        if (
+            currentMetrics.peso !== peso ||
+            currentMetrics.altura !== altura ||
+            currentMetrics.imc !== newImc
+        ) {
+            const metricsResult = await User.updateUserMetrics(userId, peso, altura, newImc);
+
+            if (!metricsResult.affectedRows) {
+                return res.status(400).json({ message: 'Failed to update user metrics' });
+            }
+        }
+
+        const updatedUser = await User.getById(userId);
+        return res.json(updatedUser);
+
+    } catch (error) {
+        return res.status(500).json({ message: 'Error updating user', error: error.message });
+    }
+};
+
+module.exports = { getById, registro, login, forgotPassword, resetPassword, updateUser };

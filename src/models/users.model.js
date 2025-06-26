@@ -51,6 +51,14 @@ const insertUserMetrics = async (userId, peso, altura, imc) => {
     return result;
 }
 
+const updateUserMetrics = async (userId, peso, altura, imc) => {
+    const [result] = await db.query(
+        'UPDATE medidas_usuarios SET peso = ?, altura = ?, imc = ?, fecha = CURRENT_TIMESTAMP WHERE id_usuario = ? ORDER BY fecha DESC LIMIT 1',
+        [peso, altura, imc, userId]
+    );
+    return result;
+}
+
 const updatePassword = async (userId, newPassword) => {
     const [result] = await db.query(
         'UPDATE usuarios SET password = ? WHERE id = ?',
@@ -67,6 +75,28 @@ const updateResetToken = async (userId, resetToken) => {
     return result;
 }
 
+const updateUserData = async (userId, { nombre, apellidos, email, fecha_nacimiento }) => {
+    const [result] = await db.query(
+        'UPDATE usuarios SET nombre = ?, apellidos = ?, email = ?, fecha_nacimiento = ? WHERE id = ?',
+        [nombre, apellidos, email, fecha_nacimiento, userId]
+    );
+    return result;
+}
+
+const getUserMetrics = async (userId) => {
+    const [result] = await db.query(
+        `
+        SELECT peso, altura, imc
+        FROM medidas_usuarios
+        WHERE id_usuario = ?
+        ORDER BY fecha DESC
+        LIMIT 1;
+        `,
+        [userId]
+    );
+    return result[0] || {};
+}
+
 module.exports = {
     getById,
     getByEmail,
@@ -74,5 +104,8 @@ module.exports = {
     insertUser,
     insertUserMetrics,
     updatePassword,
-    updateResetToken
+    updateResetToken,
+    updateUserData,
+    getUserMetrics,
+    updateUserMetrics
 };
