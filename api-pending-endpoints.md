@@ -14,7 +14,6 @@
   - [Añadir nuevos ejercicios a una rutina](#añadir-nuevos-ejercicios-a-una-rutina)
 - Rutinas & usuarios
   - [Crear rutina para un usuario](#crear-rutina-para-un-usuario)
-  - [Añadir ejercicios a la rutina de un usuario](#añadir-ejercicios-a-la-rutina-de-un-usuario)
 - Objetivos
   - [Recuperar todos los objetivos](#recuperar-todos-los-objetivos)
 - Métodos
@@ -127,13 +126,6 @@
 - **Description**: Crear rutina para un usuario
 - **Method**: POST
 - **URL**: /api/users/{userId}/routines
-- **Headers**: Authorization: {token}
-- **Body**: (_aclararlo_)
-
-### Añadir ejercicios a la rutina de un usuario
-- **Description**: Insertar ejercicio en ejercicios_usuarios que esté asociado a la rutina indicada
-- **Method**: POST
-- **URL**: (_aclararlo_)
 - **Headers**: Authorization: {token}
 - **Body**: (_aclararlo_)
 

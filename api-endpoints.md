@@ -146,7 +146,7 @@
 
 ### Save a user routine
 - **Method**: POST
-- **URL**: /api/users/routines/{userRoutineId}/save
+- **URL**: /api/users/routines/`{userRoutineId}`/save
 - **Headers**: Authorization: `{token}`
 - **Body**: ---
 - **Response**: On success, returns the full saved routine object (including exercises) assigned to the logged-in user, for example:
@@ -196,7 +196,7 @@
 
 ### Delete a user routine
 - **Method**: DELETE
-- **URL**: /api/users/routines/{userRoutineId}
+- **URL**: /api/users/routines/`{userRoutineId}`
 - **Headers**: Authorization: `{token}`
 - **Body**: ---
 - **Response**: On success:
@@ -212,7 +212,7 @@
 
 ### Update a user routine
 - **Method**: PATCH
-- **URL**: /api/users/routines/{userRoutineId}
+- **URL**: /api/users/routines/`{userRoutineId}`
 - **Headers**: Authorization: `{token}`
 - **Body**:
   - `fecha_inicio_rutina` (string, nullable, formato `YYYY-MM-DD`)
@@ -234,6 +234,63 @@
   - **500 Internal Server Error**: `{ "message": "Error updating user routine" }` — There was a problem updating the routine.
   - **500 Internal Server Error**: `{ "message": "Error formatting routine with exercises" }` — There was a problem formatting the updated routine.
 
+### Add exercise to a user routine
+- **Method**: POST
+- **URL**: /api/users/routines/`{userRoutineId}`/exercises
+- **Headers**: Authorization: `{token}`
+- **Body**:
+  - `ejercicio_id` (number, required): Exercise ID to add
+  - `series` (number, required)
+  - `repeticiones` (number, required)
+  - `orden` (number, optional)
+  - `comentario` (string, optional)
+- **Response**: On success, returns the updated routine object (including exercises)
+- **Possible errors**:
+  - **403 Forbidden**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **403 Forbidden**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
+  - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
+  - **400 Bad Request**: `{ "message": "Missing required fields" }` — One or more required fields are missing in the request body.
+  - **400 Bad Request**: `{ "message": "Invalid value for field" }` — One or more fields have invalid values or types.
+  - **404 Not Found**: `{ "message": "No routines found for the specified user." }` — The routine does not exist or does not belong to the user.
+  - **404 Not Found**: `{ "message": "Exercise not found" }` — The exercise does not exist.
+  - **409 Conflict**: `{ "message": "Exercise already exists in routine" }` — The exercise is already assigned to the routine.
+  - **500 Internal Server Error**: `{ "message": "Error adding exercise to routine" }` — There was a problem adding the exercise.
+  - **500 Internal Server Error**: `{ "message": "Error formatting routine with exercises" }` — There was a problem formatting the updated routine.
+
+### Remove exercise from a user routine
+- **Method**: DELETE
+- **URL**: /api/users/routines/`{userRoutineId}`/exercises/`{exerciseId}`
+- **Headers**: Authorization: `{token}`
+- **Body**: ---
+- **Response**: On success, returns the updated routine object (including exercises) with the new order:
+  ```json
+  {
+    "rutina_id": 123,
+    "nombre": "Routine name",
+    "ejercicios": [
+      {
+        "orden": 1,
+        "nombre": "Press banca",
+        // ...other fields...
+      },
+      {
+        "orden": 2,
+        "nombre": "Sentadilla",
+        // ...other fields...
+      }
+      // ...
+    ]
+    // ...other routine fields
+  }
+  ```
+- **Notes**: After removing an exercise, the `orden` field of the remaining exercises is updated to maintain a continuous ascending order, preserving the previous sequence. For example, if there are exercises with `orden` 1, 2, and 3, and the one with `orden` 2 is removed, the one with `orden` 3 becomes `orden` 2.
+- **Possible errors**:
+  - **403 Forbidden**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **403 Forbidden**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
+  - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
+  - **404 Not Found**: `{ "message": "No routines found for the specified user." }` — The routine does not exist or does not belong to the user.
+  - **404 Not Found**: `{ "message": "Exercise not found in routine" }` — The exercise does not exist in the routine.
+  - **500 Internal Server Error**: `{ "message": "Error removing exercise from routine" }` — There was a problem removing the exercise.
 
 ## Basic Gets
 
