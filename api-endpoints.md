@@ -292,6 +292,61 @@
   - **404 Not Found**: `{ "message": "Exercise not found in routine" }` — The exercise does not exist in the routine.
   - **500 Internal Server Error**: `{ "message": "Error removing exercise from routine" }` — There was a problem removing the exercise.
 
+### Update an exercise in a user routine
+- **Method**: PATCH
+- **URL**: /api/users/routines/`{userRoutineId}`/exercises/`{exerciseId}`
+- **Headers**: Authorization: `{token}`
+- **Body**:
+  - `series` (number, optional): New number of sets for the exercise (must be a positive number)
+  - `repeticiones` (number, optional): New number of repetitions for the exercise (must be a positive number)
+  - `orden` (number, optional): New order for the exercise in the routine (must be a positive number and not already assigned to another exercise in the routine)
+  - `comentario` (string, optional): New comment for the exercise
+  - (At least one of these fields must be present)
+- **Response**: On success, returns the updated routine object (including exercises with their updated order and fields):
+  ```json
+  {
+    "rutina_id": 123,
+    "nombre": "Routine name",        // ...other fields...
+    "ejercicios": [
+      {
+        "orden": 1,
+        "nombre": "Press banca",
+        "series": 4,
+        "repeticiones": 10,
+        "comentario": "..."        // ...other fields...
+      },
+      {
+        "orden": 2,
+        "nombre": "Sentadilla",
+        "series": 3,
+        "repeticiones": 12,
+        "comentario": "..."        // ...other fields...
+      }
+      // ...
+    ]
+    // ...other routine fields
+  }
+  ```
+- **Possible errors**:
+  - **403 Forbidden**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **403 Forbidden**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
+  - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
+  - **400 Bad Request**: `{ "message": "At least one field is required to update" }` — No valid fields were provided in the request body.
+  - **400 Bad Request**: `{ "message": "Invalid value for series, must be a positive number" }` — The value for `series` is not a positive number.
+  - **400 Bad Request**: `{ "message": "Invalid value for repeticiones, must be a positive number" }` — The value for `repeticiones` is not a positive number.
+  - **400 Bad Request**: `{ "message": "Invalid value for orden, must be a positive number" }` — The value for `orden` is not a positive number.
+  - **400 Bad Request**: `{ "message": "The order number is already assigned to another exercise in the routine." }` — The value for `orden` is already used by another exercise in the routine.
+  - **400 Bad Request**: `{ "message": "Invalid value for comentario, must be a string" }` — The value for `comentario` is not a string.
+  - **404 Not Found**: `{ "message": "No routines found for the specified user." }` — The routine does not exist or does not belong to the user.
+  - **404 Not Found**: `{ "message": "Exercise not found in the specified routine" }` — The exercise does not exist in the routine.
+  - **404 Not Found**: `{ "message": "No exercises found for the specified routine." }` — The exercise to update was not found in the routine.
+  - **404 Not Found**: `{ "message": "Updated routine not found" }` — The routine could not be retrieved after updating.
+  - **500 Internal Server Error**: `{ "message": "Error updating user routine exercise" }` — There was a problem updating the exercise.
+  - **500 Internal Server Error**: `{ "message": "Error formatting routine with exercises" }` — There was a problem formatting the updated routine.
+
+>[!NOTE]
+>You can update one or more fields. If the `orden` is updated, it must not conflict with another exercise's order in the same routine. When the `orden` is changed, the rest of the exercises are automatically reordered to maintain a continuous ascending order, preserving the intended sequence. The response always returns the full updated routine with all exercises and their current order and fields.
+
 ## Basic Gets
 
 ### Get all methods
