@@ -17,12 +17,12 @@ router.put('/reset-password', resetPassword);
 router.get('/routines', checkToken, getRoutinesByUserId);
 router.get('/routines/:routineId', checkToken, getRoutineById);
 
-router.post('/routines/:userRoutineId/save', checkToken, saveUserRoutine);
 router.patch('/routines/:userRoutineId', checkToken, updateUserRoutine);
+
+router.post('/routines/:userRoutineId/save', checkToken, saveUserRoutine);
 router.post('/routines/:userRoutineId/exercises', checkToken, addExerciseToRoutine);
 
 router.delete('/routines/:userRoutineId', checkToken, removeUserRoutine);
-// delete exercise from routine
 router.delete('/routines/:userRoutineId/exercises/:exerciseId', checkToken, removeExerciseFromRoutine);
 
 module.exports = router;
