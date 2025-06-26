@@ -69,3 +69,18 @@ Content-Type: application/json
     "fecha_fin_rutina": "2023-09-30",
     "rutina_compartida": true
 }
+###
+POST {{host}}/api/users/routines/2430/exercises
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+    "ejercicio_id": 13,
+    "series": 3,
+    "repeticiones": 10,
+    "orden": 5,
+    "comentario": "Comentario del ejercicio"
+}
+###
+DELETE {{host}}/api/users/routines/2430/exercises/67130
+Authorization: {{token}}
