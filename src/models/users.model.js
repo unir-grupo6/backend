@@ -215,6 +215,14 @@ const updateResetToken = async (userId, resetToken) => {
     return result;
 }
 
+const updateExerciseOrder = async (exerciseId, userRoutineId, newOrder) => {
+    const [result] = await db.query(
+        'UPDATE ejercicios_usuarios SET orden = ? WHERE id = ? AND rutinas_usuarios_id = ?',
+        [newOrder, exerciseId, userRoutineId]
+    );
+    return result;
+}
+
 const insertUserRoutine = async (routineId, user_id) => {
     const [result] = await db.query(
         'INSERT INTO rutinas_usuarios (rutinas_id, usuarios_id, compartida) VALUES (?, ?, 0);',
@@ -267,6 +275,7 @@ module.exports = {
     updateRoutineById,
     updatePassword,
     updateResetToken,
+    updateExerciseOrder,
     insertUserRoutine,
     insertUserRoutineExercise,
     deleteUserRoutine,
