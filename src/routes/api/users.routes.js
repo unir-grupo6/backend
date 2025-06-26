@@ -1,4 +1,4 @@
-const { login, registro, forgotPassword, resetPassword, getRoutinesByUserId, getRoutineById, changePassword, saveUserRoutine, getById, removeUserRoutine, updateUserRoutine } = require('../../controllers/users.controller');
+const { login, registro, forgotPassword, resetPassword, getRoutinesByUserId, getRoutineById, changePassword, saveUserRoutine, getById, removeUserRoutine, updateUserRoutine, addExerciseToRoutine, removeExerciseFromRoutine } = require('../../controllers/users.controller');
 const { checkToken } = require('../../middlewares/auth.middlewares');
 
 const router = require('express').Router();
@@ -19,7 +19,10 @@ router.get('/routines/:routineId', checkToken, getRoutineById);
 
 router.post('/routines/:userRoutineId/save', checkToken, saveUserRoutine);
 router.patch('/routines/:userRoutineId', checkToken, updateUserRoutine);
+router.post('/routines/:userRoutineId/exercises', checkToken, addExerciseToRoutine);
 
 router.delete('/routines/:userRoutineId', checkToken, removeUserRoutine);
+// delete exercise from routine
+router.delete('/routines/:userRoutineId/exercises/:exerciseId', checkToken, removeExerciseFromRoutine);
 
 module.exports = router;

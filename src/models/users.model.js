@@ -132,7 +132,7 @@ const selectRoutineByUserIdRoutineId = async (userId, routineId) => {
 const selectExercisesByUserRoutineId = async (routineId) => {
     const [result] = await db.query(
         `
-        SELECT EU.rutinas_id, EU.ejercicios_id, EU.rutinas_usuarios_id, EU.dia,
+        SELECT EU.id, EU.rutinas_id, EU.ejercicios_id, EU.rutinas_usuarios_id, EU.dia,
             EU.orden, E.nombre, E.tipo, E.inicio as step_1, E.fin as step_2, GM.nombre as grupos_musculares,
             EU.series, EU.repeticiones, EU.comentario
         FROM ejercicios_usuarios EU
@@ -144,6 +144,37 @@ const selectExercisesByUserRoutineId = async (routineId) => {
         [routineId]
     );
     return result;
+}
+
+const selectExerciseById = async (exerciseId) => {
+    const [result] = await db.query(
+        `
+        SELECT E.id, E.nombre, E.tipo, E.inicio as step_1, E.fin as step_2, GM.nombre as grupos_musculares
+        FROM ejercicios E
+            INNER JOIN grupos_musculares GM ON GM.id = E.grupos_musculares_id
+        WHERE E.id = ?
+        `,
+        [exerciseId]
+    );
+    if (result.length === 0) return null;
+    return result[0];
+}
+
+const selectUserExerciseById = async (exerciseId, userRoutineId) => {
+    const [result] = await db.query(
+        `
+        SELECT EU.id, EU.ejercicios_id, EU.rutinas_usuarios_id,
+            EU.orden, E.nombre, E.tipo, E.inicio as step_1, E.fin as step_2, GM.nombre as grupos_musculares,
+            EU.series, EU.repeticiones, EU.comentario
+        FROM ejercicios_usuarios EU
+                INNER JOIN ejercicios E ON E.id = EU.ejercicios_id
+                INNER JOIN grupos_musculares GM ON GM.id = E.grupos_musculares_id
+        WHERE EU.id = ? AND EU.rutinas_usuarios_id = ?
+        `,
+        [userExerciseId, exerciseId, userRoutineId]
+    );
+    if (result.length === 0) return null;
+    return result[0];
 }
 
 const insert = async ({ nombre, apellidos, email, password, sexo }) => {
@@ -192,13 +223,13 @@ const insertUserRoutine = async (routineId, user_id) => {
     return result;
 }
 
-const insertUserRoutineExercise = async (routine_id, exercise_id, user_routine_id, series, repetitions, day, order, comment) => {
+const insertUserRoutineExercise = async (exercise_id, user_routine_id, series, repetitions, order, comment) => {
     const [result] = await db.query(
         `
-        INSERT INTO ejercicios_usuarios (rutinas_id, ejercicios_id, rutinas_usuarios_id, dia, orden, series, repeticiones, comentario)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO ejercicios_usuarios (ejercicios_id, rutinas_usuarios_id, orden, series, repeticiones, comentario)
+        VALUES (?, ?, ?, ?, ?, ?)
         `,
-        [routine_id, exercise_id, user_routine_id, day, order, series, repetitions, comment]
+        [exercise_id, user_routine_id, order, series, repetitions, comment]
     );
     return result;
 }
@@ -207,6 +238,14 @@ const deleteUserRoutine = async (userRoutineId) => {
     const [result] = await db.query(
         'DELETE FROM rutinas_usuarios WHERE id = ?',
         [userRoutineId]
+    );
+    return result;
+}
+
+const deleteUserRoutineExercise = async (userRoutineId, exerciseId) => {
+    const [result] = await db.query(
+        'DELETE FROM ejercicios_usuarios WHERE rutinas_usuarios_id = ? AND ejercicios_id = ?',
+        [userRoutineId, exerciseId]
     );
     return result;
 }
@@ -222,6 +261,8 @@ module.exports = {
     selectRoutineByRoutineId,
     selectRoutineByUserIdRoutineId,
     selectExercisesByUserRoutineId,
+    selectExerciseById,
+    selectUserExerciseById,
     insert,
     updateRoutineById,
     updatePassword,

@@ -322,6 +322,50 @@ const saveUserRoutine = async (req, res) => {
     return res.json(savedRoutine);
 }
 
+const addExerciseToRoutine = async (req, res) => {
+    const user = req.user;
+    const { userRoutineId } = req.params;
+    const { ejercicio_id, series, repeticiones, orden, comentario } = req.body;
+    if (!ejercicio_id || !series || !repeticiones || !orden) {
+        return res.status(400).json({ message: 'All fields are required' });
+    }
+    // Check if the user routine exists
+    const userRoutine = await User.selectUserRoutineByIdUserId(user.id, userRoutineId);
+    if (!userRoutine) {
+        return res.status(404).json({ message: 'No routines found for the specified user.' });
+    }
+    // Check if the exercise exists
+    const exercise = await User.selectExerciseById(ejercicio_id);
+    if (!exercise) {
+        return res.status(404).json({ message: 'Exercise not found' });
+    }
+
+    // Get the last order of the exercises in the routine
+    let lastOrder = 0;
+    const exercisesInRoutine = await User.selectExercisesByUserRoutineId(userRoutine.id);
+    if (exercisesInRoutine && exercisesInRoutine.length > 0) {
+        lastOrder = Math.max(...exercisesInRoutine.map(ex => ex.orden));
+    }
+
+    // Insert the exercise into the user routine
+    try {
+        await User.insertUserRoutineExercise(ejercicio_id, userRoutine.id, series, repeticiones, lastOrder + 1, comentario);
+    } catch (error) {
+        return res.status(500).json({ message: 'Error saving exercise for the routine' });
+    }
+
+    // Retrieve the updated routine with exercises
+    const updatedRoutine = await User.selectRoutineByUserIdRoutineId(user.id, userRoutineId);
+    if (!updatedRoutine) {
+        return res.status(404).json({ message: 'Updated routine not found' });
+    }
+    const formattedRoutine = await formatRoutineWithExercises(updatedRoutine);
+    if (!formattedRoutine) {
+        return res.status(500).json({ message: 'Error formatting routine with exercises' });
+    }
+    res.json(formattedRoutine);
+}
+
 const copyExecrisesToRoutine = async (userRoutineId, generatedUserRoutineId) => {
     const exercises = await User.selectExercisesByUserRoutineId(userRoutineId);
     if (!exercises || exercises.length === 0) {
@@ -343,7 +387,7 @@ const removeUserRoutine  = async (req, res) => {
     const { userRoutineId } = req.params;
     const routineId = await User.selectUserRoutineByIdUserId( user.id, userRoutineId);
     if (!routineId) {
-        return res.status(404).json({ message: 'No routines found for the user.' });
+        return res.status(404).json({ message: 'The specified routine was not found for the user.' });
     }
 
     try {
@@ -352,6 +396,38 @@ const removeUserRoutine  = async (req, res) => {
         return res.status(500).json({ message: 'Error deleting user routine' });
     }
     return res.json({ message: 'Routine deleted successfully' });
+}
+
+const removeExerciseFromRoutine = async (req, res) => {
+    const user = req.user;
+    const { userRoutineId, exerciseId } = req.params;
+    const userRoutine = await User.selectUserRoutineByIdUserId(user.id, userRoutineId);
+    if (!userRoutine) {
+        return res.status(404).json({ message: 'The specified routine was not found for the user.' });
+    }
+
+    const exercise = await User.selectUserExerciseById(exerciseId, userRoutineId);
+    if (!exercise) {
+        return res.status(404).json({ message: 'The specified exercise was not found.' });
+    }
+    try {
+        await User.deleteUserRoutineExercise(userRoutineId, exerciseId);
+    } catch (error) {
+        return res.status(500).json({ message: 'Error deleting exercise from user routine' });
+    }
+
+    // OPTIMIZE: update the order of the exercises in the routine
+    
+    // Retrieve the updated routine with exercises
+    const updatedRoutine = await User.selectRoutineByUserIdRoutineId(user.id, userRoutineId);
+    if (!updatedRoutine) {
+        return res.status(404).json({ message: 'Updated routine not found' });
+    }
+    const formattedRoutine = await formatRoutineWithExercises(updatedRoutine);
+    if (!formattedRoutine) {
+        return res.status(500).json({ message: 'Error formatting routine with exercises' });
+    }
+    res.json(formattedRoutine);
 }
 
 module.exports = {
@@ -365,7 +441,9 @@ module.exports = {
     resetPassword,
     updateUserRoutine,
     saveUserRoutine,
-    removeUserRoutine
+    addExerciseToRoutine,
+    removeUserRoutine,
+    removeExerciseFromRoutine
 };
 
 
@@ -398,6 +476,7 @@ const formatRoutineWithExercises = async (userRoutine) => {
         if (exercises && exercises.length > 0) {
             for (const exercise of exercises) {
                 formattedRoutine.ejercicios.push({
+                    ejercicio_id: exercise.id,
                     orden: exercise.orden,
                     nombre: exercise.nombre || '',
                     tipo: exercise.tipo || '',
