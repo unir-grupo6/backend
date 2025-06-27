@@ -57,20 +57,39 @@ GET {{host}}/api/exercises/filter?grupos_musculares_id=1
 GET {{host}}/api/exercises/filter?dificultad_id=2
 
 ### Ejercicios por ambos filtros
-GET {{host}}/api/exercises/filter?grupos_musculares_id=1&dificultad_id=2
+GET {{host}}/api/exercises/filter?grupos_musculares_id=2&dificultad_id=2
+
+
+### RUTINAS
+
+### Sin filtros (todas las rutinas)
+GET {{host}}/api/rutines
+
+### Rutinas por id
+GET {{host}}/api/rutines/rutina/1
+
+
+### Sin filtros
+GET {{host}}/api/rutines/filter
+
+### Solo objetivo
+GET {{host}}/api/rutines/filter?objetivos_id=3
+
+### Solo método
+GET {{host}}/api/rutines/filter?metodos_id=1
+
+### Solo dificultad
+GET {{host}}/api/rutines/filter?dificultad_id=1
+
+### Dos filtros
+GET {{host}}/api/rutines/filter?objetivos_id=11&metodos_id=1
 
 
 ### Todos los filtros
 GET {{host}}/api/rutines/filter?objetivos_id=1&dificultad_id=1&metodos_id=1
 
-### Solo objetivo
-GET {{host}}/api/rutines/filter?objetivos_id=1
 
-### Solo método
-GET {{host}}/api/rutines/filter?metodos_id=1
 
-### Sin filtros (todas las rutinas)
-GET {{host}}/api/rutines
 
 
 ###
