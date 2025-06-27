@@ -45,7 +45,9 @@ const getRoutinesByUserId = async (req, res) => {
     }
     user.rutinas = formattedRoutines;
 
+    user.fecha_nacimiento = dayjs(user.fecha_nacimiento).format('DD-MM-YYYY');
     user.fecha_alta = dayjs(user.fecha_alta).format('DD-MM-YYYY HH:mm:ss');
+
 
     res.json(user);
 }
@@ -586,12 +588,17 @@ const formatRoutineWithExercises = async (userRoutine) => {
     const fechaInicio = userRoutine.fecha_inicio_rutina ? dayjs(userRoutine.fecha_inicio_rutina).format('DD-MM-YYYY') : null;
     const fechaFin = userRoutine.fecha_fin_rutina ? dayjs(userRoutine.fecha_fin_rutina).format('DD-MM-YYYY') : null;
 
+    const rutina_activa = fechaInicio && fechaFin
+        ? dayjs().isAfter(dayjs(fechaInicio, 'DD-MM-YYYY').subtract(1, 'day')) &&
+          dayjs().isBefore(dayjs(fechaFin, 'DD-MM-YYYY').add(1, 'day'))
+        : false;
+
     const formattedRoutine = {
         rutina_id: userRoutine.rutina_id,
         nombre: userRoutine.nombre|| '',
         fecha_inicio_rutina: fechaInicio,
         fecha_fin_rutina: fechaFin,
-        rutina_activa: userRoutine.rutina_activa === 1,
+        rutina_activa: rutina_activa,
         rutina_compartida: userRoutine.rutina_compartida === 1,
         rutina_observaciones: userRoutine.rutina_observaciones || '',
         nivel: userRoutine.nivel || '',
