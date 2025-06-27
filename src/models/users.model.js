@@ -86,7 +86,7 @@ const updateUserData = async (userId, { nombre, apellidos, email, fecha_nacimien
 const getUserMetrics = async (userId) => {
     const [result] = await db.query(
         `
-        SELECT peso, altura, imc
+        SELECT peso, altura, imc, CAST(fecha AS DATE) as fecha
         FROM medidas_usuarios
         WHERE id_usuario = ?
         ORDER BY fecha DESC

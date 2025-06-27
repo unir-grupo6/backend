@@ -1,6 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const dayjs = require('dayjs');
+const customParseFormat = require("dayjs/plugin/customParseFormat");
+dayjs.extend(customParseFormat);
 
 const { transporter, sendResetPasswordEmail } = require('../config/mailer');
 
@@ -170,8 +172,24 @@ const updateUser = async (req, res) => {
     const userId = req.user.id;
     const { nombre, apellidos, email, peso, altura, fecha_nacimiento } = req.body;
 
+    if (!nombre || !apellidos || !email || !fecha_nacimiento) {
+        return res.status(400).json({ message: 'Nombre, apellidos, email, and fecha_nacimiento are required' });
+    }
+
+    if (peso && isNaN(peso)) {
+        return res.status(400).json({ message: 'Peso must be a number' });
+    }
+    if (altura && isNaN(altura)) {
+        return res.status(400).json({ message: 'Altura must be a number' });
+    }
+    if (fecha_nacimiento && !dayjs(fecha_nacimiento, 'DD-MM-YYYY', true).isValid()) {
+        return res.status(400).json({ message: 'Fecha de nacimiento must be a valid date' });
+    }
+
+    const newFechaNacimiento = dayjs(fecha_nacimiento, 'DD-MM-YYYY', true).format('YYYY-MM-DD');
+
     try {
-        const result = await User.updateUserData(userId, { nombre, apellidos, email, fecha_nacimiento });
+        const result = await User.updateUserData(userId, { nombre, apellidos, email, fecha_nacimiento: newFechaNacimiento });
 
         if (!result.affectedRows) {
             return res.status(400).json({ message: 'Failed to update user data' });
@@ -185,14 +203,22 @@ const updateUser = async (req, res) => {
         }
 
         if (
-            currentMetrics.peso !== peso ||
-            currentMetrics.altura !== altura ||
-            currentMetrics.imc !== newImc
+            (dayjs(currentMetrics.fecha).format('YYYY-MM-DD') === dayjs().format('YYYY-MM-DD')) &&
+            (currentMetrics.peso !== peso || currentMetrics.altura !== altura || currentMetrics.imc !== newImc)
         ) {
             const metricsResult = await User.updateUserMetrics(userId, peso, altura, newImc);
 
             if (!metricsResult.affectedRows) {
                 return res.status(400).json({ message: 'Failed to update user metrics' });
+            }
+        }else if (
+            (dayjs(currentMetrics.fecha).format('YYYY-MM-DD') !== dayjs().format('YYYY-MM-DD')) &&
+            (currentMetrics.peso !== peso || currentMetrics.altura !== altura || currentMetrics.imc !== newImc)
+        ) {
+            const metricsResult = await User.insertUserMetrics(userId, peso, altura, newImc);
+
+            if (!metricsResult.affectedRows) {
+                return res.status(400).json({ message: 'Failed to insert new user metrics' });
             }
         }
 
