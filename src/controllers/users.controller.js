@@ -176,6 +176,10 @@ const updateUser = async (req, res) => {
         return res.status(400).json({ message: 'Nombre, apellidos, email, and fecha_nacimiento are required' });
     }
 
+    if (typeof nombre !== 'string' || typeof apellidos !== 'string' || typeof email !== 'string') {
+        return res.status(400).json({ message: 'Nombre, apellidos, and email must be strings' });
+    }
+
     if (peso && isNaN(peso)) {
         return res.status(400).json({ message: 'Peso must be a number' });
     }
@@ -196,17 +200,28 @@ const updateUser = async (req, res) => {
         }
 
         const currentMetrics = await User.getUserMetrics(userId);
+        let newAltura = null;
+        let newPeso = null;
         let newImc = null;
 
-        if (peso && altura) {
-            newImc = Number(peso) / ((Number(altura) / 100) ** 2);
+        if (peso && !altura) {
+            newAltura = currentMetrics.altura;
+            newPeso = peso;
+        } else if (!peso && altura) {
+            newPeso = currentMetrics.peso;
+            newAltura = altura;
+        } else if (!peso && !altura) {
+            newPeso = currentMetrics.peso;
+            newAltura = currentMetrics.altura;
         }
+
+        newImc = Number(newPeso) / ((Number(newAltura) / 100) ** 2);
 
         if (
             (dayjs(currentMetrics.fecha).format('YYYY-MM-DD') === dayjs().format('YYYY-MM-DD')) &&
             (currentMetrics.peso !== peso || currentMetrics.altura !== altura || currentMetrics.imc !== newImc)
         ) {
-            const metricsResult = await User.updateUserMetrics(userId, peso, altura, newImc);
+            const metricsResult = await User.updateUserMetrics(userId, newPeso, newAltura, newImc);
 
             if (!metricsResult.affectedRows) {
                 return res.status(400).json({ message: 'Failed to update user metrics' });
@@ -215,7 +230,7 @@ const updateUser = async (req, res) => {
             (dayjs(currentMetrics.fecha).format('YYYY-MM-DD') !== dayjs().format('YYYY-MM-DD')) &&
             (currentMetrics.peso !== peso || currentMetrics.altura !== altura || currentMetrics.imc !== newImc)
         ) {
-            const metricsResult = await User.insertUserMetrics(userId, peso, altura, newImc);
+            const metricsResult = await User.insertUserMetrics(userId, newPeso, newAaltura, newImc);
 
             if (!metricsResult.affectedRows) {
                 return res.status(400).json({ message: 'Failed to insert new user metrics' });
@@ -226,7 +241,7 @@ const updateUser = async (req, res) => {
         return res.json(updatedUser);
 
     } catch (error) {
-        return res.status(500).json({ message: 'Error updating user', error: error.message });
+        return res.status(500).json({ message: 'Error updating user' });
     }
 };
 
