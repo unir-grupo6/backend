@@ -1,5 +1,5 @@
 @host = http://localhost:3000
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NTAzNDM3MzcsImlhdCI6MTc1MDM0MTkzN30.kx1MJJP6xWXr_PIvOW3plfw4xDWWaUUFI_Mk8armXIA
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NTE2MjEwOTgsImlhdCI6MTc1MTAxNjI5OH0.UQXm9zMC_RBQ8UTgTJ3iKhpOCdem9JyeZKlZucDUiCc
 
 GET {{host}}/api/users
 Authorization: {{token}}
@@ -73,5 +73,17 @@ GET {{host}}/api/rutines/filter?metodos_id=1
 GET {{host}}/api/rutines
 
 
+###
+PUT {{host}}/api/users/update
+Authorization: {{token}}
+Content-Type: application/json
 
+{
+    "nombre": "pepito",
+    "apellidos": "grillo",
+    "email": "pepito.grillo@example.com",
+    "fecha_nacimiento": "01-01-1990",
+    "peso": 70,
+    "altura": 190
+}
 
