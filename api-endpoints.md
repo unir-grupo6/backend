@@ -15,6 +15,35 @@
   - **404 Not Found**: `{ "message": "Not found" }` — The endpoint does not exist.
   - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
 
+### Update logged-in user information
+- **Method**: PUT
+- **URL**: /api/users/update
+- **Headers**: Authorization: `{token}`, Content-Type: application/json
+- **Body**:
+  - `nombre` (string, required): New first name
+  - `apellidos` (string, required): New last name
+  - `email` (string, required): New email address
+  - `fecha_nacimiento` (string, required, format: YYYY-MM-DD): New birth date
+  - `peso` (number, optional): New weight
+  - `altura` (number, optional): New height
+- **Response**: On success, returns the updated user object
+- **Possible errors**:
+  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
+  - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
+  - **400 Bad Request**: `{ "message": "Nombre, apellidos, email, and fecha_nacimiento are required" }` — One or more required fields are missing in the request body.
+  - **400 Bad Request**: `{ "message": "Peso must be a number" }` — The value for `peso` is not a number.
+  - **400 Bad Request**: `{ "message": "Altura must be a number" }` — The value for `altura` is not a number.
+  - **400 Bad Request**: `{ "message": "Fecha de nacimiento must be a valid date" }` — The value for `fecha_nacimiento` is not a valid date.
+  - **400 Bad Request**: `{ "message": "Failed to update user data" }` — There was a problem updating the user data in the database.
+  - **400 Bad Request**: `{ "message": "Failed to update user metrics" }` — There was a problem updating the user metrics in the database.
+  - **400 Bad Request**: `{ "message": "Failed to insert new user metrics" }` — There was a problem inserting new user metrics in the database.
+  - **403 Forbidden**: `{ "message": "Email already exists" }` — The new email is already registered in the system.
+  - **404 Not Found**: `{ "message": "Not found" }` — The endpoint does not exist.
+  - **500 Internal Server Error**: `{ "message": "Error updating user" }` — There was a problem updating the user in the database.
+  - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
+- **Notes**: All fields except `peso` and `altura` are required. The response always returns the updated user object. If `peso` and/or `altura` are provided, user metrics are updated or inserted for the current day. All validations are applied to the provided fields.
+
 ### Registration
 - **Method**: POST
 - **URL**: /api/users/register
