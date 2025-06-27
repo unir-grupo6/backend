@@ -70,15 +70,84 @@ const getRoutineById = async (req, res) => {
 const registro = async (req, res) => {
     req.body.password = bcrypt.hashSync(req.body.password, Number(BCRYPT_SALT_ROUNDS));
     const existingUser = await User.getByEmail(req.body.email);
+
+    // Check than all fields are present
+    if (!req.body.nombre || !req.body.apellidos || !req.body.email || !req.body.password || !req.body.fecha_nacimiento || !req.body.peso || !req.body.altura || !req.body.objetivo_id) {
+        return res.status(400).json({ message: 'Nombre, apellidos, email, password, fecha_nacimiento, peso, altura and objetivo_id are required' });
+    }
+
+    if (typeof req.body.nombre !== 'string' || typeof req.body.apellidos !== 'string' || typeof req.body.email !== 'string') {
+        return res.status(400).json({ message: 'Nombre, apellidos, and email must be strings' });
+    }
+
+    if (req.body.peso && isNaN(req.body.peso)) {
+        return res.status(400).json({ message: 'Peso must be a number' });
+    }
+    if (req.body.altura && isNaN(req.body.altura)) {
+        return res.status(400).json({ message: 'Altura must be a number' });
+    }
+    if (!dayjs(req.body.fecha_nacimiento, 'DD-MM-YYYY', true).isValid()) {
+        return res.status(400).json({ message: 'Fecha de nacimiento must be a valid date' });
+    }
+    if (req.body.objetivo_id && isNaN(req.body.objetivo_id)) {
+        return res.status(400).json({ message: 'Objetivo ID must be a number' });
+    }
+
     if (existingUser) {
         return res.status(403).json({ message: 'Email already exists' });
     }
-    const result = await User.insert(req.body);
+
+    req.body.fecha_nacimiento = dayjs(req.body.fecha_nacimiento).format('YYYY-MM-DD');
+
+    const result = await User.insertUser(req.body);
+
+    if (!result || !result.insertId) {
+        return res.status(400).json({ message: 'Failed to register user' });
+    }
+
+    const { peso, altura } = req.body;
+
+    const metricsResult = await User.insertUserMetrics(
+        result.insertId,
+        peso,
+        altura,
+        peso && altura ? Number(peso) / ((Number(altura) / 100) ** 2) : null
+    );
+
+    if (!metricsResult || !metricsResult.insertId) {
+        return res.status(400).json({ message: 'Failed to register user metrics' });
+    }
+
+    // Insert objectives
+    if (req.body.objetivo_id) {
+        const objectiveResult = await User.insertUserObjective(result.insertId, req.body.objetivo_id);
+        if (!objectiveResult || !objectiveResult.insertId) {
+            return res.status(400).json({ message: 'Failed to register user objective' });
+        }
+    }
 
     // OPTIMIZE: send verification link via email when a new user registers
 
     const newUser = await User.getById(result.insertId);
-    res.json(newUser);
+
+    if (!newUser) {
+        return res.status(400).json({ message: 'Failed to retrieve new user' });
+    }
+
+    newUser.fecha_nacimiento = dayjs(newUser.fecha_nacimiento).format('YYYY-MM-DD');
+    newUser.fecha_alta = dayjs(newUser.fecha_alta).format('YYYY-MM-DD');
+
+    const token = jwt.sign(
+        { user_id: newUser.id },
+        JWT_SECRET_KEY,
+        { expiresIn: `${JWT_EXPIRES_IN_AMOUNT} ${JWT_EXPIRES_IN_UNIT}` }
+    );
+
+    res.json({
+        message: 'User registered successfully',
+        token: token,
+        user: newUser,
+    });
 };
 
 const login = async (req, res) => {
@@ -195,6 +264,83 @@ const resetPassword = async (req, res) => {
     return res.json({ message: 'Password reset successfully' });
 }
 
+const updateUser = async (req, res) => {
+    const userId = req.user.id;
+    const { nombre, apellidos, email, peso, altura, fecha_nacimiento } = req.body;
+
+    if (!nombre || !apellidos || !email || !fecha_nacimiento) {
+        return res.status(400).json({ message: 'Nombre, apellidos, email, and fecha_nacimiento are required' });
+    }
+
+    if (typeof nombre !== 'string' || typeof apellidos !== 'string' || typeof email !== 'string') {
+        return res.status(400).json({ message: 'Nombre, apellidos, and email must be strings' });
+    }
+
+    if (peso && isNaN(peso)) {
+        return res.status(400).json({ message: 'Peso must be a number' });
+    }
+    if (altura && isNaN(altura)) {
+        return res.status(400).json({ message: 'Altura must be a number' });
+    }
+    if (fecha_nacimiento && !dayjs(fecha_nacimiento, 'DD-MM-YYYY', true).isValid()) {
+        return res.status(400).json({ message: 'Fecha de nacimiento must be a valid date' });
+    }
+
+    const newFechaNacimiento = dayjs(fecha_nacimiento, 'DD-MM-YYYY', true).format('YYYY-MM-DD');
+
+    try {
+        const result = await User.updateUserData(userId, { nombre, apellidos, email, fecha_nacimiento: newFechaNacimiento });
+
+        if (!result.affectedRows) {
+            return res.status(400).json({ message: 'Failed to update user data' });
+        }
+
+        const currentMetrics = await User.getUserMetrics(userId);
+        let newAltura = null;
+        let newPeso = null;
+        let newImc = null;
+
+        if (peso && !altura) {
+            newAltura = currentMetrics.altura;
+            newPeso = peso;
+        } else if (!peso && altura) {
+            newPeso = currentMetrics.peso;
+            newAltura = altura;
+        } else if (!peso && !altura) {
+            newPeso = currentMetrics.peso;
+            newAltura = currentMetrics.altura;
+        }
+
+        newImc = Number(newPeso) / ((Number(newAltura) / 100) ** 2);
+
+        if (
+            (dayjs(currentMetrics.fecha).format('YYYY-MM-DD') === dayjs().format('YYYY-MM-DD')) &&
+            (currentMetrics.peso !== peso || currentMetrics.altura !== altura || currentMetrics.imc !== newImc)
+        ) {
+            const metricsResult = await User.updateUserMetrics(userId, newPeso, newAltura, newImc);
+
+            if (!metricsResult.affectedRows) {
+                return res.status(400).json({ message: 'Failed to update user metrics' });
+            }
+        }else if (
+            (dayjs(currentMetrics.fecha).format('YYYY-MM-DD') !== dayjs().format('YYYY-MM-DD')) &&
+            (currentMetrics.peso !== peso || currentMetrics.altura !== altura || currentMetrics.imc !== newImc)
+        ) {
+            const metricsResult = await User.insertUserMetrics(userId, newPeso, newAaltura, newImc);
+
+            if (!metricsResult.affectedRows) {
+                return res.status(400).json({ message: 'Failed to insert new user metrics' });
+            }
+        }
+
+        const updatedUser = await User.getById(userId);
+        return res.json(updatedUser);
+
+    } catch (error) {
+        return res.status(500).json({ message: 'Error updating user' });
+    }
+};
+
 const updateUserRoutine = async (req, res) => {
     const user = req.user;
     const { userRoutineId } = req.params;
@@ -228,8 +374,8 @@ const updateUserRoutine = async (req, res) => {
     // Add fields to update
     const updateFields = {};
     if (fecha_inicio_rutina  && fecha_fin_rutina) {
-        updateFields.inicio = fecha_inicio_rutina;
-        updateFields.fin = fecha_fin_rutina;
+        updateFields.inicio = dayjs(fecha_inicio_rutina, 'DD-MM-YYYY', true).format('YYYY-MM-DD');
+        updateFields.fin = dayjs(fecha_fin_rutina, 'DD-MM-YYYY', true).format('YYYY-MM-DD');
     }
     if (rutina_compartida === true || rutina_compartida === false) {
         updateFields.compartida = rutina_compartida ? 1 : 0;
@@ -406,7 +552,7 @@ const saveUserRoutine = async (req, res) => {
     }
 
     // Insert the exercises for the user routine
-    const insertedExercises = await copyExecrisesToRoutine(userRoutineId, generatedUserRoutine.insertId);
+    const insertedExercises = await copyExecrisesToRoutine(res, userRoutineId, generatedUserRoutine.insertId);
     if (!insertedExercises) {
         return res.status(500).json({ message: 'Error saving exercises for the routine' });
     }
@@ -559,6 +705,7 @@ module.exports = {
     changePassword,
     forgotPassword,
     resetPassword,
+    updateUser,
     updateUserRoutine,
     updateUserRoutineExercise,
     saveUserRoutine,
@@ -567,17 +714,17 @@ module.exports = {
     removeExerciseFromRoutine
 };
 
-const copyExecrisesToRoutine = async (userRoutineId, generatedUserRoutineId) => {
+const copyExecrisesToRoutine = async (res, userRoutineId, generatedUserRoutineId) => {
     const exercises = await User.selectExercisesByUserRoutineId(userRoutineId);
     if (!exercises || exercises.length === 0) {
-        return res.status(404).json({ message: 'No exercises found for the specified routine.' });
+        res.status(404).json({ message: 'No exercises found for the specified routine.' });
     }
     for (const exercise of exercises) {
-        const {rutinas_id, ejercicios_id, series, repeticiones, dia, orden, comentario } = exercise;
+        const {ejercicios_id, series, repeticiones, dia, orden, comentario } = exercise;
         try {
-            await User.insertUserRoutineExercise(rutinas_id, ejercicios_id, generatedUserRoutineId, series, repeticiones, dia, orden, comentario);
+            await User.insertUserRoutineExercise(ejercicios_id, generatedUserRoutineId, series, repeticiones, orden, comentario);
         } catch (error) {
-            return res.status(500).json({ message: 'Error saving exercise for the routine' });
+            res.status(500).json({ message: 'Error saving exercise for the routine' });
         }
     }
     return true;

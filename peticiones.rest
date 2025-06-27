@@ -1,5 +1,5 @@
 @host = http://localhost:3000
-@token = 
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NTE2Mzc3MTIsImlhdCI6MTc1MTAzMjkxMn0.to1KnuiCWp1w8pGlpt7r2_6yOkwNZYfx_6Dp_QyVlKI
 
 GET {{host}}/api/users
 Authorization: {{token}}
@@ -9,10 +9,14 @@ POST {{host}}/api/users/register
 Content-Type: application/json
 
 {
-    "nombre": "nombre",
-    "apellidos": "apellido",
-    "email": "email@example.com",
-    "password": "newPassword"
+    "nombre": "Rana",
+    "apellidos": "Gustavo",
+    "email": "rana.gustavo3@example.com",
+    "password": "123456",
+    "fecha_nacimiento": "01-01-1995",
+    "peso": 70,
+    "altura": 1.75,
+    "objetivo_id": 1
 }
 
 ###
@@ -21,6 +25,28 @@ Content-Type: application/json
 
 {
     "email": "pepito.grillo1@example.com",
+    "password": "123456"
+}
+
+###
+PUT {{host}}/api/users/update
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+    "nombre": "Patito",
+    "apellidos": "Feo",
+    "email": "patito.feo@example.com",
+    "fecha_nacimiento": "01-01-2050",
+    "peso": 40
+}
+
+###
+put {{host}}/api/users/update-password
+Authorization: {{token}}
+Content-Type: application/json
+
+{
     "password": "123456"
 }
 
@@ -40,6 +66,49 @@ Content-Type: application/json
 {
     "newPassword": "newPassword"
 }
+
+
+### Todos los ejercicios
+GET {{host}}/api/exercises/filter
+
+### Ejercicios por grupo muscular
+GET {{host}}/api/exercises/filter?grupos_musculares_id=1
+
+### Ejercicios por dificultad
+GET {{host}}/api/exercises/filter?dificultad_id=2
+
+### Ejercicios por ambos filtros
+GET {{host}}/api/exercises/filter?grupos_musculares_id=2&dificultad_id=2
+
+
+### RUTINAS
+
+### Sin filtros (todas las rutinas)
+GET {{host}}/api/rutines
+
+### Rutinas por id
+GET {{host}}/api/rutines/rutina/1
+
+
+### Sin filtros
+GET {{host}}/api/rutines/filter
+
+### Solo objetivo
+GET {{host}}/api/rutines/filter?objetivos_id=3
+
+### Solo método
+GET {{host}}/api/rutines/filter?metodos_id=1
+
+### Solo dificultad
+GET {{host}}/api/rutines/filter?dificultad_id=1
+
+### Dos filtros
+GET {{host}}/api/rutines/filter?objetivos_id=11&metodos_id=1
+
+
+### Todos los filtros
+GET {{host}}/api/rutines/filter?objetivos_id=1&dificultad_id=1&metodos_id=1
+
 ###
 GET {{host}}/api/users/routines?page=1&limit=10&active=false
 Content-Type: application/json
@@ -49,46 +118,46 @@ GET {{host}}/api/users/routines?active=true
 Content-Type: application/json
 Authorization: {{token}}
 ###
-GET {{host}}/api/users/routines/2425
+GET {{host}}/api/users/routines/2407
 Content-Type: application/json
 Authorization: {{token}}
 ###
-POST {{host}}/api/users/routines/2407/save
+POST {{host}}/api/users/routines/2425/save
 Content-Type: application/json
 Authorization: {{token}}
 ###
-DELETE {{host}}/api/users/routines/2431
+DELETE {{host}}/api/users/routines/2442
 Authorization: {{token}}
 ###
-PATCH {{host}}/api/users/routines/2425
+PATCH {{host}}/api/users/routines/2441
 Authorization: {{token}}
 Content-Type: application/json
 
 {
-    "fecha_inicio_rutina": "2023-09-22",
-    "fecha_fin_rutina": "2023-09-30",
+    "fecha_inicio_rutina": "22-09-2023",
+    "fecha_fin_rutina": "30-09-2025",
     "rutina_compartida": true
 }
 ###
-POST {{host}}/api/users/routines/2430/exercises
+POST {{host}}/api/users/routines/2441/exercises
 Authorization: {{token}}
 Content-Type: application/json
 
 {
-    "ejercicio_id": 15,
+    "ejercicio_id": 21,
     "series": 3,
     "repeticiones": 10,
     "orden": 5,
     "comentario": "Comentario del ejercicio"
 }
 ###
-DELETE {{host}}/api/users/routines/2430/exercises/67141
+DELETE {{host}}/api/users/routines/2441/exercises/67146
 Authorization: {{token}}
 ###
-PATCH {{host}}/api/users/routines/2430/exercises/67129
+PATCH {{host}}/api/users/routines/2441/exercises/67152
 Authorization: {{token}}
 Content-Type: application/json
 
 {
-    "orden": 2
+    "orden": 1
 }

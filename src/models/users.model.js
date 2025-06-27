@@ -21,7 +21,7 @@ const getById = async (userId) => {
 
 const getByEmail = async (email) => {
     const [result] = await db.query(
-        'SELECT * FROM usuarios WHERE email = ?',
+        'SELECT id, email, password FROM usuarios WHERE email = ?',
         [email]
     );
     if (result.length === 0) return null;
@@ -30,7 +30,7 @@ const getByEmail = async (email) => {
 
 const getByResetToken = async (resetToken) => {
     const [result] = await db.query(
-        'SELECT * FROM usuarios WHERE reset_token = ?',
+        'SELECT id FROM usuarios WHERE reset_token = ?',
         [resetToken]
     );
     if (result.length === 0) return null;
@@ -180,10 +180,34 @@ const selectUserExerciseById = async (exerciseId, userRoutineId) => {
     return result[0];
 }
 
-const insert = async ({ nombre, apellidos, email, password, sexo }) => {
+const insertUser = async ({ nombre, apellidos, email, password, sexo, fecha_nacimiento }) => {
     const [result] = await db.query(
-        'INSERT INTO usuarios (nombre, apellidos, email, password, fecha_alta, sexo) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?)',
-        [nombre, apellidos, email, password, sexo]
+        'INSERT INTO usuarios (nombre, apellidos, email, password, fecha_alta, sexo, fecha_nacimiento) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?)',
+        [nombre, apellidos, email, password, sexo, fecha_nacimiento]
+    );
+    return result;
+}
+
+const insertUserMetrics = async (userId, peso, altura, imc) => {
+    const [result] = await db.query(
+        'INSERT INTO medidas_usuarios (id_usuario, peso, altura, imc, fecha) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)',
+        [userId, peso, altura, imc]
+    );
+    return result;
+}
+
+const insertUserObjective = async (userId, objectiveId) => {
+    const [result] = await db.query(
+        'INSERT INTO objetivos_usuarios (id_usuarios, id_objetivos, fecha) VALUES (?, ?, CURRENT_TIMESTAMP)',
+        [userId, objectiveId]
+    );
+    return result;
+}
+
+const updateUserMetrics = async (userId, peso, altura, imc) => {
+    const [result] = await db.query(
+        'UPDATE medidas_usuarios SET peso = ?, altura = ?, imc = ?, fecha = CURRENT_TIMESTAMP WHERE id_usuario = ? ORDER BY fecha DESC LIMIT 1',
+        [peso, altura, imc, userId]
     );
     return result;
 }
@@ -275,6 +299,28 @@ const deleteUserRoutineExercise = async (exerciseId) => {
     return result;
 }
 
+const updateUserData = async (userId, { nombre, apellidos, email, fecha_nacimiento }) => {
+    const [result] = await db.query(
+        'UPDATE usuarios SET nombre = ?, apellidos = ?, email = ?, fecha_nacimiento = ? WHERE id = ?',
+        [nombre, apellidos, email, fecha_nacimiento, userId]
+    );
+    return result;
+}
+
+const getUserMetrics = async (userId) => {
+    const [result] = await db.query(
+        `
+        SELECT peso, altura, imc, CAST(fecha AS DATE) as fecha
+        FROM medidas_usuarios
+        WHERE id_usuario = ?
+        ORDER BY fecha DESC
+        LIMIT 1;
+        `,
+        [userId]
+    );
+    return result[0] || {};
+}
+
 module.exports = {
     getById,
     getByEmail,
@@ -288,11 +334,16 @@ module.exports = {
     selectExercisesByUserRoutineId,
     selectExerciseById,
     selectUserExerciseById,
-    insert,
+    insertUser,
+    insertUserMetrics,
+    insertUserObjective,
     updateRoutineById,
     updateUserRoutineExerciseById,
     updatePassword,
     updateResetToken,
+    updateUserData,
+    getUserMetrics,
+    updateUserMetrics,
     updateExerciseOrder,
     insertUserRoutine,
     insertUserRoutineExercise,
