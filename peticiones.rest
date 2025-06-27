@@ -1,5 +1,5 @@
 @host = http://localhost:3000
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NTE2Mzc3MTIsImlhdCI6MTc1MTAzMjkxMn0.to1KnuiCWp1w8pGlpt7r2_6yOkwNZYfx_6Dp_QyVlKI
+@token = 
 
 GET {{host}}/api/users
 Authorization: {{token}}
@@ -11,7 +11,7 @@ Content-Type: application/json
 {
     "nombre": "Rana",
     "apellidos": "Gustavo",
-    "email": "rana.gustavo3@example.com",
+    "email": "rana.gustavo@example.com",
     "password": "123456",
     "fecha_nacimiento": "01-01-1995",
     "peso": 70,
@@ -110,26 +110,26 @@ GET {{host}}/api/rutines/filter?objetivos_id=11&metodos_id=1
 GET {{host}}/api/rutines/filter?objetivos_id=1&dificultad_id=1&metodos_id=1
 
 ###
-GET {{host}}/api/users/routines?page=1&limit=10&active=false
+GET {{host}}/api/user-routines?page=1&limit=10&active=false
 Content-Type: application/json
 Authorization: {{token}}
 ###
-GET {{host}}/api/users/routines?active=true
+GET {{host}}/api/user-routines?active=true
 Content-Type: application/json
 Authorization: {{token}}
 ###
-GET {{host}}/api/users/routines/2407
+GET {{host}}/api/user-routines/2407
 Content-Type: application/json
 Authorization: {{token}}
 ###
-POST {{host}}/api/users/routines/2425/save
+POST {{host}}/api/user-routines/2425/save
 Content-Type: application/json
 Authorization: {{token}}
 ###
-DELETE {{host}}/api/users/routines/2442
+DELETE {{host}}/api/user-routines/2444
 Authorization: {{token}}
 ###
-PATCH {{host}}/api/users/routines/2441
+PATCH {{host}}/api/user-routines/2443
 Authorization: {{token}}
 Content-Type: application/json
 
@@ -139,7 +139,7 @@ Content-Type: application/json
     "rutina_compartida": true
 }
 ###
-POST {{host}}/api/users/routines/2441/exercises
+POST {{host}}/api/user-routines/2441/exercises
 Authorization: {{token}}
 Content-Type: application/json
 
@@ -151,10 +151,10 @@ Content-Type: application/json
     "comentario": "Comentario del ejercicio"
 }
 ###
-DELETE {{host}}/api/users/routines/2441/exercises/67146
+DELETE {{host}}/api/user-routines/2441/exercises/67159
 Authorization: {{token}}
 ###
-PATCH {{host}}/api/users/routines/2441/exercises/67152
+PATCH {{host}}/api/user-routines/2441/exercises/67147
 Authorization: {{token}}
 Content-Type: application/json
 
