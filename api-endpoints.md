@@ -1,5 +1,48 @@
 # API Endpoints
 
+## Index
+
+- [API Endpoints](#api-endpoints)
+  - [Index](#index)
+  - [Users](#users)
+    - [Get logged-in user information](#get-logged-in-user-information)
+    - [Update logged-in user information](#update-logged-in-user-information)
+    - [Registration](#registration)
+    - [Login](#login)
+    - [Update password for the logged-in user](#update-password-for-the-logged-in-user)
+    - [Forgot Password](#forgot-password)
+    - [Reset Password](#reset-password)
+  - [User Routines](#user-routines)
+    - [Get logged-in user's routines (paginated)](#get-logged-in-users-routines-paginated)
+    - [Get a specific routine of the logged-in user](#get-a-specific-routine-of-the-logged-in-user)
+    - [Save a user routine](#save-a-user-routine)
+    - [Delete a user routine](#delete-a-user-routine)
+    - [Update a user routine](#update-a-user-routine)
+    - [Add exercise to a user routine](#add-exercise-to-a-user-routine)
+    - [Remove exercise from a user routine](#remove-exercise-from-a-user-routine)
+    - [Update an exercise in a user routine](#update-an-exercise-in-a-user-routine)
+  - [Muscle Groups](#muscle-groups)
+    - [Get all muscle groups](#get-all-muscle-groups)
+    - [Get muscle group by ID](#get-muscle-group-by-id)
+  - [Difficulties](#difficulties)
+    - [Get all difficulties](#get-all-difficulties)
+    - [Get difficulty by ID](#get-difficulty-by-id)
+  - [Methods](#methods)
+    - [Get all methods](#get-all-methods)
+    - [Get method by ID](#get-method-by-id)
+  - [Goals](#goals)
+    - [Get all goals](#get-all-goals)
+    - [Get goal by ID](#get-goal-by-id)
+  - [Rutines](#rutines)
+    - [Get all rutines](#get-all-rutines)
+    - [Get rutine by ID](#get-rutine-by-id)
+    - [Get rutines by goals, difficulty and method](#get-rutines-by-goals-difficulty-and-method)
+  - [Exercises](#exercises)
+    - [Get all exercises](#get-all-exercises)
+    - [Get exercises by muscle group and difficulty](#get-exercises-by-muscle-group-and-difficulty)
+
+
+
 ## Users
 
 ### Get logged-in user information
@@ -148,19 +191,7 @@
   - **404 Not Found**: `{ "message": "Not found" }` — The endpoint does not exist.
   - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
 
-### Get logged-in user information
-- **Method**: GET
-- **URL**: /api/users
-- **Headers**: Authorization: `{token}`
-- **Body**: ---
-- **Response**: The logged-in user object
-- **Possible errors**:
-  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
-  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
-  - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
-  - **404 Not Found**: `{ "message": "Not found" }` — The endpoint does not exist.
-  - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
-
+## User Routines
 
 ### Get logged-in user's routines (paginated)
 - **Method**: GET
@@ -397,24 +428,24 @@
 >[!NOTE]
 >You can update one or more fields. If the `orden` is updated, it must not conflict with another exercise's order in the same routine. When the `orden` is changed, the rest of the exercises are automatically reordered to maintain a continuous ascending order, preserving the intended sequence. The response always returns the full updated routine with all exercises and their current order and fields.
 
-## Basic Gets
+## Muscle Groups
 
-### Get all methods
+### Get all muscle groups
 - **Method**: GET
-- **URL**: /api/methods
+- **URL**: /api/muscle-groups
 - **Headers**: None
-- **Response**: An array with all the methods
+- **Response**: An array with all the muscle groups
 - **Possible errors**:
-  - **500 Internal Server Error**: `{ "message": "Error retrieving methods" }` — An unexpected server error occurred.
+  - **500 Internal Server Error**: `{ "message": "Error retrieving muscle groups" }` — An unexpected server error occurred.
 
-### Get method by ID
+### Get muscle group by ID
 - **Method**: GET
-- **URL**: /api/methods/`{id}`
+- **URL**: /api/muscle-groups/`{id}`
 - **Headers**: None
-- **Response**: The method object with the specified ID
+- **Response**: The muscle group object with the specified ID
 - **Possible errors**:
   - **400 Bad Request**: `{ "message": "Invalid ID" }` — The ID is not valid.
-  - **404 Not Found**: `{ "message": "Method not found" }` — The method does not exist.
+  - **404 Not Found**: `{ "message": "Muscle group not found" }` — The muscle group does not exist.
   - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
 
 ## Difficulties
@@ -437,26 +468,25 @@
   - **404 Not Found**: `{ "message": "Difficulty not found" }` — The difficulty does not exist.
   - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
 
-## Muscle groups
+## Methods
 
-### Get all muscle groups
+### Get all methods
 - **Method**: GET
-- **URL**: /api/muscle-groups
+- **URL**: /api/methods
 - **Headers**: None
-- **Response**: An array with all the muscle groups
+- **Response**: An array with all the methods
 - **Possible errors**:
-  - **500 Internal Server Error**: `{ "message": "Error retrieving muscle groups" }` — An unexpected server error occurred.
+  - **500 Internal Server Error**: `{ "message": "Error retrieving methods" }` — An unexpected server error occurred.
 
-### Get muscle group by ID
+### Get method by ID
 - **Method**: GET
-- **URL**: /api/muscle-groups/`{id}`
+- **URL**: /api/methods/`{id}`
 - **Headers**: None
-- **Response**: The muscle group object with the specified ID
+- **Response**: The method object with the specified ID
 - **Possible errors**:
   - **400 Bad Request**: `{ "message": "Invalid ID" }` — The ID is not valid.
-  - **404 Not Found**: `{ "message": "Muscle group not found" }` — The muscle group does not exist.
+  - **404 Not Found**: `{ "message": "Method not found" }` — The method does not exist.
   - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
-
 
 ## Goals
 
