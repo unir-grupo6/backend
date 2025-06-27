@@ -1,5 +1,5 @@
 @host = http://localhost:3000
-@token = 
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NTE2NDM3OTYsImlhdCI6MTc1MTAzODk5Nn0.2NF4XK_EAGBvYOpd4c1u16x2-VEvn0ZHgeopAGPvsa0
 
 GET {{host}}/api/users
 Authorization: {{token}}
@@ -110,7 +110,7 @@ GET {{host}}/api/rutines/filter?objetivos_id=11&metodos_id=1
 GET {{host}}/api/rutines/filter?objetivos_id=1&dificultad_id=1&metodos_id=1
 
 ###
-GET {{host}}/api/user-routines?page=1&limit=10&active=false
+GET {{host}}/api/user-routines?page=2&limit=5&active=false
 Content-Type: application/json
 Authorization: {{token}}
 ###

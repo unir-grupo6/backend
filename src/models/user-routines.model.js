@@ -29,6 +29,21 @@ const selectRoutinesByUserId = async (userId, page, limit) => {
     return result;
 }
 
+const countRoutinesByUserId = async (userId) => {
+    const [result] = await db.query(
+        `
+        SELECT COUNT(*) as total
+        FROM usuarios U
+            INNER JOIN rutinas_usuarios RU ON U.id = RU.usuarios_id
+            INNER JOIN rutinas R ON R.id = RU.rutinas_id
+        WHERE U.id = ?
+        `,
+        [userId]
+    );
+    if (result.length === 0) return 0;
+    return result[0].total;
+}
+
 const selectUserRoutineByIdUserId = async (user_id, id_user_routine) => {
     const [result] = await db.query(
         'SELECT id, rutinas_id, usuarios_id, inicio, fin, compartida FROM rutinas_usuarios WHERE id = ? AND usuarios_id = ? LIMIT 1',
@@ -217,6 +232,7 @@ const deleteUserRoutineExercise = async (exerciseId) => {
 module.exports = {
     selectUserRoutineById,
     selectRoutinesByUserId,
+    countRoutinesByUserId,
     selectUserRoutineByIdUserId,
     selectActiveRoutinesByUserId,
     selectRoutineByRoutineId,

@@ -23,6 +23,13 @@ const getRoutinesByUserId = async (req, res) => {
     if (!userRoutines || userRoutines.length === 0) {
         return res.status(404).json({ message: 'No routines found for this user' });
     }
+    
+    // Get the total number of routines and total pages
+    const totalRoutines = await User.countRoutinesByUserId(user.id);
+    const totalPages = Math.ceil(totalRoutines / limit);
+    user.total_routines = totalRoutines;
+    user.current_page = Number(page);
+    user.total_pages = totalPages;
 
     const formattedRoutines = [];
     for (const routine of userRoutines) {
@@ -41,7 +48,6 @@ const getRoutinesByUserId = async (req, res) => {
 
     user.fecha_nacimiento = dayjs(user.fecha_nacimiento).format('DD-MM-YYYY');
     user.fecha_alta = dayjs(user.fecha_alta).format('DD-MM-YYYY HH:mm:ss');
-
 
     res.json(user);
 }
