@@ -50,23 +50,23 @@ GET {{host}}/api/exercises/1
 Authorization: {{token}}
 
 ### Rutinas & rutinas_ejercicios
-GET {{host}}/api/routines/
+GET {{host}}/api/rutines/
 Authorization: {{token}}
 
 ###
-GET {{host}}/api/routines/1
+GET {{host}}/api/rutines/1
 Authorization: {{token}}
 
 ###
-GET {{host}}/api/routines/exercises
+GET {{host}}/api/rutines/exercises
 Authorization: {{token}}
 
 ###
-GET {{host}}/api/routines/3/exercises
+GET {{host}}/api/rutines/3/exercises
 Authorization: {{token}}
 
 ###
-PUT {{host}}/api/routines/1
+PUT {{host}}/api/rutines/1
 Authorization: {{token}}
 Content-Type: application/json
 
@@ -78,7 +78,7 @@ Content-Type: application/json
 }
 
 ###
-POST {{host}}/api/routines/
+POST {{host}}/api/rutines/
 Authorization: {{token}}
 Content-Type: application/json
 
@@ -91,7 +91,7 @@ Content-Type: application/json
 }
 
 ###
-POST {{host}}/api/routines/1/exercises
+POST {{host}}/api/rutines/1/exercises
 Authorization: {{token}}
 Content-Type: application/json
 

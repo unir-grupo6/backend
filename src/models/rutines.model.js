@@ -1,4 +1,4 @@
-// Modelo para rutinas
+// Modelo para rutines
 const db = require('../config/db');
 
 const getAll = async () => {
@@ -45,7 +45,5 @@ const getAllPublic = async () => {
     const [result] = await db.query('SELECT * FROM rutinas WHERE compartida = 1');
     return result;
 };
-
-// Aquí puedes agregar más métodos según los endpoints
 
 module.exports = { getAll, getById, getExercisesByRoutineId, create, update, addExerciseToRoutine, getAllPublic };
