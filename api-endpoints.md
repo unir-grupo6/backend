@@ -21,6 +21,7 @@
     - [Add exercise to a user routine](#add-exercise-to-a-user-routine)
     - [Remove exercise from a user routine](#remove-exercise-from-a-user-routine)
     - [Update an exercise in a user routine](#update-an-exercise-in-a-user-routine)
+    - [Generate PDF for a user routine](#generate-pdf-for-a-user-routine)
   - [Muscle Groups](#muscle-groups)
     - [Get all muscle groups](#get-all-muscle-groups)
     - [Get muscle group by ID](#get-muscle-group-by-id)
@@ -434,6 +435,26 @@
 
 >[!NOTE]
 >You can update one or more fields. If the `orden` is updated, it must not conflict with another exercise's order in the same routine. When the `orden` is changed, the rest of the exercises are automatically reordered to maintain a continuous ascending order, preserving the intended sequence. The response always returns the full updated routine with all exercises and their current order and fields.
+
+### Generate PDF for a user routine
+- **Method**: GET
+- **URL**: /api/users/routines/generate/{userRoutineId}
+- **Headers**: Authorization: `{token}`
+- **Body**: ---
+- **Response**: On success, returns a PDF file containing the details of the specified user routine. The response headers include:
+  - `Content-Type: application/pdf`
+  - `Content-Disposition: attachment; filename="user_routine.pdf"`
+- **Possible errors**:
+  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
+  - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
+  - **404 Not Found**: `{ "message": "Routine not found for the the specified user" }` — The routine does not exist or does not belong to the user.
+  - **404 Not Found**: `{ "message": "No exercises found for the specified routine." }` — The routine does not have exercises to export.
+  - **500 Internal Server Error**: `{ "message": "Error generating PDF" }` — There was a problem generating the PDF file.
+  - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
+
+> [!NOTE]
+> This endpoint generates and returns a PDF with the details of the specified user routine, including exercises and routine metadata. The PDF is formatted with bold labels and normal values for clarity.
 
 ## Muscle Groups
 

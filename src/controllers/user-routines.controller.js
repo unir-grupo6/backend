@@ -1,15 +1,9 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 const dayjs = require('dayjs');
 const customParseFormat = require("dayjs/plugin/customParseFormat");
 dayjs.extend(customParseFormat);
 
-const { transporter, sendResetPasswordEmail } = require('../config/mailer');
-
-require('dotenv').config();
-const { JWT_SECRET_KEY, JWT_RESET_SECRET_KEY, JWT_EXPIRES_IN_UNIT, JWT_RESET_EXPIRES_IN_UNIT, JWT_EXPIRES_IN_AMOUNT, JWT_RESET_EXPIRES_IN_AMOUNT, BCRYPT_SALT_ROUNDS, FRONTEND_URL } = process.env;
-
 const User = require('../models/user-routines.model');
+const pdfBuilder = require('../doc-generator/pdf-kit');
 
 const getRoutinesByUserId = async (req, res) => {
     const user = req.user;
@@ -411,6 +405,38 @@ const removeExerciseFromRoutine = async (req, res) => {
     res.json(formattedRoutine);
 }
 
+const generatePdfFromUserRoutine = async (req, res) => {
+    const user = req.user;
+
+    const { userRoutineId } = req.params;
+    const userRoutine = await User.selectRoutineByUserIdRoutineId(user.id, userRoutineId);
+    if (!userRoutine) {
+        return res.status(404).json({ message: 'Routine not found for the the specified user' });
+    }
+
+    const formattedRoutine = await formatRoutineWithExercises(userRoutine);
+    if (!formattedRoutine) {
+        return res.status(500).json({ message: 'Error formatting routine with exercises' });
+    }
+
+    const fileName = `routine-${userRoutineId}-${userRoutine.nombre.replace(/\s+/g, '-')}.pdf`;
+    const stream = res.writeHead(200, {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename=${fileName}`
+    });
+
+    try {
+        pdfBuilder.buildPdfFromUserRoutine(
+            (data) => stream.write(data),
+            () => res.end(),
+            formattedRoutine
+        );
+    } catch (error) {
+        res.status(500).json({ message: 'Error generating PDF' });
+    }
+
+}
+
 module.exports = {
     getRoutinesByUserId,
     getRoutineById,
@@ -420,6 +446,7 @@ module.exports = {
     addExerciseToRoutine,
     removeUserRoutine,
     removeExerciseFromRoutine
+    ,generatePdfFromUserRoutine
 };
 
 const copyExecrisesToRoutine = async (res, userRoutineId, generatedUserRoutineId) => {

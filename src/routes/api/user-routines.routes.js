@@ -1,10 +1,11 @@
-const { getRoutinesByUserId, getRoutineById, saveUserRoutine, removeUserRoutine, updateUserRoutine, addExerciseToRoutine, removeExerciseFromRoutine, updateUserRoutineExercise } = require('../../controllers/user-routines.controller');
+const { getRoutinesByUserId, getRoutineById, saveUserRoutine, removeUserRoutine, updateUserRoutine, addExerciseToRoutine, removeExerciseFromRoutine, updateUserRoutineExercise, generatePdfFromUserRoutine } = require('../../controllers/user-routines.controller');
 const { checkToken } = require('../../middlewares/auth.middlewares');
 
 const router = require('express').Router();
 
 router.get('/', checkToken, getRoutinesByUserId);
 router.get('/:routineId', checkToken, getRoutineById);
+router.get('/generate/:userRoutineId', checkToken, generatePdfFromUserRoutine);
 
 router.patch('/:userRoutineId', checkToken, updateUserRoutine);
 router.patch('/:userRoutineId/exercises/:exerciseId', checkToken, updateUserRoutineExercise);

@@ -1,5 +1,5 @@
 @host = http://localhost:3000
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NTE2NDM3OTYsImlhdCI6MTc1MTAzODk5Nn0.2NF4XK_EAGBvYOpd4c1u16x2-VEvn0ZHgeopAGPvsa0
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo4LCJleHAiOjE3NTE2NTU1MzUsImlhdCI6MTc1MTA1MDczNX0.G6S_wRGBCs-VQt5eStwLz1Nv897L_ejhoHefwjv5S8E
 
 GET {{host}}/api/users
 Authorization: {{token}}
@@ -24,7 +24,7 @@ POST {{host}}/api/users/login
 Content-Type: application/json
 
 {
-    "email": "pepito.grillo1@example.com",
+    "email": "markelkortajarena1@gmail.com",
     "password": "123456"
 }
 
@@ -120,7 +120,7 @@ GET {{host}}/api/user-routines?active=true
 Content-Type: application/json
 Authorization: {{token}}
 ###
-GET {{host}}/api/user-routines/2407
+GET {{host}}/api/user-routines/2425
 Content-Type: application/json
 Authorization: {{token}}
 ###
@@ -141,12 +141,12 @@ Content-Type: application/json
     "rutina_compartida": true
 }
 ###
-POST {{host}}/api/user-routines/2441/exercises
+POST {{host}}/api/user-routines/2425/exercises
 Authorization: {{token}}
 Content-Type: application/json
 
 {
-    "ejercicio_id": 21,
+    "ejercicio_id": 16,
     "series": 3,
     "repeticiones": 10,
     "orden": 5,
@@ -163,3 +163,9 @@ Content-Type: application/json
 {
     "orden": 1
 }
+
+
+
+###
+GET {{host}}/api/user-routines/generate/2425
+Authorization: {{token}}
