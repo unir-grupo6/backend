@@ -409,7 +409,7 @@
 
 ### Get method by ID
 - **Method**: GET
-- **URL**: /api/methods/{id}
+- **URL**: /api/methods/`{id}`
 - **Headers**: None
 - **Response**: The method object with the specified ID
 - **Possible errors**:
@@ -429,7 +429,7 @@
 
 ### Get difficulty by ID
 - **Method**: GET
-- **URL**: /api/difficulties/{id}
+- **URL**: /api/difficulties/`{id}`
 - **Headers**: None
 - **Response**: The difficulty object with the specified ID
 - **Possible errors**:
@@ -449,7 +449,7 @@
 
 ### Get muscle group by ID
 - **Method**: GET
-- **URL**: /api/muscle-groups/{id}
+- **URL**: /api/muscle-groups/`{id}`
 - **Headers**: None
 - **Response**: The muscle group object with the specified ID
 - **Possible errors**:
@@ -470,7 +470,7 @@
 
 ### Get goal by ID
 - **Method**: GET
-- **URL**: /api/goals/{id}
+- **URL**: /api/goals/`{id}`
 - **Headers**: None
 - **Response**: The goal object with the specified ID
 - **Possible errors**:
@@ -478,25 +478,57 @@
   - **404 Not Found**: `{ "message": "Goal not found" }` — The goal does not exist.
   - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
 
-    ## Exercises
+## Rutines
 
-    ### Get all exercises
-    - **Method**: GET
-    - **URL**: /api/exercises
-    - **Headers**: None
-    - **Response**: An array with all the exercises
-    - **Possible errors**:
-      - **500 Internal Server Error**: `{ "message": "Error retrieving exercises" }` — An unexpected server error occurred.
+### Get all rutines
+- **Method**: GET
+- **URL**: /api/rutines
+- **Headers**: None
+- **Response**: An array with all the rutines
+- **Possible errors**:
+  - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
 
-      ### Get exercises by muscle group and difficulty
-      - **Method**: GET
-      - **URL**: /api/exercises/filter?grupos_musculares_id=?&dificultad_id=?
-      - **Headers**: None
-      - **Query Parameters**:
-        - `grupos_musculares_id` (int, required): The ID of the muscle group
-        - `dificultad_id` (int, required): The ID of the difficulty
-      - **Response**: An array with the exercises matching the specified muscle group and difficulty
-      - **Possible errors**:
-        - **400 Bad Request**: `{ "message": "muscleGroupId and difficultyId are required" }` — One or both query parameters are missing.
-        - **404 Not Found**: `{ "message": "No exercises found for the given criteria" }` — No exercises match the given criteria.
-        - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
+### Get rutine by ID
+- **Method**: GET
+- **URL**: /api/rutines/rutina/`{id}`
+- **Headers**: None
+- **Response**: The rutine object with the specified ID
+- **Possible errors**:
+  - **404 Not Found**: `{ "message": "Rutine not found" }` — The rutine does not exist.
+  - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
+
+### Get rutines by goals, difficulty and method
+- **Method**: GET
+- **URL**: /api/rutines/filter?objetivos_id=`{id}`&dificultad_id=`{id}`&metodos_id=`{id}`
+- **Headers**: None
+- **Query Parameters**:
+  - `objetivos_id` (int, required): The ID of the goal
+  - `dificultad_id` (int, required): The ID of the difficulty
+  - `metodos_id` (int, required): The ID of the method
+- **Response**: An array with the rutines matching the specified filters
+- **Possible errors**:
+  - **404 Not Found**: `{ "message": "No rutines found for the given criteria" }` — No rutines match the given criteria.
+  - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
+
+## Exercises
+
+### Get all exercises
+- **Method**: GET
+- **URL**: /api/exercises
+- **Headers**: None
+- **Response**: An array with all the exercises
+- **Possible errors**:
+  - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
+
+### Get exercises by muscle group and difficulty
+- **Method**: GET
+- **URL**: /api/exercises/filter?grupos_musculares_id=`{id}`&dificultad_id=`{id}`
+- **Headers**: None
+- **Query Parameters**:
+  - `grupos_musculares_id` (int, required): The ID of the muscle group
+  - `dificultad_id` (int, required): The ID of the difficulty
+- **Response**: An array with the exercises matching the specified muscle group and difficulty
+- **Possible errors**:
+  - **400 Bad Request**: `{ "message": "muscleGroupId and difficultyId are required" }` — One or both query parameters are missing.
+  - **404 Not Found**: `{ "message": "No exercises found for the given criteria" }` — No exercises match the given criteria.
+  - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
