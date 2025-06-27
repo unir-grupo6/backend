@@ -23,9 +23,9 @@
   - `nombre` (string, required): New first name
   - `apellidos` (string, required): New last name
   - `email` (string, required): New email address
-  - `fecha_nacimiento` (string, required, format: YYYY-MM-DD): New birth date
-  - `peso` (number, optional): New weight
-  - `altura` (number, optional): New height
+  - `fecha_nacimiento` (string, required, format: DD-MM-YYYY): New birth date
+  - `peso` (number, optional): New weight (must be a number if provided)
+  - `altura` (number, optional): New height (must be a number if provided)
 - **Response**: On success, returns the updated user object
 - **Possible errors**:
   - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
@@ -42,7 +42,9 @@
   - **404 Not Found**: `{ "message": "Not found" }` — The endpoint does not exist.
   - **500 Internal Server Error**: `{ "message": "Error updating user" }` — There was a problem updating the user in the database.
   - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
-- **Notes**: All fields except `peso` and `altura` are required. The response always returns the updated user object. If `peso` and/or `altura` are provided, user metrics are updated or inserted for the current day. All validations are applied to the provided fields.
+
+>[!NOTE]
+>All fields except `peso` and `altura` are required. The response always returns the updated user object. If `peso` and/or `altura` are provided, user metrics are updated or inserted for the current day. All validations are applied to the provided fields.
 
 ### Registration
 - **Method**: POST
