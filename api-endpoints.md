@@ -67,6 +67,7 @@
   - `apellidos` (string, required): New last name
   - `email` (string, required): New email address
   - `fecha_nacimiento` (string, required, format: DD-MM-YYYY): New birth date
+  - `objetivo_id` (number, optional): New goal ID
   - `peso` (number, optional): New weight (must be a number if provided)
   - `altura` (number, optional): New height (must be a number if provided)
 - **Response**: On success, returns the updated user object
@@ -78,6 +79,9 @@
   - **400 Bad Request**: `{ "message": "Peso must be a number" }` — The value for `peso` is not a number.
   - **400 Bad Request**: `{ "message": "Altura must be a number" }` — The value for `altura` is not a number.
   - **400 Bad Request**: `{ "message": "Fecha de nacimiento must be a valid date" }` — The value for `fecha_nacimiento` is not a valid date.
+  - **400 Bad Request**: `{ "message": "Objetivo ID must be a number" }` — The value for `objetivo_id` is not a number.
+  - **400 Bad Request**: `{ "message": "Invalid objetivo_id" }` — The value for `objetivo_id` does not exist.
+  - **400 Bad Request**: `{ "message": "Failed to update user objective" }` — There was a problem updating the user objective in the database.
   - **400 Bad Request**: `{ "message": "Failed to update user data" }` — There was a problem updating the user data in the database.
   - **400 Bad Request**: `{ "message": "Failed to update user metrics" }` — There was a problem updating the user metrics in the database.
   - **400 Bad Request**: `{ "message": "Failed to insert new user metrics" }` — There was a problem inserting new user metrics in the database.
@@ -87,7 +91,7 @@
   - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
 
 >[!NOTE]
->All fields except `peso` and `altura` are required. The response always returns the updated user object. If `peso` and/or `altura` are provided, user metrics are updated or inserted for the current day. All validations are applied to the provided fields.
+>All fields except `peso`, `altura` y `objetivo_id` are required. The response always returns the updated user object. If `peso` and/or `altura` are provided, user metrics are updated or inserted for the current day. All validations are applied to the provided fields.
 
 ### Registration
 - **Method**: POST

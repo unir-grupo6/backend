@@ -215,11 +215,11 @@ const resetPassword = async (req, res) => {
 }
 
 const updateUser = async (req, res) => {
-    const userId = req.user.id;
-    const { nombre, apellidos, email, peso, altura, fecha_nacimiento } = req.body;
+    const user = req.user;
+    const { nombre, apellidos, email, peso, altura, fecha_nacimiento, id_objetivo } = req.body;
 
-    if (!nombre || !apellidos || !email || !fecha_nacimiento) {
-        return res.status(400).json({ message: 'Nombre, apellidos, email, and fecha_nacimiento are required' });
+    if (!nombre || !apellidos || !email || !fecha_nacimiento || !id_objetivo) {
+        return res.status(400).json({ message: 'Nombre, apellidos, email, fecha_nacimiento and id_objetivo are required' });
     }
 
     if (typeof nombre !== 'string' || typeof apellidos !== 'string' || typeof email !== 'string') {
@@ -235,22 +235,40 @@ const updateUser = async (req, res) => {
     if (fecha_nacimiento && !dayjs(fecha_nacimiento, 'DD-MM-YYYY', true).isValid()) {
         return res.status(400).json({ message: 'Fecha de nacimiento must be a valid date' });
     }
+    if (id_objetivo && isNaN(id_objetivo)) {
+        return res.status(400).json({ message: 'Objetivo ID must be a number' });
+    }
+
+    //check if email already exists
+    const existingUser = await User.getByEmail(email);
+    if (existingUser && existingUser.id !== user.id) {
+        return res.status(403).json({ message: 'Email already exists' });
+    }
+
+    // check if obtetyivo_id is valid
+    const objetivoExists = await User.getObjectiveById(id_objetivo);
+    if (!objetivoExists) {
+        return res.status(400).json({ message: 'Invalid objetivo_id' });
+    }
 
     const newFechaNacimiento = dayjs(fecha_nacimiento, 'DD-MM-YYYY', true).format('YYYY-MM-DD');
 
     try {
-        const result = await User.updateUserData(userId, { nombre, apellidos, email, fecha_nacimiento: newFechaNacimiento });
+        const result = await User.updateUserData(user.id, { nombre, apellidos, email, fecha_nacimiento: newFechaNacimiento });
 
         if (!result.affectedRows) {
             return res.status(400).json({ message: 'Failed to update user data' });
         }
 
-        const currentMetrics = await User.getUserMetrics(userId);
+        const currentMetrics = await User.getUserMetrics(user.id);
         let newAltura = null;
         let newPeso = null;
         let newImc = null;
 
-        if (peso && !altura) {
+        if (peso && altura) {
+            newAltura = altura;
+            newPeso = peso;
+        } else if (peso && !altura) {
             newAltura = currentMetrics.altura;
             newPeso = peso;
         } else if (!peso && altura) {
@@ -267,7 +285,7 @@ const updateUser = async (req, res) => {
             (dayjs(currentMetrics.fecha).format('YYYY-MM-DD') === dayjs().format('YYYY-MM-DD')) &&
             (currentMetrics.peso !== peso || currentMetrics.altura !== altura || currentMetrics.imc !== newImc)
         ) {
-            const metricsResult = await User.updateUserMetrics(userId, newPeso, newAltura, newImc);
+            const metricsResult = await User.updateUserMetrics(user.id, newPeso, newAltura, newImc);
 
             if (!metricsResult.affectedRows) {
                 return res.status(400).json({ message: 'Failed to update user metrics' });
@@ -276,14 +294,21 @@ const updateUser = async (req, res) => {
             (dayjs(currentMetrics.fecha).format('YYYY-MM-DD') !== dayjs().format('YYYY-MM-DD')) &&
             (currentMetrics.peso !== peso || currentMetrics.altura !== altura || currentMetrics.imc !== newImc)
         ) {
-            const metricsResult = await User.insertUserMetrics(userId, newPeso, newAaltura, newImc);
+            const metricsResult = await User.insertUserMetrics(user.id, newPeso, newAaltura, newImc);
 
             if (!metricsResult.affectedRows) {
                 return res.status(400).json({ message: 'Failed to insert new user metrics' });
             }
         }
 
-        const updatedUser = await User.getById(userId);
+        if (id_objetivo !== user.objetivo_id) {
+            const objectiveResult = await User.insertUserObjective(user.id, id_objetivo);
+            if (!objectiveResult.affectedRows) {
+                return res.status(400).json({ message: 'Failed to update user objective' });
+            }
+        }
+
+        const updatedUser = await User.getById(user.id);
         return res.json(updatedUser);
 
     } catch (error) {

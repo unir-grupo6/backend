@@ -51,6 +51,15 @@ const getUserMetrics = async (userId) => {
     return result[0] || {};
 }
 
+const getObjectiveById = async (objectiveId) => {
+    const [result] = await db.query(
+        'SELECT id, nombre FROM objetivos WHERE id = ?',
+        [objectiveId]
+    );
+    if (result.length === 0) return null;
+    return result[0];
+}
+
 const insertUser = async ({ nombre, apellidos, email, password, sexo, fecha_nacimiento }) => {
     const [result] = await db.query(
         'INSERT INTO usuarios (nombre, apellidos, email, password, fecha_alta, sexo, fecha_nacimiento) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?)',
@@ -111,12 +120,13 @@ module.exports = {
     getById,
     getByEmail,
     getByResetToken,
+    getUserMetrics,
+    getObjectiveById,
     insertUser,
     insertUserMetrics,
     insertUserObjective,
     updatePassword,
     updateResetToken,
     updateUserData,
-    getUserMetrics,
     updateUserMetrics
 };

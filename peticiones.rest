@@ -38,7 +38,9 @@ Content-Type: application/json
     "apellidos": "Feo",
     "email": "patito.feo@example.com",
     "fecha_nacimiento": "01-01-2050",
-    "peso": 40
+    "peso": 40,
+    "altura": 190,
+    "id_objetivo": 2
 }
 
 ###
