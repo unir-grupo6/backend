@@ -2,7 +2,7 @@ const {getAll, getById, getByGoalsAndDifficultyAndMethod} = require('../../contr
 const router = require('express').Router();
 
 router.get('/', getAll);
-router.get('/:id', getById);
+router.get('/rutina/:id', getById);
 router.get('/filter', getByGoalsAndDifficultyAndMethod);
 
 // Define your routes here
