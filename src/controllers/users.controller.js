@@ -60,7 +60,7 @@ const getRoutineById = async (req, res) => {
     // BOOLEANS
     userRoutine.rutina_compartida = userRoutine.rutina_compartida === 1;
 
-    const exercises = await User.selectExercisesByUserRoutineId(userRoutine.rutina_id);
+    const exercises = await User.selectExercisesByUserRoutineId(userRoutine.routine_id);
     userRoutine.ejercicios = exercises;
     
     res.json(userRoutine);

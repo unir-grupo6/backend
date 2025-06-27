@@ -69,10 +69,6 @@ module.exports = {
     getById,
     getByEmail,
     getByResetToken,
-    selectRoutinesByUserId,
-    selectActiveRoutinesByUserId,
-    selectRoutineByUserIdRoutineId,
-    selectExercisesByUserRoutineId,
     insert,
     updatePassword,
     updateResetToken

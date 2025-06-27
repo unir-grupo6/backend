@@ -1,9 +1,8 @@
 @host = http://localhost:3000
-@token = 
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo5LCJleHAiOjE3NTExMzg5MzUsImlhdCI6MTc1MDUzNDEzNX0.HkrtBnWtkvsvb-50J8X4QHbdU0j2ahFYopON_lnwzcY
 
 GET {{host}}/api/users
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo5LCJleHAiOjE3NTA5MzU1NjgsImlhdCI6MTc1MDMzMDc2OH0.vLc37rg3Ak2LMWoUyv2-f1nmZ6TyT0ybq15GTr3A3o0
-
+Authorization: {{token}}
 ###
 POST {{host}}/api/users/register
 Content-Type: application/json
@@ -59,11 +58,11 @@ GET {{host}}/api/routines/1
 Authorization: {{token}}
 
 ###
-GET {{host}}/api/routines/exercises/
+GET {{host}}/api/routines/exercises
 Authorization: {{token}}
 
 ###
-GET {{host}}/api/routines/1/exercises
+GET {{host}}/api/routines/3/exercises
 Authorization: {{token}}
 
 ###
@@ -84,8 +83,9 @@ Authorization: {{token}}
 Content-Type: application/json
 
 {
-  "dificultad_id": 1,
-  "metodos_id": 1,
+  "dificultad_id": 5,
+  "objetivos_id": 10,
+  "metodos_id": 8,
   "nombre": "Nueva rutina",
   "observaciones": "Observaciones de la rutina"
 }
@@ -96,8 +96,11 @@ Authorization: {{token}}
 Content-Type: application/json
 
 {
-  "ejercicios_id": 1,
-  "rutinas_id": 1,
-  "series": 3,
-  "repeticiones": 12
+  "ejercicios_id": 22,
+  "rutinas_id": 5,
+  "series": 5,
+  "repeticiones": 20,
+  "dia": 6,
+  "orden": 2,
+  "comentario": "Observaciones2 del ejercicio"
 }
