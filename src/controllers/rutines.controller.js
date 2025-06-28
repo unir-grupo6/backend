@@ -28,10 +28,11 @@ const getRutineWithExercises = async (req, res) => {
     const exercises = await Promise.all(
         rutineEjercicios.map(async (re) => {
             const ejercicio = await Exercise.getById(re.ejercicios_id);
-            return { ...ejercicio, ...re };
+            // Incluye detalles adicionales como sexo y día
+            return { ...ejercicio, sexo: re.sexo, dia: re.dia, series: re.series, repeticiones: re.repeticiones, orden: re.orden, comentario: re.comentario };
         })
     );
-    res.json({ rutine, exercises });
+    res.json({ ...rutine, exercises });
 };
 
 const getRutineWithAllExercises = async (req, res) => {
