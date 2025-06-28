@@ -9,61 +9,61 @@ const { JWT_SECRET_KEY, JWT_RESET_SECRET_KEY, JWT_EXPIRES_IN_UNIT, JWT_RESET_EXP
 
 const User = require('../models/users.model');
 
-const getRoutinesByUserId = async (req, res) => {
+const getRutinesByUserId = async (req, res) => {
     const user = req.user;
     const { page = 1, limit = 5, active = false } = req.query;
     
-    const userRoutines = active === 'true' ?
-        await User.selectActiveRoutinesByUserId(user.id, Number(page), Number(limit))
+    const userRutines = active === 'true' ?
+        await User.selectActiveRutinesByUserId(user.id, Number(page), Number(limit))
         :
-        await User.selectRoutinesByUserId(user.id, Number(page), Number(limit));
+        await User.selectRutinesByUserId(user.id, Number(page), Number(limit));
 
-    if (!userRoutines || userRoutines.length === 0) {
-        return res.status(404).json({ message: 'No routines found for this user' });
+    if (!userRutines || userRutines.length === 0) {
+        return res.status(404).json({ message: 'No rutines found for this user' });
     }
 
-    for (const routine of userRoutines) {
+    for (const rutine of userRutines) {
         // DATES
-        const fechaInicio = dayjs(routine.fecha_inicio_rutina);
-        const fechaFin = dayjs(routine.fecha_fin_rutina);
+        const fechaInicio = dayjs(rutine.fecha_inicio_rutina);
+        const fechaFin = dayjs(rutine.fecha_fin_rutina);
         const today = dayjs();
 
-        routine.rutina_activa = today >= fechaInicio && today <= fechaFin;
-        routine.fecha_inicio_rutina = fechaInicio.format('DD-MM-YYYY');
-        routine.fecha_fin_rutina = fechaFin.format('DD-MM-YYYY');
-        routine.rutina_compartida = routine.rutina_compartida === 1;
+        rutine.rutina_activa = today >= fechaInicio && today <= fechaFin;
+        rutine.fecha_inicio_rutina = fechaInicio.format('DD-MM-YYYY');
+        rutine.fecha_fin_rutina = fechaFin.format('DD-MM-YYYY');
+        rutine.rutina_compartida = rutine.rutina_compartida === 1;
 
-        const exercises = await User.selectExercisesByUserRoutineId(routine.rutina_id);
-        routine.ejercicios = exercises;
+        const exercises = await User.selectExercisesByUserRutineId(rutine.rutina_id);
+        rutine.ejercicios = exercises;
     }
 
     user.fecha_alta = dayjs(user.fecha_alta).format('DD-MM-YYYY HH:mm:ss');
 
-    user.rutinas = userRoutines;
+    user.rutinas = userRutines;
     res.json(user);
 }
 
-const getRoutineById = async (req, res) => {
+const getRutineById = async (req, res) => {
     const user = req.user;
-    const { routineId } = req.params;
-    const userRoutine = await User.selectRoutineByUserIdRoutineId(user.id, routineId);
-    if (!userRoutine) {
-        return res.status(404).json({ message: 'Routine not found for this user' });
+    const { rutineId } = req.params;
+    const userRutine = await User.selectRutineByUserIdRutineId(user.id, rutineId);
+    if (!userRutine) {
+        return res.status(404).json({ message: 'Rutine not found for this user' });
     }
     // DATES
-    const fechaInicio = dayjs(userRoutine.fecha_inicio_rutina);
-    const fechaFin = dayjs(userRoutine.fecha_fin_rutina);
+    const fechaInicio = dayjs(userRutine.fecha_inicio_rutina);
+    const fechaFin = dayjs(userRutine.fecha_fin_rutina);
     const today = dayjs();
-    userRoutine.rutina_activa = today >= fechaInicio && today <= fechaFin;
-    userRoutine.fecha_inicio_rutina = fechaInicio.format('DD-MM-YYYY');
-    userRoutine.fecha_fin_rutina = fechaFin.format('DD-MM-YYYY');
+    userRutine.rutina_activa = today >= fechaInicio && today <= fechaFin;
+    userRutine.fecha_inicio_rutina = fechaInicio.format('DD-MM-YYYY');
+    userRutine.fecha_fin_rutina = fechaFin.format('DD-MM-YYYY');
     // BOOLEANS
-    userRoutine.rutina_compartida = userRoutine.rutina_compartida === 1;
+    userRutine.rutina_compartida = userRutine.rutina_compartida === 1;
 
-    const exercises = await User.selectExercisesByUserRoutineId(userRoutine.routine_id);
-    userRoutine.ejercicios = exercises;
+    const exercises = await User.selectExercisesByUserRutineId(userRutine.rutine_id);
+    userRutine.ejercicios = exercises;
     
-    res.json(userRoutine);
+    res.json(userRutine);
 }
 
 const registro = async (req, res) => {
@@ -197,8 +197,8 @@ const resetPassword = async (req, res) => {
 }
 
 module.exports = {
-    getRoutinesByUserId,
-    getRoutineById,
+    getRutinesByUserId,
+    getRutineById,
     registro,
     login,
     changePassword,

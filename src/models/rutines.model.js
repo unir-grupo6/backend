@@ -12,8 +12,8 @@ const getById = async (id) => {
     return result[0];
 };
 
-const getExercisesByRoutineId = async (routineId) => {
-    const [result] = await db.query('SELECT * FROM ejercicios_rutinas WHERE rutinas_id = ?', [routineId]);
+const getExercisesByRutineId = async (rutineId) => {
+    const [result] = await db.query('SELECT * FROM ejercicios_rutinas WHERE rutinas_id = ?', [rutineId]);
     return result;
 };
 
@@ -25,15 +25,15 @@ const create = async ({ dificultad_id, objetivos_id, metodos_id, nombre, observa
     return result;
 };
 
-const update = async ({ routineId, dificultad_id, metodos_id, nombre, observaciones }) => {
+const update = async ({ rutineId, dificultad_id, metodos_id, nombre, observaciones }) => {
     const [result] = await db.query(
         'UPDATE rutinas SET dificultad_id = ?, metodos_id = ?, nombre = ?, observaciones = ? WHERE id = ?',
-        [dificultad_id, metodos_id, nombre, observaciones, routineId]
+        [dificultad_id, metodos_id, nombre, observaciones, rutineId]
     );
     return result;
 };
 
-const addExerciseToRoutine = async ({ rutinas_id, ejercicios_id, series, repeticiones, dia, orden, comentario }) => {
+const addExerciseToRutine = async ({ rutinas_id, ejercicios_id, series, repeticiones, dia, orden, comentario }) => {
     const [result] = await db.query(
         'INSERT INTO ejercicios_rutinas (rutinas_id, ejercicios_id, series, repeticiones, dia, orden, comentario) VALUES (?, ?, ?, ?, ?, ?, ?)',
         [rutinas_id, ejercicios_id, series, repeticiones, dia, orden, comentario]
@@ -46,4 +46,4 @@ const getAllPublic = async () => {
     return result;
 };
 
-module.exports = { getAll, getById, getExercisesByRoutineId, create, update, addExerciseToRoutine, getAllPublic };
+module.exports = { getAll, getById, getExercisesByRutineId, create, update, addExerciseToRutine, getAllPublic };

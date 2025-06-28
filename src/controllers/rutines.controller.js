@@ -8,8 +8,8 @@ const getAllRutines = async (req, res) => {
 };
 
 const getRutineById = async (req, res) => {
-    const { routineId } = req.params;
-    const rutine = await Rutine.getById(routineId);
+    const { rutineId } = req.params;
+    const rutine = await Rutine.getById(rutineId);
     if (!rutine) return res.status(404).json({ message: 'Rutina no encontrada' });
     res.json(rutine);
 };
@@ -21,10 +21,10 @@ const getRutinesWithExercises = async (req, res) => {
 };
 
 const getRutineWithExercises = async (req, res) => {
-    const { routineId } = req.params;
-    const rutine = await Rutine.getById(routineId);
+    const { rutineId } = req.params;
+    const rutine = await Rutine.getById(rutineId);
     if (!rutine) return res.status(404).json({ message: 'Rutina no encontrada' });
-    const rutineEjercicios = await Rutine.getExercisesByRoutineId(routineId);
+    const rutineEjercicios = await Rutine.getExercisesByRutineId(rutineId);
     const exercises = await Promise.all(
         rutineEjercicios.map(async (re) => {
             const ejercicio = await Exercise.getById(re.ejercicios_id);
@@ -35,8 +35,8 @@ const getRutineWithExercises = async (req, res) => {
 };
 
 const getRutineWithAllExercises = async (req, res) => {
-    const { routineId } = req.params;
-    const rutine = await Rutine.getById(routineId);
+    const { rutineId } = req.params;
+    const rutine = await Rutine.getById(rutineId);
     if (!rutine) return res.status(404).json({ message: 'Rutina no encontrada' });
     const exercises = await Exercise.getAll();
     res.json({ rutine, exercises });
@@ -53,27 +53,27 @@ const createRutine = async (req, res) => {
 };
 
 const updateRutine = async (req, res) => {
-    const { routineId } = req.params;
+    const { rutineId } = req.params;
     const { dificultad_id, metodos_id, nombre, observaciones } = req.body;
     if (!dificultad_id || !metodos_id || !nombre) {
         return res.status(400).json({ message: 'Faltan campos obligatorios' });
     }
-    const result = await Rutine.update({ routineId, dificultad_id, metodos_id, nombre, observaciones });
+    const result = await Rutine.update({ rutineId, dificultad_id, metodos_id, nombre, observaciones });
     if (result.affectedRows === 0) {
         return res.status(404).json({ message: 'Rutina no encontrada' });
     }
-    const updatedRutine = await Rutine.getById(routineId);
+    const updatedRutine = await Rutine.getById(rutineId);
     res.json(updatedRutine);
 };
 
 const addExerciseToRutine = async (req, res) => {
-    const { routineId } = req.params;
+    const { rutineId } = req.params;
     const { ejercicios_id, series, repeticiones, dia, orden, comentario } = req.body;
     if (!ejercicios_id || !series || !repeticiones) {
         return res.status(400).json({ message: 'Faltan campos obligatorios' });
     }
-    const result = await Rutine.addExerciseToRoutine({
-        rutinas_id: routineId,
+    const result = await Rutine.addExerciseToRutine({
+        rutinas_id: rutineId,
         ejercicios_id,
         series,
         repeticiones,

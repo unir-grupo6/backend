@@ -5,10 +5,10 @@ const rutinesController = require('../../controllers/rutines.controller');
 
 router.get('/', checkToken, rutinesController.getAllRutines);
 router.get('/exercises', checkToken, rutinesController.getPublicRutinesWithExercises);
-router.get('/:routineId/exercises', checkToken, rutinesController.getRutineWithExercises);
-router.get('/:routineId', checkToken, rutinesController.getRutineById);
+router.get('/:rutineId/exercises', checkToken, rutinesController.getRutineWithExercises);
+router.get('/:rutineId', checkToken, rutinesController.getRutineById);
 router.post('/', checkToken, rutinesController.createRutine);
-router.put('/:routineId', checkToken, rutinesController.updateRutine);
-router.post('/:routineId/exercises', checkToken, rutinesController.addExerciseToRutine);
+router.put('/:rutineId', checkToken, rutinesController.updateRutine);
+router.post('/:rutineId/exercises', checkToken, rutinesController.addExerciseToRutine);
 
 module.exports = router;
