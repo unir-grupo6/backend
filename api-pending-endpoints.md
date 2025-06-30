@@ -13,14 +13,7 @@
   - [Añadir nueva rutina](#añadir-nueva-rutina)
   - [Añadir nuevos ejercicios a una rutina](#añadir-nuevos-ejercicios-a-una-rutina)
 - Rutinas & usuarios
-  - [Recuperar todas las rutinas asignadas a un usuario](#recuperar-todas-las-rutinas-asignadas-a-un-usuario)
-  - [Recuperar todas las rutinas con ejercicios asignadas a un usuario](#recuperar-todas-las-rutinas-con-ejercicios-asignadas-a-un-usuario)
-  - [Recuperar una rutina asignada a un usuario](#recuperar-una-rutina-asignada-a-un-usuario)
-  - [Recuperar todos los ejercicios de una rutina asignada a un usuario](#recuperar-todos-los-ejercicios-de-una-rutina-asignada-a-un-usuario)
-  - [Actualizar los datos generales de una rutina asignada a un usuario](#actualizar-los-datos-generales-de-una-rutina-asignada-a-un-usuario)
-  - [Guardar rutinas de otros usuarios](#guardar-rutinas-de-otros-usuarios)
   - [Crear rutina para un usuario](#crear-rutina-para-un-usuario)
-  - [Eliminar rutina para un usuario](#eliminar-rutina-para-un-usuario)
 - Objetivos
   - [Recuperar todos los objetivos](#recuperar-todos-los-objetivos)
 - Métodos
@@ -46,14 +39,12 @@
 - **Headers**: Authorization: {token}
 - **Body**: ---
 
-///////////////////////////
 ### Obtener ejercicios relacionados con un objetivo
 - **Description**: Lista todos los ejercicios asociados indirectamente a un objetivo, a través de las rutinas y métodos de entrenamiento.
 - **Method**: GET
 - **URL**: /api/exercises/goal/{goalId}
 - **Headers**: Authorization: {token}
 - **Body**: ---
-///////////////////////////
 
 
 ## Rutinas & rutinas_ejercicios
@@ -79,14 +70,12 @@
 - **Headers**: Authorization: {token}
 - **Body**: ---
 
-//////////////////////////////
 ### Obtener rutinas asociadas a un objetivo
 - **Description**: Devuelve todas las rutinas diseñadas para alcanzar un objetivo específico.
 - **Method**: GET
 - **URL**: /api/routines/goal/{goalId}
 - **Headers**: Authorization: {token}
 - **Body**: ---
-//////////////////////////////
 
 ### Recuperar rutinas con ejercicios por ID
 - **Description**: Recuperar una rutina con sus ejercicios por su ID. Consulta a la tabla `rutinas` con `rutina_ejercicios`
@@ -133,62 +122,10 @@
 
 ## Rutinas & usuarios
 
-### Recuperar todas las rutinas asignadas a un usuario
-- **Description**: Recuperar todas las rutinas (sin los ejercicios, solo datos generales) asignadas a un usuario. Consulta a la tabla `rutinas_usuarios`
-- **Method**: GET
-- **URL**: /api/users/{userId}/routines
-- **Headers**: Authorization: {token}
-- **Body**: ---
-
-### Recuperar todas las rutinas con ejercicios asignadas a un usuario
-- **Description**: Recuperar todas las rutinas y ejercicios asignadas a un usuario. Consulta a las tablas `rutinas_usuarios`, `rutinas`, y `rutina_ejercicios`
-- **Method**: GET
-- **URL**: /api/users/{userId}/routines/exercises
-- **Headers**: Authorization: {token}
-- **Body**: ---
-
-### Recuperar una rutina asignada a un usuario
-- **Description**: Recuperar una rutina concreta asignada a un usuario. Realiza un INNER JOIN entre las tablas `rutinas_usuarios` y `rutinas`
-- **Method**: GET
-- **URL**: /api/users/{userId}/routines/{routineId}
-- **Headers**: Authorization: {token}
-- **Body**: ---
-
-### Recuperar todos los ejercicios de una rutina asignada a un usuario
-- **Description**: Recuperar todos los ejercicios de una rutina concreta asignada a un usuario. Realiza un inner join entre `rutinas_usuarios` y `rutina_ejercicios` para obtener todos los ejercicios de la rutina del usuario.
-- **Method**: GET
-- **URL**: /api/users/{userId}/routines/{routineId}/exercises
-- **Headers**: Authorization: {token}
-- **Body**: ---
-
-### Actualizar los datos generales de una rutina asignada a un usuario
-- **Description**: Actualizar los datos generales de una rutina asignada a un usuario. Actualizar la tabla `rutinas_usuarios`
-- **Method**: PATCH (solo actualizará los campos que cambien. Si por ejemplo el campo `compartida` no va a cambiar de valor, lo detecta y no lo actualiza en la BBDD)
-- **URL**: /api/users/{userId}/routines/{routineId}
-- **Headers**: Authorization: {token}
-- **Body**: 
-  - `inicio` (date)
-  - `fin` (date)
-  - `compartida` (number, 0 o 1)
-
-### Guardar rutinas de otros usuarios
-- **Description**: Guardar rutinas de otros usuarios. Duplicar la fila de `rutinas_usuarios` cambiando el id user y dejando fecha inicio y fecha fin en blanco. Más adelante el usuario que guarde la rutina podrá actualizar estos campos
-- **Method**: POST
-- **URL**: /api/users/{userId}/routines/{routineId}/copy (_aclararlo_)
-- **Headers**: Authorization: {token}
-- **Body**: (_aclararlo_)
-
 ### Crear rutina para un usuario
 - **Description**: Crear rutina para un usuario
 - **Method**: POST
 - **URL**: /api/users/{userId}/routines
-- **Headers**: Authorization: {token}
-- **Body**: (_aclararlo_)
-
-### Eliminar rutina para un usuario
-- **Description**: Eliminar rutina para un usuario
-- **Method**: DELETE
-- **URL**: /api/users/{userId}/routines/{routineId}
 - **Headers**: Authorization: {token}
 - **Body**: (_aclararlo_)
 
@@ -201,7 +138,6 @@
 - **Headers**: Authorization: {token}
 - **Body**: ---
 
-///////////////////////////////
 ### Obtener objetivo por ID
 - **Description**: Recuperar los datos de un objetivo específico usando su ID.
 - **Method**: GET
@@ -218,7 +154,6 @@
 - **Body**:
 
 
-//////////////////////////////
 ## Métodos
 
 ### Recuperar todos los métodos
@@ -228,14 +163,12 @@
 - **Headers**: Authorization: {token}
 - **Body**: ---
 
-//////////////////////////////
 ### Obtener método de entrenamiento por objetivo
 - **Description**: Dado un objetivo específico, obtener el método de entrenamiento asociado.
 - **Method**: GET
 - **URL**: /api/methods/goal/{goalId}
 - **Headers**: Authorization: {token}
 - **Body**
-//////////////////////////////
 
 
 ## Dificultad

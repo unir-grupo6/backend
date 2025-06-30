@@ -8,10 +8,14 @@ POST {{host}}/api/users/register
 Content-Type: application/json
 
 {
-    "nombre": "prueba",
-    "apellidos": "prueba",
-    "email": "prueba@si.com",
-    "password": "12345"
+    "nombre": "Rana",
+    "apellidos": "Gustavo",
+    "email": "rana.gustavo@example.com",
+    "password": "123456",
+    "fecha_nacimiento": "01-01-1995",
+    "peso": 70,
+    "altura": 1.75,
+    "objetivo_id": 1
 }
 
 ###
@@ -19,8 +23,32 @@ POST {{host}}/api/users/login
 Content-Type: application/json
 
 {
-    "email": "prueba@si.com",
-    "password": "12345"
+    "email": "markelkortajarena1@gmail.com",
+    "password": "123456"
+}
+
+###
+PUT {{host}}/api/users/update
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+    "nombre": "Patito",
+    "apellidos": "Feo",
+    "email": "patito.feo@example.com",
+    "fecha_nacimiento": "01-01-2050",
+    "peso": 40,
+    "altura": 190,
+    "id_objetivo": 2
+}
+
+###
+put {{host}}/api/users/update-password
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+    "password": "123456"
 }
 
 ###
@@ -104,3 +132,168 @@ Content-Type: application/json
   "orden": 2,
   "comentario": "Observaciones2 del ejercicio"
 }
+
+### Catálogo de ejercicios
+GET {{host}}/api/exercises
+Authorization: {{token}}
+
+###
+GET {{host}}/api/exercises/1
+Authorization: {{token}}
+
+### Rutinas & rutinas_ejercicios
+GET {{host}}/api/rutines/
+Authorization: {{token}}
+
+###
+GET {{host}}/api/rutines/1
+Authorization: {{token}}
+
+###
+GET {{host}}/api/rutines/exercises
+Authorization: {{token}}
+
+###
+GET {{host}}/api/rutines/3/exercises
+Authorization: {{token}}
+
+###
+PUT {{host}}/api/rutines/1
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "dificultad_id": 1,
+  "metodos_id": 1,
+  "nombre": "Rutina actualizada",
+  "observaciones": "Observaciones actualizadas"
+}
+
+###
+POST {{host}}/api/rutines/
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "dificultad_id": 5,
+  "objetivos_id": 10,
+  "metodos_id": 8,
+  "nombre": "Nueva rutina",
+  "observaciones": "Observaciones de la rutina"
+}
+
+###
+POST {{host}}/api/rutines/1/exercises
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+  "ejercicios_id": 22,
+  "rutinas_id": 5,
+  "series": 5,
+  "repeticiones": 20,
+  "dia": 6,
+  "orden": 2,
+  "comentario": "Observaciones2 del ejercicio"
+}
+
+
+### Todos los ejercicios
+GET {{host}}/api/exercises/filter
+
+### Ejercicios por grupo muscular
+GET {{host}}/api/exercises/filter?grupos_musculares_id=1
+
+### Ejercicios por dificultad
+GET {{host}}/api/exercises/filter?dificultad_id=2
+
+### Ejercicios por ambos filtros
+GET {{host}}/api/exercises/filter?grupos_musculares_id=2&dificultad_id=2
+
+
+### RUTINAS
+
+### Sin filtros (todas las rutinas)
+GET {{host}}/api/rutines
+
+### Rutinas por id
+GET {{host}}/api/rutines/rutina/1
+
+
+### Sin filtros
+GET {{host}}/api/rutines/filter
+
+### Solo objetivo
+GET {{host}}/api/rutines/filter?objetivos_id=3
+
+### Solo método
+GET {{host}}/api/rutines/filter?metodos_id=1
+
+### Solo dificultad
+GET {{host}}/api/rutines/filter?dificultad_id=1
+
+### Dos filtros
+GET {{host}}/api/rutines/filter?objetivos_id=11&metodos_id=1
+
+
+### Todos los filtros
+GET {{host}}/api/rutines/filter?objetivos_id=1&dificultad_id=1&metodos_id=1
+
+###
+GET {{host}}/api/user-routines?page=2&limit=5&active=false
+Content-Type: application/json
+Authorization: {{token}}
+###
+GET {{host}}/api/user-routines?active=true
+Content-Type: application/json
+Authorization: {{token}}
+###
+GET {{host}}/api/user-routines/2425
+Content-Type: application/json
+Authorization: {{token}}
+###
+POST {{host}}/api/user-routines/2425/save
+Content-Type: application/json
+Authorization: {{token}}
+###
+DELETE {{host}}/api/user-routines/2444
+Authorization: {{token}}
+###
+PATCH {{host}}/api/user-routines/2443
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+    "fecha_inicio_rutina": "22-09-2023",
+    "fecha_fin_rutina": "30-09-2025",
+    "rutina_compartida": true
+}
+###
+POST {{host}}/api/user-routines/2425/exercises
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+    "ejercicio_id": 16,
+    "series": 3,
+    "repeticiones": 10,
+    "orden": 5,
+    "comentario": "Comentario del ejercicio"
+}
+###
+DELETE {{host}}/api/user-routines/2441/exercises/67159
+Authorization: {{token}}
+###
+PATCH {{host}}/api/user-routines/2441/exercises/67147
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+    "orden": 1
+}
+
+
+
+###
+GET {{host}}/api/user-routines/generate/2425
+Authorization: {{token}}

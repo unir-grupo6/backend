@@ -21,19 +21,26 @@ Este proyecto es el backend de una aplicación desarrollada con Express.js.
  - Crea un archivo `.env` en la raíz del proyecto para definir variables de entorno. Ejemplo:
    ```env
    PORT=3000
-   JWT_SECRET_KEY=your_jwt_secret
-   JWT_EXPIRES_IN_UNIT=day
-   JWT_EXPIRES_IN_AMOUNT=7
-   BCRYPT_SALT_ROUNDS=8
+   NODE_ENV=
+
    DB_HOST=localhost
-   DB_USER=root
-   DB_PASSWORD=1234567890
+   DB_USER=username
+   DB_PASSWORD=password
    DB_PORT=3306
-   DB_NAME=restaurante
+   DB_NAME=your_db_name
+
+   JWT_SECRET_KEY=your_jwt_secret
+   JWT_EXPIRES_IN_UNIT=hours
+   JWT_EXPIRES_IN_AMOUNT=2
+
    JWT_RESET_SECRET_KEY=your_jwt_secret
    JWT_RESET_EXPIRES_IN_UNIT=minutes
-   JWT_RESET_EXPIRES_IN_AMOUNT=5
+   JWT_RESET_EXPIRES_IN_AMOUNT=15
+
+   BCRYPT_SALT_ROUNDS=8
+
    FRONTEND_URL=http://localhost:3000
+
    GMAIL_APP_USER=your_gmail_user
    GMAIL_APP_PASSWORD=your_gmail_app_password
    ```
