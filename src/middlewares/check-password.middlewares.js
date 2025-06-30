@@ -26,6 +26,18 @@ const passwordValidator = (password) => {
 const checkPassword = (req, res, next) => {
   const { password } = req.body;
 
+  if (!password) {
+    return res.status(400).json({ message: 'Password is required.' });
+  }
+
+  if (typeof password !== 'string') {
+    return res.status(400).json({ message: 'Password must be a string.' });
+  }
+
+  if (password.trim() === '') {
+    return res.status(400).json({ message: 'Password cannot be empty.' });
+  }
+
   const validated = passwordValidator(password);
 
   if (!validated.valid) {
