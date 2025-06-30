@@ -200,7 +200,7 @@
 
 ### Get logged-in user's routines (paginated)
 - **Method**: GET
-- **URL**: /api/users/routines?page=1&limit=10&active=true
+- **URL**: /api/user-routines?page=1&limit=10&active=true
 - **Headers**: Authorization: `{token}`
 - **Body**: ---
 - **Query Parameters**:
@@ -222,7 +222,7 @@
 
 ### Get a specific routine of the logged-in user
 - **Method**: GET
-- **URL**: /api/users/routines/{routineId}
+- **URL**: /api/user-routines/`{routineId}`
 - **Headers**: Authorization: `{token}`
 - **Body**: ---
 - **Response**: Routine object belonging to the authenticated user with the specified routineId
@@ -235,7 +235,7 @@
 
 ### Save a user routine
 - **Method**: POST
-- **URL**: /api/users/routines/`{userRoutineId}`/save
+- **URL**: /api/user-routines/`{userRoutineId}`/save
 - **Headers**: Authorization: `{token}`
 - **Body**: ---
 - **Response**: On success, returns the full saved routine object (including exercises) assigned to the logged-in user, for example:
@@ -285,7 +285,7 @@
 
 ### Delete a user routine
 - **Method**: DELETE
-- **URL**: /api/users/routines/`{userRoutineId}`
+- **URL**: /api/user-routines/`{userRoutineId}`
 - **Headers**: Authorization: `{token}`
 - **Body**: ---
 - **Response**: On success:
@@ -301,7 +301,7 @@
 
 ### Update a user routine
 - **Method**: PATCH
-- **URL**: /api/users/routines/`{userRoutineId}`
+- **URL**: /api/user-routines/`{userRoutineId}`
 - **Headers**: Authorization: `{token}`
 - **Body**:
   - `fecha_inicio_rutina` (string, nullable, formato `YYYY-MM-DD`)
@@ -325,7 +325,7 @@
 
 ### Add exercise to a user routine
 - **Method**: POST
-- **URL**: /api/users/routines/`{userRoutineId}`/exercises
+- **URL**: /api/user-routines/`{userRoutineId}`/exercises
 - **Headers**: Authorization: `{token}`
 - **Body**:
   - `ejercicio_id` (number, required): Exercise ID to add
@@ -348,7 +348,7 @@
 
 ### Remove exercise from a user routine
 - **Method**: DELETE
-- **URL**: /api/users/routines/`{userRoutineId}`/exercises/`{exerciseId}`
+- **URL**: /api/user-routines/`{userRoutineId}`/exercises/`{exerciseId}`
 - **Headers**: Authorization: `{token}`
 - **Body**: ---
 - **Response**: On success, returns the updated routine object (including exercises) with the new order:
@@ -383,7 +383,7 @@
 
 ### Update an exercise in a user routine
 - **Method**: PATCH
-- **URL**: /api/users/routines/`{userRoutineId}`/exercises/`{exerciseId}`
+- **URL**: /api/user-routines/`{userRoutineId}`/exercises/`{exerciseId}`
 - **Headers**: Authorization: `{token}`
 - **Body**:
   - `series` (number, optional): New number of sets for the exercise (must be a positive number)
@@ -438,7 +438,7 @@
 
 ### Generate PDF for a user routine
 - **Method**: GET
-- **URL**: /api/users/routines/generate/{userRoutineId}
+- **URL**: /api/user-routines/generate/`{userRoutineId}`
 - **Headers**: Authorization: `{token}`
 - **Body**: ---
 - **Response**: On success, returns a PDF file containing the details of the specified user routine. The response headers include:
