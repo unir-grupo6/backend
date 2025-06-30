@@ -1,4 +1,4 @@
-const { login, registro, forgotPassword, resetPassword, getRoutinesByUserId, getRoutineById, changePassword, saveUserRoutine, getById, removeUserRoutine, updateUserRoutine, addExerciseToRoutine, removeExerciseFromRoutine, updateUserRoutineExercise, updateUser } = require('../../controllers/users.controller');
+const { login, registro, forgotPassword, resetPassword, getRutinesByUserId, getRutineById, changePassword, saveUserRoutine, getById, removeUserRoutine, updateUserRoutine, addExerciseToRoutine, removeExerciseFromRoutine, updateUserRoutineExercise, updateUser } = require('../../controllers/users.controller');
 const { checkToken } = require('../../middlewares/auth.middlewares');
 const { checkPassword } = require('../../middlewares/check-password.middlewares');
 

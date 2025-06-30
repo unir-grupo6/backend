@@ -1,5 +1,5 @@
 @host = http://localhost:3000
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo5LCJleHAiOjE3NTExMzg5MzUsImlhdCI6MTc1MDUzNDEzNX0.HkrtBnWtkvsvb-50J8X4QHbdU0j2ahFYopON_lnwzcY
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo0LCJleHAiOjE3NTE5MDIyNDMsImlhdCI6MTc1MTI5NzQ0M30.DnRhiN-GWKgs2Wa6aWm35_vBGK7dodieuZDtnMa_gBU
 
 GET {{host}}/api/users
 Authorization: {{token}}
@@ -23,8 +23,8 @@ POST {{host}}/api/users/login
 Content-Type: application/json
 
 {
-    "email": "markelkortajarena1@gmail.com",
-    "password": "123456"
+    "email": "alvaro@si.com",
+    "password": "12345"
 }
 
 ###
