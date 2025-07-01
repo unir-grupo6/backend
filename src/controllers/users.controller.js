@@ -175,7 +175,7 @@ const forgotPassword = async (req, res) => {
             exp: dayjs().add(JWT_RESET_EXPIRES_IN_AMOUNT, JWT_RESET_EXPIRES_IN_UNIT).unix()
         }, JWT_RESET_SECRET_KEY)
     
-    verificationLink = `${FRONTEND_URL}/password-reset-request/${resetToken}`;
+    verificationLink = `${FRONTEND_URL}password-reset-request/${resetToken}`;
 
     
 
