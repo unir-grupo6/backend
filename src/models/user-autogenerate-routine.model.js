@@ -7,10 +7,40 @@ const db = require('../config/db');
 // y las añadimos al array del objeto
 // 4 - Devolver de forma aleatoria rutinas que el usuario no ha realizado y tienen el mismo objetivo
 // Esto devolvera un id de rutina, que sera la rutina que vamos a devolver al usuario
+let usuarioObjetivos = {
+    idusuario: 0,
+    objetivo: 0,
+    rutinas_realizadas: []    
+}
 
+const objetivosUsuario = async (id) => {
+    //Tener encuenta si no tiene objetivos asignados, en ese caso no se le puede generar una rutina
+
+    const [result] = await db.query( 
+ `SELECT
+    id,
+    id_usuarios,
+    id_objetivos,
+    fecha
+FROM
+    objetivos_usuarios
+WHERE
+    id_usuarios = ?
+ORDER BY
+    fecha DESC   
+LIMIT 1; `, [id]);
+
+    usuarioObjetivos.idusuario = id;
+    usuarioObjetivos.objetivo = result[0].id_objetivos;
+    
+    return result;
+}
 
 const autoGenerate = async (id) => {
-    const [result] = await db.query('SELECT * FROM grupos_musculares');
+   
+    //Obtener el objetivo del usuario
+    const result = objetivosUsuario(id)
+
     console.log(result, ' - VALOR DE RESULTADO EN MODELO');
     return result;
 }
