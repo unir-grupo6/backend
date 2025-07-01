@@ -8,6 +8,9 @@ app.use(cors());
 
 app.use(express.static("public/logo"));
 
+// add node-cron for scheduled tasks
+require('./config/cron');
+
 app.use('/api', require('./routes/api.routes'));
 
 // 404 handler
