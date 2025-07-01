@@ -7,5 +7,6 @@ router.use('/methods', require('./api/methods.routes'));
 router.use('/goals', require('./api/goals.routes'));
 router.use('/exercises', require('./api/exercises.routes'));
 router.use('/rutines', require('./api/rutines.routes'));
+router.use('/autogenerate', require('./api/user-autogenerat-routine.routes'));
 
 module.exports = router;
