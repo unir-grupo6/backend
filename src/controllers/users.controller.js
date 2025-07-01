@@ -4,7 +4,7 @@ const dayjs = require('dayjs');
 const customParseFormat = require("dayjs/plugin/customParseFormat");
 dayjs.extend(customParseFormat);
 
-const { transporter, sendResetPasswordEmail } = require('../config/mailer');
+const { sendResetPasswordEmail } = require('../config/mailer');
 
 require('dotenv').config();
 const { JWT_SECRET_KEY, JWT_RESET_SECRET_KEY, JWT_EXPIRES_IN_UNIT, JWT_RESET_EXPIRES_IN_UNIT, JWT_EXPIRES_IN_AMOUNT, JWT_RESET_EXPIRES_IN_AMOUNT, BCRYPT_SALT_ROUNDS, FRONTEND_URL } = process.env;
@@ -45,6 +45,12 @@ const registro = async (req, res) => {
 
     if (existingUser) {
         return res.status(403).json({ message: 'Email already exists' });
+    }
+
+    // check if obtetyivo_id is valid
+    const objetivoExists = await User.getObjectiveById(id_objetivo);
+    if (!objetivoExists) {
+        return res.status(400).json({ message: 'Invalid objetivo_id' });
     }
 
     req.body.fecha_nacimiento = dayjs(req.body.fecha_nacimiento).format('YYYY-MM-DD');
