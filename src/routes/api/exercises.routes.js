@@ -1,8 +1,9 @@
 const { getAll, getByMuscleAndDifficulty} = require('../../controllers/exercises.controller');
 const router = require('express').Router();
+const { checkToken } = require('../../middlewares/auth.middlewares');
 
-router.get('/', getAll);
-router.get('/filter', getByMuscleAndDifficulty);
+router.get('/',checkToken, getAll);
+router.get('/filter',checkToken, getByMuscleAndDifficulty);
 
 
 
