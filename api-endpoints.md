@@ -103,15 +103,19 @@
   - `apellidos` (string, required)
   - `email` (string, required)
   - `password` (string, required)
-  - `sexo` (number, required)
-    - 1: Hombre
-    - 2: Mujer
-    - 3: Otro / Prefiero no responder
-  - `fecha_nacimiento` (string, required, format: YYYY-MM-DD)
+  - `fecha_nacimiento` (string, required, format: DD-MM-YYYY)
   - `peso` (number, required)
   - `altura` (number, required)
+  - `objetivo_id` (number, required)
 - **Response**: The created user object
 - **Possible errors**:
+  - **400 Bad Request**: `{ "message": "Nombre, apellidos, email, password, fecha_nacimiento, peso, altura and objetivo_id are required" }` — One or more required fields are missing in the request body.
+  - **400 Bad Request**: `{ "message": "Nombre, apellidos, and email must be strings" }` — One or more of these fields are not strings.
+  - **400 Bad Request**: `{ "message": "Peso must be a number" }` — The value for `peso` is not a number.
+  - **400 Bad Request**: `{ "message": "Altura must be a number" }` — The value for `altura` is not a number.
+  - **400 Bad Request**: `{ "message": "Fecha de nacimiento must be a valid date" }` — The value for `fecha_nacimiento` is not a valid date.
+  - **400 Bad Request**: `{ "message": "Objetivo ID must be a number" }` — The value for `objetivo_id` is not a number.
+  - **400 Bad Request**: `{ "message": "Invalid objetivo_id" }` — The value for `objetivo_id` does not exist.
   - **400 Bad Request**: `{ "message": "Password is required." }` — The password field is missing (middleware).
   - **400 Bad Request**: `{ "message": "Password must be a string." }` — The password is not a string (middleware).
   - **400 Bad Request**: `{ "message": "Password cannot be empty." }` — The password is an empty string (middleware).
@@ -121,7 +125,10 @@
   - **400 Bad Request**: `{ "message": "Password must contain at least one number." }` — The password does not have a number (middleware).
   - **400 Bad Request**: `{ "message": "Password must contain at least one special character." }` — The password does not have a special character (middleware).
   - **403 Forbidden**: `{ "message": "Email already exists" }` — The email is already registered in the system.
-  - **400 Bad Request**: `{ "message": "Failed to update reset token" }` — There was a problem updating the reset token (rare, internal error).
+  - **400 Bad Request**: `{ "message": "Failed to register user" }` — There was a problem inserting the user in the database.
+  - **400 Bad Request**: `{ "message": "Failed to register user metrics" }` — There was a problem inserting user metrics in the database.
+  - **400 Bad Request**: `{ "message": "Failed to register user objective" }` — There was a problem inserting the user objective in the database.
+  - **400 Bad Request**: `{ "message": "Failed to retrieve new user" }` — There was a problem retrieving the new user after registration.
   - **404 Not Found**: `{ "message": "Not found" }` — The endpoint does not exist.
   - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
 
