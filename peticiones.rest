@@ -1,5 +1,5 @@
 @host = http://localhost:3000
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo4LCJleHAiOjE3NTE2NTU1MzUsImlhdCI6MTc1MTA1MDczNX0.G6S_wRGBCs-VQt5eStwLz1Nv897L_ejhoHefwjv5S8E
+@token = 
 
 GET {{host}}/api/users
 Authorization: {{token}}
@@ -24,8 +24,8 @@ POST {{host}}/api/users/login
 Content-Type: application/json
 
 {
-    "email": "markelkortajarena1@gmail.com",
-    "password": "123456"
+    "email": "rana.gustavo@example.com",
+    "password": "Abcd1234*"
 }
 
 ###
@@ -116,22 +116,22 @@ GET {{host}}/api/user-routines?page=2&limit=5&active=false
 Content-Type: application/json
 Authorization: {{token}}
 ###
-GET {{host}}/api/user-routines?active=true
+GET {{host}}/api/user-routines?active=false
 Content-Type: application/json
 Authorization: {{token}}
 ###
-GET {{host}}/api/user-routines/2425
+GET {{host}}/api/user-routines/11
 Content-Type: application/json
 Authorization: {{token}}
 ###
-POST {{host}}/api/user-routines/2425/save
+POST {{host}}/api/user-routines/12/save
 Content-Type: application/json
 Authorization: {{token}}
 ###
-DELETE {{host}}/api/user-routines/2444
+DELETE {{host}}/api/user-routines/11
 Authorization: {{token}}
 ###
-PATCH {{host}}/api/user-routines/2443
+PATCH {{host}}/api/user-routines/17
 Authorization: {{token}}
 Content-Type: application/json
 
@@ -141,19 +141,19 @@ Content-Type: application/json
     "rutina_compartida": true
 }
 ###
-POST {{host}}/api/user-routines/2425/exercises
+POST {{host}}/api/user-routines/17/exercises
 Authorization: {{token}}
 Content-Type: application/json
 
 {
-    "ejercicio_id": 16,
+    "ejercicio_id": 3,
     "series": 3,
     "repeticiones": 10,
     "orden": 5,
     "comentario": "Comentario del ejercicio"
 }
 ###
-DELETE {{host}}/api/user-routines/2441/exercises/67159
+DELETE {{host}}/api/user-routines/17/exercises/67150
 Authorization: {{token}}
 ###
 PATCH {{host}}/api/user-routines/2441/exercises/67147
