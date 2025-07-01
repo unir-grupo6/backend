@@ -89,7 +89,7 @@ GET {{host}}/api/exercises/filter?grupos_musculares_id=2&dificultad_id=2
 GET {{host}}/api/rutines
 
 ### Rutinas por id
-GET {{host}}/api/rutines/rutina/1
+GET {{host}}/api/rutines/rutina/10
 
 
 ### Sin filtros
@@ -105,7 +105,7 @@ GET {{host}}/api/rutines/filter?metodos_id=1
 GET {{host}}/api/rutines/filter?dificultad_id=1
 
 ### Dos filtros
-GET {{host}}/api/rutines/filter?objetivos_id=11&metodos_id=1
+GET {{host}}/api/rutines/filter?objetivos_id=1&metodos_id=1
 
 
 ### Todos los filtros
@@ -120,7 +120,7 @@ GET {{host}}/api/user-routines?active=false
 Content-Type: application/json
 Authorization: {{token}}
 ###
-GET {{host}}/api/user-routines/11
+GET {{host}}/api/user-routines/2
 Content-Type: application/json
 Authorization: {{token}}
 ###

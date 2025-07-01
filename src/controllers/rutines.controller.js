@@ -25,18 +25,20 @@ const getById = async (req, res) => {
 }
 
 
-const getByGoalsAndDifficultyAndMethod = async (req, res) => {
+const getFilteredRoutines = async (req, res) => {
+  try {
     const { objetivos_id, dificultad_id, metodos_id } = req.query;
-    try{
-        const rutines = await Rutines.getBygoalsAndDifficultyAndMethod(objetivos_id, dificultad_id, metodos_id);
-        if (!rutines) {
-            return res.status(404).json({ message: 'No rutines found for the given criteria' });
-        }
-        res.json(rutines);
-    }
-    catch (error) {
-        res.status(500).json({ message: 'Internal server error' });
-    }
-}
+    const rutinas = await Rutines.rutinesFiltered(objetivos_id, dificultad_id, metodos_id);
+    res.json(rutinas);
+  } catch (error) {
+    console.error('Error al obtener rutinas:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
 
-module.exports = { getAll, getById, getByGoalsAndDifficultyAndMethod };
+module.exports = {
+  getFilteredRoutines
+};
+
+
+module.exports = { getAll, getById, getFilteredRoutines };
