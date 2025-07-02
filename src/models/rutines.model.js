@@ -113,9 +113,51 @@ const rutinesFiltered = async (objetivos_id, dificultad_id, metodos_id) => {
     query += ' WHERE ' + conditions.join(' AND ');
   }
 
-  const [rows] = await db.query(query, params);
-  return rows;
+  const [result] = await db.query(query, params);
+  return result;
 };
+
+const rutineShared = async () => {
+  try {
+    const [result] = await db.query(`
+      SELECT 
+        ru.id as rutina_usuario_id, 
+        ru.compartida, 
+        r.nombre as rutina_nombre, 
+        r.observaciones as rutina_observaciones, 
+        o.nombre as objetivo_nombre, 
+        d.nivel as dificultad_nombre, 
+        m.nombre as metodo_nombre,
+        eu.series,
+        eu.repeticiones,
+        eu.orden,
+        eu.comentario as ejercicio_comentario,
+        eu.rutinas_usuarios_id,
+        e.nombre as ejercicio_nombre,
+        e.tipo as ejercicio_tipo,
+        e.inicio as step_1,
+        e.fin as step_2,
+        gm.nombre as grupo_muscular_nombre,
+        er.dia,
+        e.id as ejercicio_id
+      FROM rutinas_usuarios ru
+      INNER JOIN rutinas r ON ru.rutinas_id = r.id
+      INNER JOIN objetivos o ON r.objetivos_id = o.id
+      INNER JOIN dificultad d ON r.dificultad_id = d.id
+      INNER JOIN metodos m ON r.metodos_id = m.id
+      LEFT JOIN ejercicios_usuarios eu ON ru.id = eu.rutinas_usuarios_id
+      LEFT JOIN ejercicios e ON eu.ejercicios_id = e.id
+      LEFT JOIN grupos_musculares gm ON e.grupos_musculares_id = gm.id
+      LEFT JOIN ejercicios_rutinas er ON e.id = er.ejercicios_id AND r.id = er.rutinas_id
+      WHERE ru.compartida = 1
+    `);
+    return result;
+  } catch (error) {
+    console.error("Error al obtener las rutinas compartidas:", error);
+    throw error;
+  }
+};
+
 
 
 module.exports = {
@@ -123,4 +165,5 @@ module.exports = {
   getById,
   getEjerciciosByRutinaId,
   rutinesFiltered,
+  rutineShared
 };
