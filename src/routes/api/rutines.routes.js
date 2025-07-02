@@ -1,10 +1,10 @@
-const {getAll, getById, getByGoalsAndDifficultyAndMethod} = require('../../controllers/rutines.controller');
+const {getAll, getById, getFilteredRoutines} = require('../../controllers/rutines.controller');
 const router = require('express').Router();
+const { checkToken } = require('../../middlewares/auth.middlewares');
 
-router.get('/', getAll);
-router.get('/:id', getById);
-router.get('/filter', getByGoalsAndDifficultyAndMethod);
-
+router.get('/', checkToken, getAll);
+router.get('/rutina/:id', checkToken, getById);
+router.get('/filter', checkToken, getFilteredRoutines);
 // Define your routes here
 
 module.exports = router;

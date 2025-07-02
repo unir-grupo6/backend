@@ -1,5 +1,5 @@
 @host = http://localhost:3000
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NTAzNDM3MzcsImlhdCI6MTc1MDM0MTkzN30.kx1MJJP6xWXr_PIvOW3plfw4xDWWaUUFI_Mk8armXIA
+@token = 
 
 
 ###
@@ -14,14 +14,14 @@ POST {{host}}/api/users/register
 Content-Type: application/json
 
 {
-    "nombre": "nombre",
-    "apellidos": "apellido",
-    "email": "email9@example.com",
-    "password": "newPassword1.",
-    "sexo": 1,
-    "fecha_nacimiento": "1990-01-01",
+    "nombre": "Rana",
+    "apellidos": "Gustavo",
+    "email": "rana.gustavo@example.com",
+    "password": "123456",
+    "fecha_nacimiento": "01-01-1995",
     "peso": 70,
-    "altura": 175
+    "altura": 1.75,
+    "objetivo_id": 1
 }
 
 ###
@@ -29,7 +29,31 @@ POST {{host}}/api/users/login
 Content-Type: application/json
 
 {
-    "email": "markelkortajarena@gmail.com",
+    "email": "rana.gustavo@example.com",
+    "password": "Abcd1234*"
+}
+
+###
+PUT {{host}}/api/users/update
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+    "nombre": "Patito",
+    "apellidos": "Feo",
+    "email": "patito.feo@example.com",
+    "fecha_nacimiento": "01-01-2050",
+    "peso": 40,
+    "altura": 190,
+    "id_objetivo": 2
+}
+
+###
+put {{host}}/api/users/update-password
+Authorization: {{token}}
+Content-Type: application/json
+
+{
     "password": "123456"
 }
 
@@ -44,7 +68,6 @@ Content-Type: application/json
 
 ###
 PUT {{host}}/api/users/reset-password
-reset-token: 
 Content-Type: application/json
 
 {
@@ -54,29 +77,108 @@ Content-Type: application/json
 
 ### Todos los ejercicios
 GET {{host}}/api/exercises/filter
+Authorization: {{token}}
 
 ### Ejercicios por grupo muscular
 GET {{host}}/api/exercises/filter?grupos_musculares_id=1
+Authorization: {{token}}
 
 ### Ejercicios por dificultad
 GET {{host}}/api/exercises/filter?dificultad_id=2
+Authorization: {{token}}
 
 ### Ejercicios por ambos filtros
-GET {{host}}/api/exercises/filter?grupos_musculares_id=1&dificultad_id=2
+GET {{host}}/api/exercises/filter?grupos_musculares_id=2&dificultad_id=2
+Authorization: {{token}}
+
+
+### RUTINAS
+
+### Sin filtros (todas las rutinas)
+GET {{host}}/api/rutines
+Authorization: {{token}}
+
+### Rutinas por id
+GET {{host}}/api/rutines/rutina/10
+Authorization: {{token}}
+
+
+### Sin filtros
+GET {{host}}/api/rutines/filter
+Authorization: {{token}}
+
+### Solo objetivo
+GET {{host}}/api/rutines/filter?objetivos_id=3
+Authorization: {{token}}
+
+### Solo método
+GET {{host}}/api/rutines/filter?metodos_id=1
+Authorization: {{token}}
+
+### Solo dificultad
+GET {{host}}/api/rutines/filter?dificultad_id=1
+Authorization: {{token}}
+
+### Dos filtros
+GET {{host}}/api/rutines/filter?objetivos_id=1&metodos_id=1
+Authorization: {{token}}
 
 
 ### Todos los filtros
 GET {{host}}/api/rutines/filter?objetivos_id=1&dificultad_id=1&metodos_id=1
+Authorization: {{token}}
 
-### Solo objetivo
-GET {{host}}/api/rutines/filter?objetivos_id=1
+###
+GET {{host}}/api/user-routines?page=1&limit=5&active=false
+Authorization: {{token}}
+###
+GET {{host}}/api/user-routines?active=false
+Authorization: {{token}}
+###
+GET {{host}}/api/user-routines/2
+Authorization: {{token}}
+###
+POST {{host}}/api/user-routines/13/save
+Authorization: {{token}}
+###
+DELETE {{host}}/api/user-routines/11
+Authorization: {{token}}
+###
+PATCH {{host}}/api/user-routines/17
+Authorization: {{token}}
+Content-Type: application/json
 
-### Solo método
-GET {{host}}/api/rutines/filter?metodos_id=1
+{
+    "fecha_inicio_rutina": "22-09-2023",
+    "fecha_fin_rutina": "30-09-2025",
+    "rutina_compartida": true
+}
+###
+POST {{host}}/api/user-routines/17/exercises
+Authorization: {{token}}
+Content-Type: application/json
 
-### Sin filtros (todas las rutinas)
-GET {{host}}/api/rutines
+{
+    "ejercicio_id": 3,
+    "series": 3,
+    "repeticiones": 10,
+    "orden": 5,
+    "comentario": "Comentario del ejercicio"
+}
+###
+DELETE {{host}}/api/user-routines/17/exercises/67150
+Authorization: {{token}}
+###
+PATCH {{host}}/api/user-routines/2441/exercises/67147
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+    "orden": 1
+}
 
 
 
-
+###
+GET {{host}}/api/user-routines/generate/2425
+Authorization: {{token}}
