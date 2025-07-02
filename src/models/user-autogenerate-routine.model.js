@@ -12,18 +12,11 @@ const db = require('../config/db');
 const objetivosUsuario = async (id) => {
     //Tener encuenta si no tiene objetivos asignados, en ese caso no se le puede generar una rutina
     const [result] = await db.query( 
-                `SELECT
-                    id,
-                    id_usuarios,
-                    id_objetivos,
-                    fecha
-                FROM
-                    objetivos_usuarios
-                WHERE
-                    id_usuarios = ?
-                ORDER BY
-                    fecha DESC   
-                LIMIT 1; `, [id]);    
+                `SELECT id, id_usuarios, id_objetivos, fecha
+                FROM objetivos_usuarios
+                WHERE id_usuarios = ?     
+                ORDER by fecha DESC
+                LIMIT 1;`, [id]);    
     
     return result;
 }
@@ -31,11 +24,11 @@ const objetivosUsuario = async (id) => {
 const rutinasRealizadas = async (id) => {
 // Rutinas que el usuario ha realizado
     const [result] = await db.query( 
-                `SELECT rutinas_id
-    FROM rutinas_usuarios
-    WHERE usuarios_id = ?
-    GROUP by rutinas_id
-    ORDER BY rutinas_id ASC;`, [id]);        
+            `SELECT rutinas_id
+            FROM rutinas_usuarios
+            WHERE usuarios_id = ?
+            GROUP by rutinas_id
+            ORDER BY rutinas_id ASC;`, [id]);        
     
     return result;
 }
@@ -65,7 +58,7 @@ const rutinaSugerida = async (obj) => {
             objetivos_id = ? and id NOT IN (?) 
         ORDER BY
             RAND()    
-        LIMIT 1; `, [10,rutinas_realizadas]);    
+        LIMIT 1; `, [objetivo,rutinas_realizadas]);    
     
     
     return result[0];

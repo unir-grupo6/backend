@@ -1,10 +1,6 @@
 const auto = require('../models/user-autogenerate-routine.model');
+const rutines = require('../models/rutines.model');
 
-let usuarioObjetivos = {
-    idusuario: 0,
-    objetivo: 0,
-    rutinas_realizadas: []    
-}
 
 
 const autoGenerate = async (req, res) => {
@@ -27,7 +23,8 @@ const autoGenerate = async (req, res) => {
         result = await auto.objetivosUsuario(id);
 
         usuarioObjetivos.idusuario = id;
-        usuarioObjetivos.objetivo = result[0].id_objetivos;        
+        usuarioObjetivos.objetivo = result[0].id_objetivos; 
+        console.log(usuarioObjetivos, ' - OBJETIVO DEL USUARIO EN CONTROLADOR');       
         
         result = await auto.rutinasRealizadas(id);
 
@@ -52,8 +49,10 @@ const autoGenerate = async (req, res) => {
         if (!result) {
             return res.status(499).json({ message: 'No se han sugerido rutinas' });
         }
+
+        rutina = await rutines.getById(result.id);
         
-        return res.status(200).json(result);
+        return res.status(201).json(rutina);
     
     }
     catch (error) {
