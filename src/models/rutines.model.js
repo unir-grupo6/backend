@@ -12,23 +12,27 @@ const getById = async (id) => {
         r.nombre,
         r.observaciones AS rutina_observaciones,
         r.realizada,
-        r.dificultad_id,
-        r.metodos_id,
-        r.objetivos_id,
-        d.nivel,
+        
+        d.nivel AS dificultad_nombre,
+     
         m.nombre AS metodo_nombre,
         m.tiempo_aerobicos,
         m.tiempo_anaerobicos,
         m.observaciones AS metodo_observaciones,
-        m.descanso
+        m.descanso,
+        
+        o.nombre AS objetivo_nombre
+
       FROM rutinas r
       JOIN dificultad d ON r.dificultad_id = d.id
       JOIN metodos m ON r.metodos_id = m.id
+      JOIN objetivos o ON r.objetivos_id = o.id
       WHERE r.id = ?`,
     [id]
   );
   return result;
 };
+
 
 const getEjerciciosByRutinaId = async (id) => {
   const [ejercicios] = await db.query(
@@ -60,11 +64,12 @@ const rutinesFiltered = async (objetivos_id, dificultad_id, metodos_id) => {
     SELECT 
       r.id AS rutina_id,
       r.nombre AS rutina_nombre,
-      r.objetivos_id,
-      r.dificultad_id,
-      r.metodos_id,
       r.observaciones AS rutina_observaciones,
       r.realizada,
+
+      o.nombre AS objetivo_nombre,
+      d.nivel AS dificultad_nombre,
+      m.nombre AS metodo_nombre,
 
       er.series,
       er.repeticiones,
@@ -77,12 +82,15 @@ const rutinesFiltered = async (objetivos_id, dificultad_id, metodos_id) => {
       e.tipo AS ejercicio_tipo,
       e.inicio AS step_1,
       e.fin AS step_2,
-      e.grupos_musculares_id,
-      e.dificultad_id AS ejercicio_dificultad_id
+      gm.nombre AS grupo_muscular_nombre
 
     FROM rutinas r
+    LEFT JOIN objetivos o ON r.objetivos_id = o.id
+    LEFT JOIN dificultad d ON r.dificultad_id = d.id
+    LEFT JOIN metodos m ON r.metodos_id = m.id
     LEFT JOIN ejercicios_rutinas er ON r.id = er.rutinas_id
     LEFT JOIN ejercicios e ON er.ejercicios_id = e.id
+    LEFT JOIN grupos_musculares gm ON e.grupos_musculares_id = gm.id
   `;
 
   const conditions = [];
@@ -108,6 +116,7 @@ const rutinesFiltered = async (objetivos_id, dificultad_id, metodos_id) => {
   const [rows] = await db.query(query, params);
   return rows;
 };
+
 
 module.exports = {
   selectAll,

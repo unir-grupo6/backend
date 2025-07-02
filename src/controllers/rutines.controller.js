@@ -33,7 +33,6 @@ const getFilteredRoutines = async (req, res) => {
     const { objetivos_id, dificultad_id, metodos_id } = req.query;
     const rows = await Rutines.rutinesFiltered(objetivos_id, dificultad_id, metodos_id);
 
-    // Agrupar por rutina_id
     const rutinasMap = {};
 
     for (const row of rows) {
@@ -41,13 +40,15 @@ const getFilteredRoutines = async (req, res) => {
 
       if (!rutinasMap[rutinaId]) {
         rutinasMap[rutinaId] = {
-          id: row.rutina_id,
+          id: rutinaId,
           nombre: row.rutina_nombre,
-          objetivos_id: row.objetivos_id,
-          dificultad_id: row.dificultad_id,
-          metodos_id: row.metodos_id,
           observaciones: row.rutina_observaciones,
           realizada: row.realizada,
+
+          objetivo: row.objetivo_nombre,
+          dificultad: row.dificultad_nombre,
+          metodo: row.metodo_nombre,
+
           ejercicios: []
         };
       }
@@ -63,7 +64,7 @@ const getFilteredRoutines = async (req, res) => {
           tipo: row.ejercicio_tipo,
           step_1: row.step_1,
           step_2: row.step_2,
-          grupos_musculares: row.grupos_musculares_id
+          grupos_musculares: row.grupo_muscular_nombre
         });
       }
     }
@@ -74,6 +75,8 @@ const getFilteredRoutines = async (req, res) => {
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
+
+
 
 module.exports = {
   getAll,
