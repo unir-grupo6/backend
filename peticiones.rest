@@ -1,6 +1,5 @@
 @host = http://localhost:3000
 @token = 
-
 GET {{host}}/api/users
 Authorization: {{token}}
 ###
@@ -8,13 +7,13 @@ POST {{host}}/api/users/register
 Content-Type: application/json
 
 {
-    "nombre": "Rana",
+    "nombre": "alvaro",
     "apellidos": "Gustavo",
-    "email": "rana.gustavo@example.com",
-    "password": "123456",
-    "fecha_nacimiento": "01-01-1995",
-    "peso": 70,
-    "altura": 1.75,
+    "email": "alvaro.gustavo@example.com",
+    "password": "Ll1234567@",
+    "fecha_nacimiento": "1999-10-20",
+    "peso": 60,
+    "altura": 1.25,
     "objetivo_id": 1
 }
 
@@ -23,8 +22,8 @@ POST {{host}}/api/users/login
 Content-Type: application/json
 
 {
-    "email": "alvaro@si.com",
-    "password": "12345"
+    "email": "rana.gustavo@example.com",
+    "password": "Abcd1234*"
 }
 
 ###
@@ -33,12 +32,12 @@ Authorization: {{token}}
 Content-Type: application/json
 
 {
-    "nombre": "Patito",
-    "apellidos": "Feo",
-    "email": "patito.feo@example.com",
-    "fecha_nacimiento": "01-01-2050",
+    "nombre": "alvaro",
+    "apellidos": "gg",
+    "email": "alvaro.gustavo@example.com",
+    "fecha_nacimiento": "1999-10-20",
     "peso": 40,
-    "altura": 190,
+    "altura": 180,
     "id_objetivo": 2
 }
 
@@ -48,7 +47,8 @@ Authorization: {{token}}
 Content-Type: application/json
 
 {
-    "password": "123456"
+    "oldPassword": "Ll1234567@",
+    "password": "La1234567@"
 }
 
 ###
@@ -56,7 +56,7 @@ PUT {{host}}/api/users/forgot-password
 Content-Type: application/json
 
 {
-    "email": "prueba@si.com"
+    "email": "alvaro.gustavo@example.com"
 }
 
 
@@ -82,7 +82,7 @@ GET {{host}}/api/rutines/
 Authorization: {{token}}
 
 ###
-GET {{host}}/api/rutines/1
+GET {{host}}/api/rutines/10
 Authorization: {{token}}
 
 ###
@@ -101,7 +101,7 @@ Content-Type: application/json
 {
   "dificultad_id": 1,
   "metodos_id": 1,
-  "nombre": "Rutina actualizada",
+  "nombre": "Rutina actualizada2",
   "observaciones": "Observaciones actualizadas"
 }
 
@@ -111,9 +111,9 @@ Authorization: {{token}}
 Content-Type: application/json
 
 {
-  "dificultad_id": 5,
-  "objetivos_id": 10,
-  "metodos_id": 8,
+  "dificultad_id": 2,
+  "objetivos_id": 1,
+  "metodos_id": 3,
   "nombre": "Nueva rutina",
   "observaciones": "Observaciones de la rutina"
 }
@@ -132,71 +132,6 @@ Content-Type: application/json
   "orden": 2,
   "comentario": "Observaciones2 del ejercicio"
 }
-
-### Catálogo de ejercicios
-GET {{host}}/api/exercises
-Authorization: {{token}}
-
-###
-GET {{host}}/api/exercises/1
-Authorization: {{token}}
-
-### Rutinas & rutinas_ejercicios
-GET {{host}}/api/rutines/
-Authorization: {{token}}
-
-###
-GET {{host}}/api/rutines/1
-Authorization: {{token}}
-
-###
-GET {{host}}/api/rutines/exercises
-Authorization: {{token}}
-
-###
-GET {{host}}/api/rutines/3/exercises
-Authorization: {{token}}
-
-###
-PUT {{host}}/api/rutines/1
-Authorization: {{token}}
-Content-Type: application/json
-
-{
-  "dificultad_id": 1,
-  "metodos_id": 1,
-  "nombre": "Rutina actualizada",
-  "observaciones": "Observaciones actualizadas"
-}
-
-###
-POST {{host}}/api/rutines/
-Authorization: {{token}}
-Content-Type: application/json
-
-{
-  "dificultad_id": 5,
-  "objetivos_id": 10,
-  "metodos_id": 8,
-  "nombre": "Nueva rutina",
-  "observaciones": "Observaciones de la rutina"
-}
-
-###
-POST {{host}}/api/rutines/1/exercises
-Authorization: {{token}}
-Content-Type: application/json
-
-{
-  "ejercicios_id": 22,
-  "rutinas_id": 5,
-  "series": 5,
-  "repeticiones": 20,
-  "dia": 6,
-  "orden": 2,
-  "comentario": "Observaciones2 del ejercicio"
-}
-
 
 ### Todos los ejercicios
 GET {{host}}/api/exercises/filter
@@ -264,7 +199,7 @@ Authorization: {{token}}
 POST {{host}}/api/user-routines/13/save
 Authorization: {{token}}
 ###
-DELETE {{host}}/api/user-routines/11
+DELETE {{host}}/api/user-routines/7
 Authorization: {{token}}
 ###
 PATCH {{host}}/api/user-routines/17
@@ -272,8 +207,8 @@ Authorization: {{token}}
 Content-Type: application/json
 
 {
-    "fecha_inicio_rutina": "22-09-2023",
-    "fecha_fin_rutina": "30-09-2025",
+    "fecha_inicio_rutina": "2023-09-22",
+    "fecha_fin_rutina": "2025-09-30",
     "rutina_compartida": true
 }
 ###

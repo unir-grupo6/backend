@@ -12,13 +12,13 @@ const getAll = async (req, res) => {
 }
 
 const getAllExercises = async (req, res) => {
-    const exercises = await Exercise.getAll();
+    const exercises = await Exercises.getAll();
     res.json(exercises);
 };
 
 const getExerciseById = async (req, res) => {
     const { ejercicioId } = req.params;
-    const exercise = await Exercise.getById(ejercicioId);
+    const exercise = await Exercises.getById(ejercicioId);
     if (!exercise) return res.status(404).json({ message: 'Ejercicio no encontrado' });
     res.json(exercise);
 };

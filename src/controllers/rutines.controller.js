@@ -4,7 +4,7 @@ const Exercise = require('../models/exercises.model');
 
 const getAll = async (req, res) => {
     try{
-        const rutines = await Rutines.selectAll();
+        const rutines = await Rutine.selectAll();
         res.json(rutines); 
     }
     catch (error) {
@@ -19,13 +19,13 @@ const getAllRutines = async (req, res) => {
 const getById = async (req, res) => {
   const { id } = req.params;
   try {
-    const rutinaResult = await Rutines.getById(id);
+    const rutinaResult = await Rutine.getById(id);
     if (!rutinaResult || rutinaResult.length === 0) {
       return res.status(404).json({ message: 'Rutine not found' });
     }
     const rutina = rutinaResult[0];
 
-    const ejercicios = await Rutines.getEjerciciosByRutinaId(id);
+    const ejercicios = await Rutine.getEjerciciosByRutinaId(id);
     rutina.ejercicios = ejercicios || [];
 
     res.json(rutina);
@@ -51,7 +51,7 @@ const getRutinesWithExercises = async (req, res) => {
 const getFilteredRoutines = async (req, res) => {
   try {
     const { objetivos_id, dificultad_id, metodos_id } = req.query;
-    const rows = await Rutines.rutinesFiltered(objetivos_id, dificultad_id, metodos_id);
+    const rows = await Rutine.rutinesFiltered(objetivos_id, dificultad_id, metodos_id);
 
     // Agrupar por rutina_id
     const rutinasMap = {};
@@ -97,17 +97,19 @@ const getFilteredRoutines = async (req, res) => {
 
 const getRutineWithExercises = async (req, res) => {
     const { rutineId } = req.params;
-    const rutine = await Rutine.getById(rutineId);
-    if (!rutine) return res.status(404).json({ message: 'Rutina no encontrada' });
-    const rutineEjercicios = await Rutine.getExercisesByRutineId(rutineId);
-    const exercises = await Promise.all(
-        rutineEjercicios.map(async (re) => {
-            const ejercicio = await Exercise.getById(re.ejercicios_id);
-            // Incluye detalles adicionales como sexo y día
-            return { ...ejercicio, sexo: re.sexo, dia: re.dia, series: re.series, repeticiones: re.repeticiones, orden: re.orden, comentario: re.comentario };
-        })
-    );
-    res.json({ ...rutine, exercises });
+    // Obtener la rutina (devuelve array, tomar el primer elemento)
+    const rutinaResult = await Rutine.getById(rutineId);
+    if (!rutinaResult || rutinaResult.length === 0) {
+        return res.status(404).json({ message: 'Rutina no encontrada' });
+    }
+    const rutina = rutinaResult[0];
+
+    // Obtener los ejercicios de la rutina
+    const ejerciciosRutina = await Rutine.getEjerciciosByRutinaId(rutineId);
+    // Estructura: cada ejercicio es un objeto con los datos de la relación y del ejercicio
+    rutina.ejercicios = ejerciciosRutina || [];
+
+    res.json(rutina);
 };
 
 const getRutineWithAllExercises = async (req, res) => {

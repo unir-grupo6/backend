@@ -11,11 +11,6 @@ const selectAll = async () => {
   return result;
 };
 
-// const getById = async (id) => {
-//     const [result] = await db.query('SELECT * FROM rutinas WHERE id = ?', [id]);
-//     if (result.length === 0) return null;
-//     return result[0];
-// };
 
 const getById = async (id) => {
   const [result] = await db.query(
@@ -157,4 +152,4 @@ const getAllPublic = async () => {
     return result;
 };
 
-module.exports = { getAll, getById, getEjerciciosByRutinaId, rutinesFiltered, create, update, addExerciseToRutine, getAllPublic, selectAll };
+module.exports = { getAll, getById, getExercisesByRutineId, getEjerciciosByRutinaId, rutinesFiltered, create, update, addExerciseToRutine, getAllPublic, selectAll };

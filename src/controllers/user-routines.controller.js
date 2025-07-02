@@ -40,8 +40,8 @@ const getRoutinesByUserId = async (req, res) => {
     }
     user.rutinas = formattedRoutines;
 
-    user.fecha_nacimiento = dayjs(user.fecha_nacimiento).format('DD-MM-YYYY');
-    user.fecha_alta = dayjs(user.fecha_alta).format('DD-MM-YYYY HH:mm:ss');
+    user.fecha_nacimiento = dayjs(user.fecha_nacimiento).format('YYYY-MM-DD');
+    user.fecha_alta = dayjs(user.fecha_alta).format('YYYY-MM-DD HH:mm:ss');
 
     res.json(user);
 }
@@ -71,14 +71,14 @@ const updateUserRoutine = async (req, res) => {
 
     // Validations
     if (
-        (fecha_inicio_rutina && !dayjs(fecha_inicio_rutina, 'DD-MM-YYYY', true).isValid()) ||
-        (fecha_fin_rutina && !dayjs(fecha_fin_rutina, 'DD-MM-YYYY', true).isValid())
+        (fecha_inicio_rutina && !dayjs(fecha_inicio_rutina, 'YYYY-MM-DD', true).isValid()) ||
+        (fecha_fin_rutina && !dayjs(fecha_fin_rutina, 'YYYY-MM-DD', true).isValid())
     ) {
         return res.status(400).json({ message: 'Invalid date format or non-existent date' });
     }
     if (
         (fecha_inicio_rutina && fecha_fin_rutina) && 
-        dayjs(fecha_inicio_rutina, 'DD-MM-YYYY', true).isAfter(dayjs(fecha_fin_rutina, 'DD-MM-YYYY', true))) {
+        dayjs(fecha_inicio_rutina, 'YYYY-MM-DD', true).isAfter(dayjs(fecha_fin_rutina, 'YYYY-MM-DD', true))) {
         return res.status(400).json({ message: 'Start date cannot be after end date' });
     }
     if( rutina_compartida !== undefined && typeof rutina_compartida !== 'boolean') {
@@ -94,8 +94,8 @@ const updateUserRoutine = async (req, res) => {
     // Add fields to update
     const updateFields = {};
     if (fecha_inicio_rutina  && fecha_fin_rutina) {
-        updateFields.inicio = dayjs(fecha_inicio_rutina, 'DD-MM-YYYY', true).format('YYYY-MM-DD');
-        updateFields.fin = dayjs(fecha_fin_rutina, 'DD-MM-YYYY', true).format('YYYY-MM-DD');
+        updateFields.inicio = dayjs(fecha_inicio_rutina, 'YYYY-MM-DD', true).format('YYYY-MM-DD');
+        updateFields.fin = dayjs(fecha_fin_rutina, 'YYYY-MM-DD', true).format('YYYY-MM-DD');
     }
     if (rutina_compartida === true || rutina_compartida === false) {
         updateFields.compartida = rutina_compartida ? 1 : 0;
@@ -276,8 +276,8 @@ const saveUserRoutine = async (req, res) => {
     const fechaFin = dayjs(savedRoutine.fecha_fin_rutina);
     const today = dayjs();
     savedRoutine.rutina_activa = today >= fechaInicio && today <= fechaFin;
-    savedRoutine.fecha_inicio_rutina = fechaInicio.format('DD-MM-YYYY');
-    savedRoutine.fecha_fin_rutina = fechaFin.format('DD-MM-YYYY');
+    savedRoutine.fecha_inicio_rutina = fechaInicio.format('YYYY-MM-DD');
+    savedRoutine.fecha_fin_rutina = fechaFin.format('YYYY-MM-DD');
     // BOOLEANS
     savedRoutine.rutina_compartida = savedRoutine.rutina_compartida === 1;
     savedRoutine.ejercicios = [];
@@ -467,12 +467,12 @@ const copyExecrisesToRoutine = async (res, userRoutineId, generatedUserRoutineId
 
 const formatRoutineWithExercises = async (userRoutine) => {
 
-    const fechaInicio = userRoutine.fecha_inicio_rutina ? dayjs(userRoutine.fecha_inicio_rutina).format('DD-MM-YYYY') : null;
-    const fechaFin = userRoutine.fecha_fin_rutina ? dayjs(userRoutine.fecha_fin_rutina).format('DD-MM-YYYY') : null;
+    const fechaInicio = userRoutine.fecha_inicio_rutina ? dayjs(userRoutine.fecha_inicio_rutina).format('YYYY-MM-DD') : null;
+    const fechaFin = userRoutine.fecha_fin_rutina ? dayjs(userRoutine.fecha_fin_rutina).format('YYYY-MM-DD') : null;
 
     const rutina_activa = fechaInicio && fechaFin
-        ? dayjs().isAfter(dayjs(fechaInicio, 'DD-MM-YYYY').subtract(1, 'day')) &&
-          dayjs().isBefore(dayjs(fechaFin, 'DD-MM-YYYY').add(1, 'day'))
+        ? dayjs().isAfter(dayjs(fechaInicio, 'YYYY-MM-DD').subtract(1, 'day')) &&
+          dayjs().isBefore(dayjs(fechaFin, 'YYYY-MM-DD').add(1, 'day'))
         : false;
 
     const formattedRoutine = {
