@@ -9,11 +9,10 @@ router.get('/', checkToken, getById);
 router.get('/rutines', checkToken, getRutinesByUserId);
 router.get('/rutines/:rutineId', checkToken, getRutineById);
 
-// LOGIN, REGISTER, FORGOT PASSWORD, RESET PASSWORD
-router.post('/register', registro);
+router.post('/register', checkPassword, registro);
 router.post('/login', login);
 
-router.put('/update-password', checkToken, changePassword);
+router.put('/update-password', checkToken, checkPassword, changePassword);
 router.put('/forgot-password', forgotPassword);
 router.put('/reset-password', checkPassword, resetPassword);
 router.put('/update', checkToken, updateUser);

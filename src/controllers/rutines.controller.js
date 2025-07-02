@@ -17,17 +17,23 @@ const getAllRutines = async (req, res) => {
 };
 
 const getById = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const rutine = await Rutines.getById(id);
-        if (!rutine) {
-            return res.status(404).json({ message: 'Rutine not found' });
-        }
-        res.json(rutine);
-    } catch (error) {
-        res.status(500).json({ message: 'Internal server error' });
+  const { id } = req.params;
+  try {
+    const rutinaResult = await Rutines.getById(id);
+    if (!rutinaResult || rutinaResult.length === 0) {
+      return res.status(404).json({ message: 'Rutine not found' });
     }
-}
+    const rutina = rutinaResult[0];
+
+    const ejercicios = await Rutines.getEjerciciosByRutinaId(id);
+    rutina.ejercicios = ejercicios || [];
+
+    res.json(rutina);
+  } catch (error) {
+    console.error('Error en obtener rutina por id con ejercicios:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
 const getRutineById = async (req, res) => {
     const { rutineId } = req.params;
@@ -42,19 +48,52 @@ const getRutinesWithExercises = async (req, res) => {
     res.json({ rutines, exercises });
 };
 
-const getByGoalsAndDifficultyAndMethod = async (req, res) => {
+const getFilteredRoutines = async (req, res) => {
+  try {
     const { objetivos_id, dificultad_id, metodos_id } = req.query;
-    try{
-        const rutines = await Rutines.getBygoalsAndDifficultyAndMethod(objetivos_id, dificultad_id, metodos_id);
-        if (!rutines) {
-            return res.status(404).json({ message: 'No rutines found for the given criteria' });
-        }
-        res.json(rutines);
+    const rows = await Rutines.rutinesFiltered(objetivos_id, dificultad_id, metodos_id);
+
+    // Agrupar por rutina_id
+    const rutinasMap = {};
+
+    for (const row of rows) {
+      const rutinaId = row.rutina_id;
+
+      if (!rutinasMap[rutinaId]) {
+        rutinasMap[rutinaId] = {
+          id: row.rutina_id,
+          nombre: row.rutina_nombre,
+          objetivos_id: row.objetivos_id,
+          dificultad_id: row.dificultad_id,
+          metodos_id: row.metodos_id,
+          observaciones: row.rutina_observaciones,
+          realizada: row.realizada,
+          ejercicios: []
+        };
+      }
+
+      if (row.ejercicio_id) {
+        rutinasMap[rutinaId].ejercicios.push({
+          id: row.ejercicio_id,
+          orden: row.orden,
+          series: row.series,
+          repeticiones: row.repeticiones,
+          comentario: row.ejercicio_comentario,
+          nombre: row.ejercicio_nombre,
+          tipo: row.ejercicio_tipo,
+          step_1: row.step_1,
+          step_2: row.step_2,
+          grupos_musculares: row.grupos_musculares_id
+        });
+      }
     }
-    catch (error) {
-        res.status(500).json({ message: 'Internal server error' });
-    }
-}
+
+    res.json(Object.values(rutinasMap));
+  } catch (error) {
+    console.error('Error al obtener rutinas:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
 
 const getRutineWithExercises = async (req, res) => {
     const { rutineId } = req.params;
@@ -127,4 +166,4 @@ const getPublicRutinesWithExercises = async (req, res) => {
     res.json({ rutines, exercises });
 };
 
-module.exports = { getAll, getById, getByGoalsAndDifficultyAndMethod, getAllRutines, getRutineById, getRutinesWithExercises, getRutineWithExercises, getRutineWithAllExercises, createRutine, updateRutine, addExerciseToRutine, getPublicRutinesWithExercises };
+module.exports = { getAll, getById, getAllRutines, getRutineById, getRutinesWithExercises, getRutineWithExercises, getRutineWithAllExercises, createRutine, updateRutine, addExerciseToRutine, getPublicRutinesWithExercises, getFilteredRoutines};

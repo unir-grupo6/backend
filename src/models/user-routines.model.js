@@ -13,8 +13,8 @@ const selectRoutinesByUserId = async (userId, page, limit) => {
     const [result] = await db.query(
         `
         SELECT RU.id as rutina_id, R.nombre, 
-		    RU.inicio as fecha_inicio_rutina, RU.fin as fecha_fin_rutina, R.dia, RU.compartida as rutina_compartida,
-            R.observaciones as rutina_observaciones, R.sexo, D.nivel,
+		    RU.inicio as fecha_inicio_rutina, RU.fin as fecha_fin_rutina, RU.dia, RU.compartida as rutina_compartida,
+            R.observaciones as rutina_observaciones, D.nivel,
             M.nombre as metodo_nombre, M.tiempo_aerobicos, M.tiempo_anaerobicos, M.descanso, M.observaciones as metodo_observaciones
         FROM usuarios U
             INNER JOIN rutinas_usuarios RU ON U.id = RU.usuarios_id
@@ -57,8 +57,8 @@ const selectActiveRoutinesByUserId = async (userId, page, limit) => {
     const [result] = await db.query(
         `
         SELECT RU.id as rutina_id, R.nombre, 
-		    RU.inicio as fecha_inicio_rutina, RU.fin as fecha_fin_rutina, R.dia, RU.compartida as rutina_compartida,
-            R.observaciones as rutina_observaciones, R.sexo, D.nivel,
+		    RU.inicio as fecha_inicio_rutina, RU.fin as fecha_fin_rutina, RU.dia, RU.compartida as rutina_compartida,
+            R.observaciones as rutina_observaciones, D.nivel,
             M.nombre as metodo_nombre, M.tiempo_aerobicos, M.tiempo_anaerobicos, M.descanso, M.observaciones as metodo_observaciones
         FROM usuarios U
             INNER JOIN rutinas_usuarios RU ON U.id = RU.usuarios_id
@@ -77,9 +77,9 @@ const selectRoutineByRoutineId = async (routineId) => {
     const [result] = await db.query(
         `
         SELECT RU.id as rutina_id, R.nombre, 
-            RU.inicio as fecha_inicio_rutina, RU.fin as fecha_fin_rutina, R.dia, RU.compartida as rutina_compartida,
-            R.observaciones as rutina_observaciones, R.sexo, D.nivel
-            ,M.nombre as metodo_nombre, M.tiempo_aerobicos, M.tiempo_anaerobicos, M.descanso, M.observaciones as metodo_observaciones
+		    RU.inicio as fecha_inicio_rutina, RU.fin as fecha_fin_rutina, RU.dia, RU.compartida as rutina_compartida,
+            R.observaciones as rutina_observaciones, D.nivel,
+            M.nombre as metodo_nombre, M.tiempo_aerobicos, M.tiempo_anaerobicos, M.descanso, M.observaciones as metodo_observaciones
         FROM rutinas_usuarios RU
             INNER JOIN rutinas R ON R.id = RU.rutinas_id
             INNER JOIN metodos M ON M.id = R.metodos_id
@@ -95,9 +95,9 @@ const selectRoutineByUserIdRoutineId = async (userId, routineId) => {
     const [result] = await db.query(
         `
         SELECT RU.id as rutina_id, R.nombre, 
-            RU.inicio as fecha_inicio_rutina, RU.fin as fecha_fin_rutina, R.dia, RU.compartida as rutina_compartida,
-            R.observaciones as rutina_observaciones, R.sexo, D.nivel
-            ,M.nombre as metodo_nombre, M.tiempo_aerobicos, M.tiempo_anaerobicos, M.descanso, M.observaciones as metodo_observaciones
+		    RU.inicio as fecha_inicio_rutina, RU.fin as fecha_fin_rutina, RU.dia, RU.compartida as rutina_compartida,
+            R.observaciones as rutina_observaciones, D.nivel,
+            M.nombre as metodo_nombre, M.tiempo_aerobicos, M.tiempo_anaerobicos, M.descanso, M.observaciones as metodo_observaciones
         FROM usuarios U
             INNER JOIN rutinas_usuarios RU ON U.id = RU.usuarios_id
             INNER JOIN rutinas R ON R.id = RU.rutinas_id
@@ -113,7 +113,7 @@ const selectRoutineByUserIdRoutineId = async (userId, routineId) => {
 const selectExercisesByUserRoutineId = async (routineId) => {
     const [result] = await db.query(
         `
-        SELECT EU.id, EU.rutinas_id, EU.ejercicios_id, EU.rutinas_usuarios_id, EU.dia,
+        SELECT EU.id, EU.ejercicios_id, EU.rutinas_usuarios_id,
             EU.orden, E.nombre, E.tipo, E.inicio as step_1, E.fin as step_2, GM.nombre as grupos_musculares,
             EU.series, EU.repeticiones, EU.comentario
         FROM ejercicios_usuarios EU

@@ -186,9 +186,25 @@ const login = async (req, res) => {
 
 const changePassword = async (req, res) => {
     const user = req.user;
-    const { password } = req.body;
-    if (!password) {
-        return res.status(400).json({ message: 'Password is required' });
+    const { oldPassword, password } = req.body;
+    
+    if (!oldPassword || !password) {
+        return res.status(400).json({ message: 'Old password and new password are required' });
+    }
+
+    if (typeof password !== 'string' || typeof oldPassword !== 'string') {
+        return res.status(400).json({ message: 'Old password and new password must be strings' });
+    }
+
+    //check if the old password is correct
+    try {
+        const isValidPassword = bcrypt.compareSync(password, user.password);
+        if (!isValidPassword) {
+            return res.status(401).json({ message: 'Error in email and/or password' });
+        }
+    } catch (error) {
+        return res.status(500).json({ message: 'Error validating password', error: error.message });
+        
     }
 
     try {
@@ -217,7 +233,7 @@ const forgotPassword = async (req, res) => {
             exp: dayjs().add(JWT_RESET_EXPIRES_IN_AMOUNT, JWT_RESET_EXPIRES_IN_UNIT).unix()
         }, JWT_RESET_SECRET_KEY)
     
-    verificationLink = `${FRONTEND_URL}/reset-password/${resetToken}`;
+    verificationLink = `${FRONTEND_URL}password-reset-request/${resetToken}`;
 
     
 

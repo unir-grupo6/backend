@@ -101,8 +101,6 @@
 - **Body**: 
   - `nombre` (string, required)
   - `apellidos` (string, required)
-  - `nombre` (string, required)
-  - `apellidos` (string, required)
   - `email` (string, required)
   - `password` (string, required)
   - `sexo` (string, required)
@@ -115,8 +113,16 @@
   - `altura` (number, required)
 - **Response**: The created user object
 - **Possible errors**:
-  - **400 Bad Request**: `{ "message": "Failed to update reset token" }` — There was a problem updating the reset token (rare, internal error).
+  - **400 Bad Request**: `{ "message": "Password is required." }` — The password field is missing (middleware).
+  - **400 Bad Request**: `{ "message": "Password must be a string." }` — The password is not a string (middleware).
+  - **400 Bad Request**: `{ "message": "Password cannot be empty." }` — The password is an empty string (middleware).
+  - **400 Bad Request**: `{ "message": "Password must be at least 8 characters long." }` — The password does not meet the minimum length (middleware).
+  - **400 Bad Request**: `{ "message": "Password must contain at least one uppercase letter." }` — The password does not have an uppercase letter (middleware).
+  - **400 Bad Request**: `{ "message": "Password must contain at least one lowercase letter." }` — The password does not have a lowercase letter (middleware).
+  - **400 Bad Request**: `{ "message": "Password must contain at least one number." }` — The password does not have a number (middleware).
+  - **400 Bad Request**: `{ "message": "Password must contain at least one special character." }` — The password does not have a special character (middleware).
   - **403 Forbidden**: `{ "message": "Email already exists" }` — The email is already registered in the system.
+  - **400 Bad Request**: `{ "message": "Failed to update reset token" }` — There was a problem updating the reset token (rare, internal error).
   - **404 Not Found**: `{ "message": "Not found" }` — The endpoint does not exist.
   - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
 
@@ -145,19 +151,27 @@
 - **URL**: /api/users/update-password
 - **Headers**: Authorization: `{token}`, Content-Type: application/json
 - **Body**:
+  - `oldPassword` (string, required): The current password of the user
   - `password` (string, required): The new password to set
 - **Response**: On success:
   ```json
   { "message": "Password updated successfully" }
   ```
 - **Possible errors**:
-  - **400 Bad Request**: `{ "message": "Password is required" }` — The password field is missing.
+  - **400 Bad Request**: `{ "message": "Old password and new password are required" }` — One or both required fields are missing in the request body.
+  - **400 Bad Request**: `{ "message": "Old password and new password must be strings" }` — One or both fields are not strings.
+  - **400 Bad Request**: `{ "message": "Password is required." }` — The new password is missing (middleware).
+  - **400 Bad Request**: `{ "message": "Password must be a string." }` — The new password is not a string (middleware).
+  - **400 Bad Request**: `{ "message": "Password cannot be empty." }` — The new password is an empty string (middleware).
+  - **400 Bad Request**: `{ "message": "Password must be at least 8 characters long." }` — The new password does not meet the minimum length (middleware).
+  - **400 Bad Request**: `{ "message": "Password must contain at least one uppercase letter." }` — The new password does not have an uppercase letter (middleware).
+  - **400 Bad Request**: `{ "message": "Password must contain at least one lowercase letter." }` — The new password does not have a lowercase letter (middleware).
+  - **400 Bad Request**: `{ "message": "Password must contain at least one number." }` — The new password does not have a number (middleware).
+  - **400 Bad Request**: `{ "message": "Password must contain at least one special character." }` — The new password does not have a special character (middleware).
   - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
-  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
-  - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
+  - **401 Unauthorized**: `{ "message": "Error in email and/or password" }` — The current password is incorrect.
+  - **500 Internal Server Error**: `{ "message": "Error validating password" }` — There was a problem validating the password.
   - **500 Internal Server Error**: `{ "message": "Error updating password" }` — There was a problem updating the password in the database.
-  - **404 Not Found**: `{ "message": "Not found" }` — The endpoint does not exist.
-  - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
 
 ### Forgot Password
 - **Method**: PUT
@@ -190,6 +204,14 @@
   { "message": "Password reset successfully" }
   ```
 - **Possible errors**:
+  - **400 Bad Request**: `{ "message": "Password is required." }` — The new password is missing (middleware).
+  - **400 Bad Request**: `{ "message": "Password must be a string." }` — The new password is not a string (middleware).
+  - **400 Bad Request**: `{ "message": "Password cannot be empty." }` — The new password is an empty string (middleware).
+  - **400 Bad Request**: `{ "message": "Password must be at least 8 characters long." }` — The new password does not meet the minimum length (middleware).
+  - **400 Bad Request**: `{ "message": "Password must contain at least one uppercase letter." }` — The new password does not have an uppercase letter (middleware).
+  - **400 Bad Request**: `{ "message": "Password must contain at least one lowercase letter." }` — The new password does not have a lowercase letter (middleware).
+  - **400 Bad Request**: `{ "message": "Password must contain at least one number." }` — The new password does not have a number (middleware).
+  - **400 Bad Request**: `{ "message": "Password must contain at least one special character." }` — The new password does not have a special character (middleware).
   - **403 Forbidden**: `{ "message": "Reset token and new password are required" }` — The reset token or new password was not provided.
   - **403 Forbidden**: `{ "message": "User not found" }` — No user is associated with the provided reset token.
   - **403 Forbidden**: `{ "message": "<jwt error message>" }` — The reset token is invalid or expired.
@@ -201,7 +223,7 @@
 
 ### Get logged-in user's routines (paginated)
 - **Method**: GET
-- **URL**: /api/users/routines?page=1&limit=10&active=true
+- **URL**: /api/user-routines?page=1&limit=10&active=true
 - **Headers**: Authorization: `{token}`
 - **Body**: ---
 - **Query Parameters**:
@@ -223,7 +245,7 @@
 
 ### Get a specific routine of the logged-in user
 - **Method**: GET
-- **URL**: /api/users/routines/{routineId}
+- **URL**: /api/user-routines/`{routineId}`
 - **Headers**: Authorization: `{token}`
 - **Body**: ---
 - **Response**: Routine object belonging to the authenticated user with the specified routineId
@@ -236,7 +258,7 @@
 
 ### Save a user routine
 - **Method**: POST
-- **URL**: /api/users/routines/`{userRoutineId}`/save
+- **URL**: /api/user-routines/`{userRoutineId}`/save
 - **Headers**: Authorization: `{token}`
 - **Body**: ---
 - **Response**: On success, returns the full saved routine object (including exercises) assigned to the logged-in user, for example:
@@ -286,7 +308,7 @@
 
 ### Delete a user routine
 - **Method**: DELETE
-- **URL**: /api/users/routines/`{userRoutineId}`
+- **URL**: /api/user-routines/`{userRoutineId}`
 - **Headers**: Authorization: `{token}`
 - **Body**: ---
 - **Response**: On success:
@@ -302,7 +324,7 @@
 
 ### Update a user routine
 - **Method**: PATCH
-- **URL**: /api/users/routines/`{userRoutineId}`
+- **URL**: /api/user-routines/`{userRoutineId}`
 - **Headers**: Authorization: `{token}`
 - **Body**:
   - `fecha_inicio_rutina` (string, nullable, formato `YYYY-MM-DD`)
@@ -326,7 +348,7 @@
 
 ### Add exercise to a user routine
 - **Method**: POST
-- **URL**: /api/users/routines/`{userRoutineId}`/exercises
+- **URL**: /api/user-routines/`{userRoutineId}`/exercises
 - **Headers**: Authorization: `{token}`
 - **Body**:
   - `ejercicio_id` (number, required): Exercise ID to add
@@ -349,7 +371,7 @@
 
 ### Remove exercise from a user routine
 - **Method**: DELETE
-- **URL**: /api/users/routines/`{userRoutineId}`/exercises/`{exerciseId}`
+- **URL**: /api/user-routines/`{userRoutineId}`/exercises/`{exerciseId}`
 - **Headers**: Authorization: `{token}`
 - **Body**: ---
 - **Response**: On success, returns the updated routine object (including exercises) with the new order:
@@ -384,7 +406,7 @@
 
 ### Update an exercise in a user routine
 - **Method**: PATCH
-- **URL**: /api/users/routines/`{userRoutineId}`/exercises/`{exerciseId}`
+- **URL**: /api/user-routines/`{userRoutineId}`/exercises/`{exerciseId}`
 - **Headers**: Authorization: `{token}`
 - **Body**:
   - `series` (number, optional): New number of sets for the exercise (must be a positive number)
@@ -439,7 +461,7 @@
 
 ### Generate PDF for a user routine
 - **Method**: GET
-- **URL**: /api/users/routines/generate/{userRoutineId}
+- **URL**: /api/user-routines/generate/`{userRoutineId}`
 - **Headers**: Authorization: `{token}`
 - **Body**: ---
 - **Response**: On success, returns a PDF file containing the details of the specified user routine. The response headers include:

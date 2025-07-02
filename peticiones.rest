@@ -1,5 +1,5 @@
 @host = http://localhost:3000
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo0LCJleHAiOjE3NTE5MDIyNDMsImlhdCI6MTc1MTI5NzQ0M30.DnRhiN-GWKgs2Wa6aWm35_vBGK7dodieuZDtnMa_gBU
+@token = 
 
 GET {{host}}/api/users
 Authorization: {{token}}
@@ -200,66 +200,74 @@ Content-Type: application/json
 
 ### Todos los ejercicios
 GET {{host}}/api/exercises/filter
+Authorization: {{token}}
 
 ### Ejercicios por grupo muscular
 GET {{host}}/api/exercises/filter?grupos_musculares_id=1
+Authorization: {{token}}
 
 ### Ejercicios por dificultad
 GET {{host}}/api/exercises/filter?dificultad_id=2
+Authorization: {{token}}
 
 ### Ejercicios por ambos filtros
 GET {{host}}/api/exercises/filter?grupos_musculares_id=2&dificultad_id=2
+Authorization: {{token}}
 
 
 ### RUTINAS
 
 ### Sin filtros (todas las rutinas)
 GET {{host}}/api/rutines
+Authorization: {{token}}
 
 ### Rutinas por id
-GET {{host}}/api/rutines/rutina/1
+GET {{host}}/api/rutines/rutina/10
+Authorization: {{token}}
 
 
 ### Sin filtros
 GET {{host}}/api/rutines/filter
+Authorization: {{token}}
 
 ### Solo objetivo
 GET {{host}}/api/rutines/filter?objetivos_id=3
+Authorization: {{token}}
 
 ### Solo método
 GET {{host}}/api/rutines/filter?metodos_id=1
+Authorization: {{token}}
 
 ### Solo dificultad
 GET {{host}}/api/rutines/filter?dificultad_id=1
+Authorization: {{token}}
 
 ### Dos filtros
-GET {{host}}/api/rutines/filter?objetivos_id=11&metodos_id=1
+GET {{host}}/api/rutines/filter?objetivos_id=1&metodos_id=1
+Authorization: {{token}}
 
 
 ### Todos los filtros
 GET {{host}}/api/rutines/filter?objetivos_id=1&dificultad_id=1&metodos_id=1
+Authorization: {{token}}
 
 ###
-GET {{host}}/api/user-routines?page=2&limit=5&active=false
-Content-Type: application/json
+GET {{host}}/api/user-routines?page=1&limit=5&active=false
 Authorization: {{token}}
 ###
-GET {{host}}/api/user-routines?active=true
-Content-Type: application/json
+GET {{host}}/api/user-routines?active=false
 Authorization: {{token}}
 ###
-GET {{host}}/api/user-routines/2425
-Content-Type: application/json
+GET {{host}}/api/user-routines/2
 Authorization: {{token}}
 ###
-POST {{host}}/api/user-routines/2425/save
-Content-Type: application/json
+POST {{host}}/api/user-routines/13/save
 Authorization: {{token}}
 ###
-DELETE {{host}}/api/user-routines/2444
+DELETE {{host}}/api/user-routines/11
 Authorization: {{token}}
 ###
-PATCH {{host}}/api/user-routines/2443
+PATCH {{host}}/api/user-routines/17
 Authorization: {{token}}
 Content-Type: application/json
 
@@ -269,19 +277,19 @@ Content-Type: application/json
     "rutina_compartida": true
 }
 ###
-POST {{host}}/api/user-routines/2425/exercises
+POST {{host}}/api/user-routines/17/exercises
 Authorization: {{token}}
 Content-Type: application/json
 
 {
-    "ejercicio_id": 16,
+    "ejercicio_id": 3,
     "series": 3,
     "repeticiones": 10,
     "orden": 5,
     "comentario": "Comentario del ejercicio"
 }
 ###
-DELETE {{host}}/api/user-routines/2441/exercises/67159
+DELETE {{host}}/api/user-routines/17/exercises/67150
 Authorization: {{token}}
 ###
 PATCH {{host}}/api/user-routines/2441/exercises/67147
