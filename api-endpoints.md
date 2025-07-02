@@ -574,7 +574,7 @@
 - **Method**: GET
 - **URL**: /api/rutines/rutina/`{id}`
 - **Headers**: Authorization: `{token}`
-- **Response**: The rutine object with the specified ID
+- **Response**: The rutine object with the specified ID, including its associated exercises
 - **Possible errors**:
   - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
   - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
@@ -586,10 +586,10 @@
 - **URL**: /api/rutines/filter?objetivos_id=`{id}`&dificultad_id=`{id}`&metodos_id=`{id}`
 - **Headers**: Authorization: `{token}`
 - **Query Parameters**:
-  - `objetivos_id` (int, required): The ID of the goal
-  - `dificultad_id` (int, required): The ID of the difficulty
-  - `metodos_id` (int, required): The ID of the method
-- **Response**: An array with the rutines matching the specified filters
+  - `objetivos_id` (int): The ID of the goal
+  - `dificultad_id` (int): The ID of the difficulty
+  - `metodos_id` (int): The ID of the method
+  - **Response**: An array with the rutines matching the specified filters, each including their associated exercises
 - **Possible errors**:
   - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
   - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
