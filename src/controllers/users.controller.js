@@ -12,10 +12,68 @@ const { JWT_SECRET_KEY, JWT_RESET_SECRET_KEY, JWT_EXPIRES_IN_UNIT, JWT_RESET_EXP
 const User = require('../models/users.model');
 
 const getById = async (req, res) => {
-    req.user.fecha_nacimiento = dayjs(req.user.fecha_nacimiento).format('DD-MM-YYYY');
-    req.user.fecha_alta = dayjs(req.user.fecha_alta).format('DD-MM-YYYY HH:mm:ss');
+    req.user.fecha_nacimiento = dayjs(req.user.fecha_nacimiento).format('YYYY-MM-DD');
+    req.user.fecha_alta = dayjs(req.user.fecha_alta).format('YYYY-MM-DD HH:mm:ss');
     res.json(req.user);
 }
+
+const getRutinesByUserId = async (req, res) => {
+    const user = req.user;
+    const { page = 1, limit = 5, active = false } = req.query;
+    
+    const userRutines = active === 'true' ?
+        await User.selectActiveRutinesByUserId(user.id, Number(page), Number(limit))
+        :
+        await User.selectRutinesByUserId(user.id, Number(page), Number(limit));
+
+    if (!userRutines || userRutines.length === 0) {
+        return res.status(404).json({ message: 'No rutines found for this user' });
+    }
+
+    for (const rutine of userRutines) {
+        // DATES
+        const fechaInicio = dayjs(rutine.fecha_inicio_rutina);
+        const fechaFin = dayjs(rutine.fecha_fin_rutina);
+        const today = dayjs();
+
+        rutine.rutina_activa = today >= fechaInicio && today <= fechaFin;
+        rutine.fecha_inicio_rutina = fechaInicio.format('YYYY-MM-DD');
+        rutine.fecha_fin_rutina = fechaFin.format('YYYY-MM-DD');
+        rutine.rutina_compartida = rutine.rutina_compartida === 1;
+
+        const exercises = await User.selectExercisesByUserRutineId(rutine.rutina_id);
+        rutine.ejercicios = exercises;
+    }
+
+    user.fecha_alta = dayjs(user.fecha_alta).format('YYYY-MM-DD HH:mm:ss');
+
+    user.rutinas = userRutines;
+    res.json(user);
+}
+
+const getRutineById = async (req, res) => {
+    const user = req.user;
+    const { rutineId } = req.params;
+    const userRutine = await User.selectRutineByUserIdRutineId(user.id, rutineId);
+    if (!userRutine) {
+        return res.status(404).json({ message: 'Rutine not found for this user' });
+    }
+    // DATES
+    const fechaInicio = dayjs(userRutine.fecha_inicio_rutina);
+    const fechaFin = dayjs(userRutine.fecha_fin_rutina);
+    const today = dayjs();
+    userRutine.rutina_activa = today >= fechaInicio && today <= fechaFin;
+    userRutine.fecha_inicio_rutina = fechaInicio.format('YYYY-MM-DD');
+    userRutine.fecha_fin_rutina = fechaFin.format('YYYY-MM-DD');
+    // BOOLEANS
+    userRutine.rutina_compartida = userRutine.rutina_compartida === 1;
+
+    const exercises = await User.selectExercisesByUserRutineId(userRutine.rutine_id);
+    userRutine.ejercicios = exercises;
+    
+    res.json(userRutine);
+}
+
 
 const registro = async (req, res) => {
     req.body.password = bcrypt.hashSync(req.body.password, Number(BCRYPT_SALT_ROUNDS));
@@ -36,7 +94,7 @@ const registro = async (req, res) => {
     if (req.body.altura && isNaN(req.body.altura)) {
         return res.status(400).json({ message: 'Altura must be a number' });
     }
-    if (!dayjs(req.body.fecha_nacimiento, 'DD-MM-YYYY', true).isValid()) {
+    if (!dayjs(req.body.fecha_nacimiento, 'YYYY-MM-DD', true).isValid()) {
         return res.status(400).json({ message: 'Fecha de nacimiento must be a valid date' });
     }
     if (req.body.objetivo_id && isNaN(req.body.objetivo_id)) {
@@ -134,27 +192,34 @@ const login = async (req, res) => {
 
 const changePassword = async (req, res) => {
     const user = req.user;
-    const { oldPassword, password } = req.body;
-    
+    // Permitir oldPassword y oldpassword
+    const oldPassword = req.body.oldPassword || req.body.oldpassword;
+    const { password } = req.body;
     if (!oldPassword || !password) {
         return res.status(400).json({ message: 'Old password and new password are required' });
     }
-
     if (typeof password !== 'string' || typeof oldPassword !== 'string') {
         return res.status(400).json({ message: 'Old password and new password must be strings' });
     }
-
-    //check if the old password is correct
+    // Asegurarse de tener el hash de la contraseña
+    let userPassword = user.password;
+    if (!userPassword) {
+        // Si no está en req.user, buscarlo explícitamente
+        const userWithPassword = await User.getByEmail(user.email);
+        if (!userWithPassword || !userWithPassword.password) {
+            return res.status(500).json({ message: 'No se pudo obtener la contraseña actual del usuario.' });
+        }
+        userPassword = userWithPassword.password;
+    }
+    //check if the old password es correcta
     try {
-        const isValidPassword = bcrypt.compareSync(password, user.password);
+        const isValidPassword = bcrypt.compareSync(oldPassword, userPassword);
         if (!isValidPassword) {
             return res.status(401).json({ message: 'Error in email and/or password' });
         }
     } catch (error) {
         return res.status(500).json({ message: 'Error validating password', error: error.message });
-        
     }
-
     try {
         const hashedPassword = bcrypt.hashSync(password, Number(BCRYPT_SALT_ROUNDS));
         await User.updatePassword(user.id, hashedPassword);
@@ -254,7 +319,7 @@ const updateUser = async (req, res) => {
     if (altura && isNaN(altura)) {
         return res.status(400).json({ message: 'Altura must be a number' });
     }
-    if (fecha_nacimiento && !dayjs(fecha_nacimiento, 'DD-MM-YYYY', true).isValid()) {
+    if (fecha_nacimiento && !dayjs(fecha_nacimiento, 'YYYY-MM-DD', true).isValid()) {
         return res.status(400).json({ message: 'Fecha de nacimiento must be a valid date' });
     }
     if (id_objetivo && isNaN(id_objetivo)) {
@@ -273,7 +338,7 @@ const updateUser = async (req, res) => {
         return res.status(400).json({ message: 'Invalid objetivo_id' });
     }
 
-    const newFechaNacimiento = dayjs(fecha_nacimiento, 'DD-MM-YYYY', true).format('YYYY-MM-DD');
+    const newFechaNacimiento = dayjs(fecha_nacimiento, 'YYYY-MM-DD', true).format('YYYY-MM-DD');
 
     try {
         const result = await User.updateUserData(user.id, { nombre, apellidos, email, fecha_nacimiento: newFechaNacimiento });
@@ -336,14 +401,7 @@ const updateUser = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: 'Error updating user' });
     }
-};
+}
+   
 
-module.exports = {
-    getById,
-    registro,
-    login,
-    changePassword,
-    forgotPassword,
-    resetPassword,
-    updateUser
-};
+module.exports = { getById, getRutinesByUserId, getRutineById, registro, login, changePassword, forgotPassword, resetPassword, updateUser };

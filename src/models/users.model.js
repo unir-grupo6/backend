@@ -1,6 +1,7 @@
 const db = require('../config/db');
 
 const getById = async (userId) => {
+    // Primero intenta obtener los datos completos con join
     const [result] = await db.query(
         `
             SELECT U.id, U.nombre, U.apellidos, U.email, U.fecha_nacimiento, U.fecha_alta, MU.peso, MU.altura, MU.imc, O.id AS objetivo_id, O.nombre AS objetivo
@@ -15,8 +16,14 @@ const getById = async (userId) => {
         `,
         [userId],
     );
-    if (result.length === 0) return null;
-    return result[0];
+    if (result.length > 0) return result[0];
+    // Si no hay datos en medidas_usuarios, devuelve los datos básicos del usuario
+    const [basic] = await db.query(
+        'SELECT id, nombre, apellidos, email, fecha_alta FROM usuarios WHERE id = ?',
+        [userId]
+    );
+    if (basic.length === 0) return null;
+    return basic[0];
 }
 
 const getByEmail = async (email) => {

@@ -5,6 +5,18 @@ const selectAll = async () => {
     return result;
 }
 
+const getAll = async () => {
+    const [result] = await db.query('SELECT * FROM ejercicios');
+    return result;
+};
+
+const getById = async (id) => {
+    const [result] = await db.query('SELECT * FROM ejercicios WHERE id = ?', [id]);
+    if (result.length === 0) return null;
+    return result[0];
+};
+
+
 const getBymuscleAndDifficulty = async (grupos_musculares_id, dificultad_id) => {
     let query = 'SELECT * FROM ejercicios';
     const conditions = [];
@@ -21,7 +33,7 @@ const getBymuscleAndDifficulty = async (grupos_musculares_id, dificultad_id) => 
     }
 
     if (conditions.length > 0) {
-        query += ' WHERE ' + conditions.join(' AND ');
+        query += ` WHERE ${conditions.join(' AND ')}`;
     }
 
     const [result] = await db.query(query, params);
@@ -29,7 +41,4 @@ const getBymuscleAndDifficulty = async (grupos_musculares_id, dificultad_id) => 
 };
 
 
-module.exports = {
-    selectAll,
-    getBymuscleAndDifficulty
-}
+module.exports = {selectAll, getBymuscleAndDifficulty, getAll, getById}

@@ -1,5 +1,10 @@
 const db = require('../config/db');
 
+const getAll = async () => {
+    const [result] = await db.query('SELECT * FROM rutinas');
+    return result;
+};
+
 const selectAll = async () => {
   const [result] = await db.query('SELECT * FROM rutinas');
   return result;
@@ -110,11 +115,16 @@ const routinesFiltered = async (objetivos_id, dificultad_id, metodos_id) => {
   }
 
   if (conditions.length > 0) {
-    query += ' WHERE ' + conditions.join(' AND ');
+    query += ` WHERE ${conditions.join(' AND ')}`;
   }
 
   const [result] = await db.query(query, params);
   return result;
+};
+
+const getExercisesByRoutineId = async (routineId) => {
+    const [result] = await db.query('SELECT * FROM ejercicios_rutinas WHERE rutinas_id = ?', [routineId]);
+    return result;
 };
 
 const routinesShared = async (user_id) => {
@@ -159,12 +169,33 @@ const routinesShared = async (user_id) => {
   }
 };
 
-
-
-module.exports = {
-  selectAll,
-  getById,
-  getEjerciciosByRutinaId,
-  routinesFiltered,
-  routinesShared
+const create = async ({ dificultad_id, objetivos_id, metodos_id, nombre, observaciones }) => {
+    const [result] = await db.query(
+        'INSERT INTO rutinas (dificultad_id, objetivos_id, metodos_id, nombre, observaciones) VALUES (?, ?, ?, ?, ?)',
+        [dificultad_id, objetivos_id, metodos_id, nombre, observaciones]
+    );
+    return result;
 };
+
+const update = async ({ rutineId, dificultad_id, metodos_id, nombre, observaciones }) => {
+    const [result] = await db.query(
+        'UPDATE rutinas SET dificultad_id = ?, metodos_id = ?, nombre = ?, observaciones = ? WHERE id = ?',
+        [dificultad_id, metodos_id, nombre, observaciones, rutineId]
+    );
+    return result;
+};
+
+const addExerciseToRoutine = async ({ rutinas_id, ejercicios_id, series, repeticiones, dia, orden, comentario }) => {
+    const [result] = await db.query(
+        'INSERT INTO ejercicios_rutinas (rutinas_id, ejercicios_id, series, repeticiones, dia, orden, comentario) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [rutinas_id, ejercicios_id, series, repeticiones, dia, orden, comentario]
+    );
+    return result;
+};
+
+const getAllPublic = async () => {
+    const [result] = await db.query('SELECT * FROM rutinas WHERE compartida = 1');
+    return result;
+};
+
+module.exports = { getAll, getById, getExercisesByRoutineId, getEjerciciosByRutinaId, routinesFiltered, create, update, addExerciseToRoutine, getAllPublic, selectAll, routinesShared };

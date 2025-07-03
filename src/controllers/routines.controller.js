@@ -1,4 +1,6 @@
 const Routines = require('../models/routines.model');
+const Exercises = require('../models/exercises.model');
+
 
 const getAll = async (req, res) => {
   try {
@@ -7,6 +9,11 @@ const getAll = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
   }
+};
+
+const getAllRoutines = async (req, res) => {
+    const routines = await Routines.getAll();
+    res.json(routines);
 };
 
 const getById = async (req, res) => {
@@ -26,6 +33,19 @@ const getById = async (req, res) => {
     console.error('Error en obtener rutina por id con ejercicios:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
+};
+
+const getRoutineById = async (req, res) => {
+    const { routineId } = req.params;
+    const routines = await Routines.getById(routineId);
+    if (!routines) return res.status(404).json({ message: 'Rutina no encontrada' });
+    res.json(routines);
+};
+
+const getRoutinesWithExercises = async (req, res) => {
+    const routines = await Routines.getAll();
+    const exercises = await Exercises.getAll();
+    res.json({ routines, exercises });
 };
 
 const getFilteredRoutines = async (req, res) => {
@@ -74,6 +94,79 @@ const getFilteredRoutines = async (req, res) => {
     console.error('Error al obtener rutinas:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
+};
+
+const getRoutineWithExercises = async (req, res) => {
+    const { routineId } = req.params;
+    // Obtener la rutina (devuelve array, tomar el primer elemento)
+    const rutinaResult = await Routines.getById(routineId);
+    if (!rutinaResult || rutinaResult.length === 0) {
+        return res.status(404).json({ message: 'Rutina no encontrada' });
+    }
+    const rutina = rutinaResult[0];
+
+    // Obtener los ejercicios de la rutina
+    const ejerciciosRutina = await Routines.getEjerciciosByRutinaId(routineId);
+    // Estructura: cada ejercicio es un objeto con los datos de la relación y del ejercicio
+    rutina.ejercicios = ejerciciosRutina || [];
+
+    res.json(rutina);
+};
+
+const getRoutineWithAllExercises = async (req, res) => {
+    const { routineId } = req.params;
+    const routines = await Routines.getById(routineId);
+    if (!routines) return res.status(404).json({ message: 'Rutina no encontrada' });
+    const exercises = await Exercises.getAll();
+    res.json({ routines, exercises });
+};
+
+const createRoutine = async (req, res) => {
+    const { dificultad_id, objetivos_id, metodos_id, nombre, observaciones } = req.body;
+    if (!dificultad_id || !objetivos_id || !metodos_id || !nombre) {
+        return res.status(400).json({ message: 'Faltan campos obligatorios' });
+    }
+    const result = await Routines.create({ dificultad_id, objetivos_id, metodos_id, nombre, observaciones });
+    const newRoutine = await Routines.getById(result.insertId);
+    res.status(201).json(newRoutine);
+};
+
+const updateRoutine = async (req, res) => {
+    const { routineId } = req.params;
+    const { dificultad_id, metodos_id, nombre, observaciones } = req.body;
+    if (!dificultad_id || !metodos_id || !nombre) {
+        return res.status(400).json({ message: 'Faltan campos obligatorios' });
+    }
+    const result = await Routines.update({ routineId, dificultad_id, metodos_id, nombre, observaciones });
+    if (result.affectedRows === 0) {
+        return res.status(404).json({ message: 'Rutina no encontrada' });
+    }
+    const updatedRoutine = await Routines.getById(routineId);
+    res.json(updatedRoutine);
+};
+
+const addExerciseToRoutine = async (req, res) => {
+    const { routineId } = req.params;
+    const { ejercicios_id, series, repeticiones, dia, orden, comentario } = req.body;
+    if (!ejercicios_id || !series || !repeticiones) {
+        return res.status(400).json({ message: 'Faltan campos obligatorios' });
+    }
+    const result = await Routines.addExerciseToRoutine({
+        rutinas_id: routineId,
+        ejercicios_id,
+        series,
+        repeticiones,
+        dia,
+        orden,
+        comentario
+    });
+    res.status(201).json({ message: 'Ejercicio añadido a la rutina', insertId: result.insertId });
+};
+
+const getPublicRoutinesWithExercises = async (req, res) => {
+    const routines = await Routines.getAllPublic();
+    const exercises = await Exercises.getAll();
+    res.json({ routines, exercises });
 };
 
 const getRoutineShared = async (req, res) => {
@@ -133,5 +226,14 @@ module.exports = {
   getAll,
   getById,
   getFilteredRoutines,
-  getRoutineShared
+  getRoutineShared,
+  getAllRoutines,
+  getRoutineById,
+  getRoutineWithExercises,
+  getRoutinesWithExercises,
+  getRoutineWithAllExercises,
+  updateRoutine,
+  createRoutine,
+  addExerciseToRoutine,
+  getPublicRoutinesWithExercises,
 };

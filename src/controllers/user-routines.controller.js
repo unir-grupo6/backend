@@ -97,8 +97,8 @@ const updateUserRoutine = async (req, res) => {
     // Add fields to update
     const updateFields = {};
     if (fecha_inicio_rutina  && fecha_fin_rutina) {
-        updateFields.inicio = dayjs(fecha_inicio_rutina, 'DD-MM-YYYY', true).format('YYYY-MM-DD');
-        updateFields.fin = dayjs(fecha_fin_rutina, 'DD-MM-YYYY', true).format('YYYY-MM-DD');
+        updateFields.inicio = dayjs(fecha_inicio_rutina, 'DD-MM-YYYY', true).format('DD-MM-YYYY');
+        updateFields.fin = dayjs(fecha_fin_rutina, 'DD-MM-YYYY', true).format('DD-MM-YYYY');
     }
     if (rutina_compartida === true || rutina_compartida === false) {
         updateFields.compartida = rutina_compartida ? 1 : 0;
@@ -441,18 +441,6 @@ const generatePdfFromUserRoutine = async (req, res) => {
 
 }
 
-module.exports = {
-    getRoutinesByUserId,
-    getRoutineById,
-    updateUserRoutine,
-    updateUserRoutineExercise,
-    saveUserRoutine,
-    addExerciseToRoutine,
-    removeUserRoutine,
-    removeExerciseFromRoutine
-    ,generatePdfFromUserRoutine
-};
-
 const copyExecrisesToRoutine = async (res, userRoutineId, generatedUserRoutineId) => {
     const exercises = await User.selectExercisesByUserRoutineId(userRoutineId);
     if (!exercises || exercises.length === 0) {
@@ -523,3 +511,18 @@ const formatRoutineWithExercises = async (userRoutine) => {
     
     return formattedRoutine;
 }
+
+module.exports = {
+    getRoutinesByUserId,
+    getRoutineById,
+    updateUserRoutine,
+    updateUserRoutineExercise,
+    saveUserRoutine,
+    addExerciseToRoutine,
+    removeUserRoutine,
+    removeExerciseFromRoutine,
+    generatePdfFromUserRoutine,
+    copyExecrisesToRoutine,
+    formatRoutineWithExercises
+};
+

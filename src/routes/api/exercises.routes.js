@@ -1,12 +1,12 @@
-const { getAll, getByMuscleAndDifficulty} = require('../../controllers/exercises.controller');
-const router = require('express').Router();
+// Rutas para ejercicios
+const express = require('express');
+const router = express.Router();
 const { checkToken } = require('../../middlewares/auth.middlewares');
+const exercisesController = require('../../controllers/exercises.controller');
 
-router.get('/',checkToken, getAll);
-router.get('/filter',checkToken, getByMuscleAndDifficulty);
-
-
-
-// Define your routes here
+router.get('/', checkToken, exercisesController.getAllExercises);
+router.get('/:ejercicioId', checkToken, exercisesController.getExerciseById);
+router.get('/', exercisesController.getAll);
+router.get('/filter', exercisesController.getByMuscleAndDifficulty);
 
 module.exports = router;
