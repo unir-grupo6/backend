@@ -64,6 +64,48 @@ const rutinaSugerida = async (obj) => {
     return result[0];
 }
 
+const getById = async (id) => {
+    //Obtener la rutina por id
+    const [result] = await db.query(
+        `SELECT 
+        r.id AS rutina_id,
+        r.nombre,
+        r.observaciones AS rutina_observaciones,
+        r.realizada,
+        d.nivel,
+        m.nombre AS metodo,
+        r.nombre AS objetivo,       
+        m.tiempo_aerobicos,
+        m.tiempo_anaerobicos,
+        m.observaciones AS metodo_observaciones,
+        o.nombre as objetivo,
+        m.descanso
+      FROM rutinas r
+      JOIN dificultad d ON r.dificultad_id = d.id
+      JOIN metodos m ON r.metodos_id = m.id
+      INNER JOIN objetivos AS o ON r.objetivos_id = o.id 
+      WHERE r.id = ?`, [id]);    
+    
+    return result[0];
+}
+
+const getByIdExercises = async (id) => {
+    //Obtener la rutina por id
+    const [result] = await db.query(
+        `SELECT eje.nombre,
+            ert.series,
+            ert.repeticiones,
+            ert.dia,
+            ert.comentario
+            from ejercicios_rutinas as ert
+            JOIN ejercicios as eje ON eje.id = ert.ejercicios_id
+            JOIN dificultad as dif ON eje.dificultad_id = dif.id
+            WHERE rutinas_id = ?
+            ORDER BY orden asc;`, [id]);    
+
+    console.log(result, ' - RESULTADO DE EJERCICIOS POR ID - ARRAY COMPLETO');
+    return result;
+}
 
 const autoGenerate = async (id) => {
    
@@ -79,5 +121,7 @@ module.exports = {
     rutinasRealizadas, 
     objetivosUsuario,
     rutinasAutogeneradas,
-    rutinaSugerida
+    rutinaSugerida,
+    getById,
+    getByIdExercises
 };

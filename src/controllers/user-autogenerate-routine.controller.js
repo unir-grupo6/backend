@@ -1,7 +1,27 @@
 const auto = require('../models/user-autogenerate-routine.model');
-const rutines = require('../models/rutines.model');
 
 
+const generarJson = (headerObj,exercisesObj) => {
+// "nivel": nivel,
+
+    const {rutina_id, nombre, rutina_observaciones, realizada, metodo, objetivo, tiempo_aerobicos, 
+        tiempo_anaerobicos, metodo_observaciones, descanso, } = headerObj
+
+    const obj = {
+        "rutina_id": rutina_id,
+        "nombre": nombre,
+        "rutina_observaciones": rutina_observaciones,
+        "realizada": realizada,        
+        "metodo": metodo,
+        "objetivo": objetivo,
+        "tiempo_aerobicos": tiempo_aerobicos,
+        "tiempo_anaerobicos": tiempo_anaerobicos,
+        "metodo_observaciones": metodo_observaciones,
+        "descanso": descanso,
+        "ejercicios": exercisesObj
+    };
+    return obj 
+}
 
 const autoGenerate = async (req, res) => {
 
@@ -23,8 +43,7 @@ const autoGenerate = async (req, res) => {
         result = await auto.objetivosUsuario(id);
 
         usuarioObjetivos.idusuario = id;
-        usuarioObjetivos.objetivo = result[0].id_objetivos; 
-        console.log(usuarioObjetivos, ' - OBJETIVO DEL USUARIO EN CONTROLADOR');       
+        usuarioObjetivos.objetivo = result[0].id_objetivos;               
         
         result = await auto.rutinasRealizadas(id);
 
@@ -43,16 +62,19 @@ const autoGenerate = async (req, res) => {
         // Actualizar el objeto con todos los IDs combinados
         usuarioObjetivos.rutinas_realizadas = rutinasIds;        
 
-        result = await auto.rutinaSugerida(usuarioObjetivos);
-        console.log(result, ' - RUTINA SUGERIDA EN CONTROLADOR');
+        result = await auto.rutinaSugerida(usuarioObjetivos);        
 
         if (!result) {
             return res.status(499).json({ message: 'No se han sugerido rutinas' });
         }
-
-        rutina = await rutines.getById(result.id);
         
-        return res.status(201).json(rutina);
+        rutina = await auto.getById(result.id);  
+        arrejercicios = await auto.getByIdExercises(result.id); 
+
+         const rutinaCompleta = generarJson(rutina, arrejercicios); //Devolvemos la cabecera de la rutina JSON
+
+
+        return res.status(201).json(rutinaCompleta);
     
     }
     catch (error) {
