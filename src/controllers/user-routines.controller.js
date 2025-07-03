@@ -1,3 +1,4 @@
+
 const dayjs = require('dayjs');
 const customParseFormat = require("dayjs/plugin/customParseFormat");
 dayjs.extend(customParseFormat);
@@ -45,6 +46,37 @@ const getRoutinesByUserId = async (req, res) => {
 
     res.json(user);
 }
+
+// Endpoint para obtener todos los ejercicios de todas las rutinas de usuario autenticado
+const getAllUserExercises = async (req, res) => {
+    const user = req.user;
+    try {
+        // Método que debe estar implementado en el modelo user-routines.model.js
+        const allExercises = await User.selectAllExercisesByUserId(user.id);
+        if (!allExercises || allExercises.length === 0) {
+            return res.status(404).json({ message: 'No se encontraron ejercicios para las rutinas del usuario.' });
+        }
+        // Agrupar ejercicios por rutina_usuario_id y devolver como array de objetos
+        const rutinasMap = {};
+        // biome-ignore lint/complexity/noForEach: <explanation>
+        allExercises.forEach(ej => {
+            if (!rutinasMap[ej.rutina_usuario_id]) {
+                rutinasMap[ej.rutina_usuario_id] = {
+                    rutina_usuario_id: ej.rutina_usuario_id,
+                    rutina_nombre: ej.rutina_nombre,
+                    ejercicios: []
+                };
+            }
+            // Eliminar campos duplicados en el array de ejercicios
+            const { rutina_usuario_id, rutina_nombre, ...ejercicio } = ej;
+            rutinasMap[ej.rutina_usuario_id].ejercicios.push(ejercicio);
+        });
+        const rutinasArray = Object.values(rutinasMap);
+        return res.json(rutinasArray);
+    } catch (error) {
+        return res.status(500).json({ message: 'Error al obtener los ejercicios de las rutinas del usuario', error });
+    }
+};
 
 const getRoutineById = async (req, res) => {
     const user = req.user;
@@ -443,9 +475,9 @@ const generatePdfFromUserRoutine = async (req, res) => {
 
 const copyExecrisesToRoutine = async (res, userRoutineId, generatedUserRoutineId) => {
     const exercises = await User.selectExercisesByUserRoutineId(userRoutineId);
-    if (!exercises || exercises.length === 0) {
-        res.status(404).json({ message: 'No exercises found for the specified routine.' });
-    }
+    // if (!exercises || exercises.length === 0) {
+    //     res.status(404).json({ message: 'No exercises found for the specified routine.' });
+    // }
     for (const exercise of exercises) {
         const {ejercicios_id, series, repeticiones, dia, orden, comentario } = exercise;
         try {
@@ -524,5 +556,6 @@ module.exports = {
     generatePdfFromUserRoutine,
     copyExecrisesToRoutine,
     formatRoutineWithExercises
+    ,getAllUserExercises
 };
 

@@ -13,7 +13,7 @@ const selectRoutinesByUserId = async (userId, page, limit) => {
     const [result] = await db.query(
         `
         SELECT RU.id as rutina_id, R.nombre, 
-		    RU.inicio as fecha_inicio_rutina, RU.fin as fecha_fin_rutina, RU.dia, RU.compartida as rutina_compartida,
+            RU.inicio as fecha_inicio_rutina, RU.fin as fecha_fin_rutina, RU.dia, RU.compartida as rutina_compartida,
             R.observaciones as rutina_observaciones, D.nivel,
             M.nombre as metodo_nombre, M.tiempo_aerobicos, M.tiempo_anaerobicos, M.descanso, M.observaciones as metodo_observaciones
         FROM usuarios U
@@ -57,7 +57,7 @@ const selectActiveRoutinesByUserId = async (userId, page, limit) => {
     const [result] = await db.query(
         `
         SELECT RU.id as rutina_id, R.nombre, 
-		    RU.inicio as fecha_inicio_rutina, RU.fin as fecha_fin_rutina, RU.dia, RU.compartida as rutina_compartida,
+            RU.inicio as fecha_inicio_rutina, RU.fin as fecha_fin_rutina, RU.dia, RU.compartida as rutina_compartida,
             R.observaciones as rutina_observaciones, D.nivel,
             M.nombre as metodo_nombre, M.tiempo_aerobicos, M.tiempo_anaerobicos, M.descanso, M.observaciones as metodo_observaciones
         FROM usuarios U
@@ -77,7 +77,7 @@ const selectRoutineByRoutineId = async (routineId) => {
     const [result] = await db.query(
         `
         SELECT RU.id as rutina_id, R.nombre, 
-		    RU.inicio as fecha_inicio_rutina, RU.fin as fecha_fin_rutina, RU.dia, RU.compartida as rutina_compartida,
+            RU.inicio as fecha_inicio_rutina, RU.fin as fecha_fin_rutina, RU.dia, RU.compartida as rutina_compartida,
             R.observaciones as rutina_observaciones, D.nivel,
             M.nombre as metodo_nombre, M.tiempo_aerobicos, M.tiempo_anaerobicos, M.descanso, M.observaciones as metodo_observaciones
         FROM rutinas_usuarios RU
@@ -95,7 +95,7 @@ const selectRoutineByUserIdRoutineId = async (userId, routineId) => {
     const [result] = await db.query(
         `
         SELECT RU.id as rutina_id, R.nombre, 
-		    RU.inicio as fecha_inicio_rutina, RU.fin as fecha_fin_rutina, RU.dia, RU.compartida as rutina_compartida,
+            RU.inicio as fecha_inicio_rutina, RU.fin as fecha_fin_rutina, RU.dia, RU.compartida as rutina_compartida,
             R.observaciones as rutina_observaciones, D.nivel,
             M.nombre as metodo_nombre, M.tiempo_aerobicos, M.tiempo_anaerobicos, M.descanso, M.observaciones as metodo_observaciones
         FROM usuarios U
@@ -229,6 +229,26 @@ const deleteUserRoutineExercise = async (exerciseId) => {
     return result;
 }
 
+// Obtener todos los ejercicios de todas las rutinas de usuario autenticado
+const selectAllExercisesByUserId = async (userId) => {
+    const [result] = await db.query(
+        `
+        SELECT EU.id as user_exercise_id, EU.ejercicios_id, EU.rutinas_usuarios_id,
+            EU.orden, E.nombre, E.tipo, E.inicio as step_1, E.fin as step_2, GM.nombre as grupos_musculares,
+            EU.series, EU.repeticiones, EU.comentario, RU.id as rutina_usuario_id, R.nombre as rutina_nombre
+        FROM rutinas_usuarios RU
+            INNER JOIN ejercicios_usuarios EU ON EU.rutinas_usuarios_id = RU.id
+            INNER JOIN ejercicios E ON E.id = EU.ejercicios_id
+            INNER JOIN grupos_musculares GM ON GM.id = E.grupos_musculares_id
+            INNER JOIN rutinas R ON R.id = RU.rutinas_id
+        WHERE RU.usuarios_id = ?
+        ORDER BY RU.id, EU.orden ASC
+        `,
+        [userId]
+    );
+    return result;
+};
+
 module.exports = {
     selectUserRoutineById,
     selectRoutinesByUserId,
@@ -246,5 +266,6 @@ module.exports = {
     insertUserRoutine,
     insertUserRoutineExercise,
     deleteUserRoutine,
-    deleteUserRoutineExercise
+    deleteUserRoutineExercise,
+    selectAllExercisesByUserId
 };

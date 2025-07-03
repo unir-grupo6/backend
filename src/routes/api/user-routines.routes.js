@@ -7,6 +7,8 @@ router.get('/', checkToken, getRoutinesByUserId);
 router.get('/:routineId', checkToken, getRoutineById);
 router.get('/generate/:userRoutineId', checkToken, generatePdfFromUserRoutine);
 
+
+
 router.patch('/:userRoutineId', checkToken, updateUserRoutine);
 router.patch('/:userRoutineId/exercises/:exerciseId', checkToken, updateUserRoutineExercise);
 

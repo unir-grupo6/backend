@@ -74,7 +74,7 @@ GET {{host}}/api/exercises
 Authorization: {{token}}
 
 ###
-GET {{host}}/api/exercises/1
+GET {{host}}/api/exercises/2
 Authorization: {{token}}
 
 ### Rutinas & rutinas_ejercicios
@@ -205,7 +205,7 @@ Authorization: {{token}}
 DELETE {{host}}/api/user-routines/18
 Authorization: {{token}}
 ###
-PATCH {{host}}/api/user-routines/18
+PATCH {{host}}/api/user-routines/13
 Authorization: {{token}}
 Content-Type: application/json
 
