@@ -331,6 +331,9 @@ const updateUser = async (req, res) => {
         }
 
         const updatedUser = await User.getById(user.id);
+        updatedUser.fecha_nacimiento = dayjs(updatedUser.fecha_nacimiento).format('DD-MM-YYYY');
+        updatedUser.fecha_alta = dayjs(updatedUser.fecha_alta).format('DD-MM-YYYY HH:mm:ss');
+
         return res.json(updatedUser);
 
     } catch (error) {
