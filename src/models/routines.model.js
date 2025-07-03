@@ -59,7 +59,7 @@ const getEjerciciosByRutinaId = async (id) => {
   return ejercicios;
 };
 
-const rutinesFiltered = async (objetivos_id, dificultad_id, metodos_id) => {
+const routinesFiltered = async (objetivos_id, dificultad_id, metodos_id) => {
   let query = `
     SELECT 
       r.id AS rutina_id,
@@ -117,7 +117,7 @@ const rutinesFiltered = async (objetivos_id, dificultad_id, metodos_id) => {
   return result;
 };
 
-const rutineShared = async () => {
+const routinesShared = async (user_id) => {
   try {
     const [result] = await db.query(`
       SELECT 
@@ -149,8 +149,9 @@ const rutineShared = async () => {
       LEFT JOIN ejercicios e ON eu.ejercicios_id = e.id
       LEFT JOIN grupos_musculares gm ON e.grupos_musculares_id = gm.id
       LEFT JOIN ejercicios_rutinas er ON e.id = er.ejercicios_id AND r.id = er.rutinas_id
-      WHERE ru.compartida = 1
-    `);
+      WHERE ru.compartida = 1 and ru.usuarios_id != ?
+    `
+    , [user_id]);
     return result;
   } catch (error) {
     console.error("Error al obtener las rutinas compartidas:", error);
@@ -164,6 +165,6 @@ module.exports = {
   selectAll,
   getById,
   getEjerciciosByRutinaId,
-  rutinesFiltered,
-  rutineShared
+  routinesFiltered,
+  routinesShared
 };

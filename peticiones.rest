@@ -90,37 +90,37 @@ Authorization: {{token}}
 ### RUTINAS
 
 ### Sin filtros (todas las rutinas)
-GET {{host}}/api/rutines
+GET {{host}}/api/routines
 Authorization: {{token}}
 
 ### Rutinas por id
-GET {{host}}/api/rutines/rutina/10
+GET {{host}}/api/routines/rutina/10
 Authorization: {{token}}
 
 
 ### Sin filtros
-GET {{host}}/api/rutines/filter
+GET {{host}}/api/routines/filter
 Authorization: {{token}}
 
 ### Solo objetivo
-GET {{host}}/api/rutines/filter?objetivos_id=3
+GET {{host}}/api/routines/filter?objetivos_id=3
 Authorization: {{token}}
 
 ### Solo método
-GET {{host}}/api/rutines/filter?metodos_id=1
+GET {{host}}/api/routines/filter?metodos_id=1
 Authorization: {{token}}
 
 ### Solo dificultad
-GET {{host}}/api/rutines/filter?dificultad_id=1
+GET {{host}}/api/routines/filter?dificultad_id=1
 Authorization: {{token}}
 
 ### Dos filtros
-GET {{host}}/api/rutines/filter?objetivos_id=1&metodos_id=1
+GET {{host}}/api/routines/filter?objetivos_id=1&metodos_id=1
 Authorization: {{token}}
 
 
 ### Todos los filtros
-GET {{host}}/api/rutines/filter?objetivos_id=1&dificultad_id=1&metodos_id=1
+GET {{host}}/api/routines/filter?objetivos_id=1&dificultad_id=1&metodos_id=1
 Authorization: {{token}}
 
 ###
@@ -184,5 +184,5 @@ Authorization: {{token}}
 
 
 ### Rutinas compartidas
-GET {{host}}/api/rutines/shared
+GET {{host}}/api/routines/shared
 Authorization: {{token}}

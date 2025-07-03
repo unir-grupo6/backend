@@ -15,7 +15,6 @@
   - [User Routines](#user-routines)
     - [Get logged-in user's routines (paginated)](#get-logged-in-users-routines-paginated)
     - [Get a specific routine of the logged-in user](#get-a-specific-routine-of-the-logged-in-user)
-    - [Get shared routines excluding those of the logged-in user](#get-shared-routines-excluding-those-of-the-logged-in-user)
     - [Save a user routine](#save-a-user-routine)
     - [Delete a user routine](#delete-a-user-routine)
     - [Update a user routine](#update-a-user-routine)
@@ -35,10 +34,11 @@
   - [Goals](#goals)
     - [Get all goals](#get-all-goals)
     - [Get goal by ID](#get-goal-by-id)
-  - [Rutines](#rutines)
-    - [Get all rutines](#get-all-rutines)
-    - [Get rutine by ID](#get-rutine-by-id)
-    - [Get rutines by goals, difficulty and method](#get-rutines-by-goals-difficulty-and-method)
+  - [Routines](#routines)
+    - [Get shared routines (excluding those of the logged-in user)](#get-shared-routines-excluding-those-of-the-logged-in-user)
+    - [Get all routines](#get-all-routines)
+    - [Get routine by ID](#get-routine-by-id)
+    - [Get routines by goals, difficulty and method](#get-routines-by-goals-difficulty-and-method)
   - [Exercises](#exercises)
     - [Get all exercises](#get-all-exercises)
     - [Get exercises by muscle group and difficulty](#get-exercises-by-muscle-group-and-difficulty)
@@ -261,56 +261,6 @@
   - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
   - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
   - **404 Not Found**: `{ "message": "Routine not found" }` — The routine does not exist or does not belong to the user.
-  - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
-
-### Get shared routines excluding those of the logged-in user
-- **Method**: GET
-- **URL**: /api/user-routines/shared?page=1&limit=5
-- **Headers**: Authorization: `{token}`
-- **Query Parameters**:
-  - `page` (number, optional): Page number of the results. Default: 1.
-  - `limit` (number, optional): Maximum number of routines per page. Default: 5.
-- **Response**: An array of shared routines belonging to the authenticated user (paginated). Each routine has the same structure as in the paginated routines endpoint, for example:
-  ```json
-  [
-    {
-      "rutina_id": 123,
-      "nombre": "Routine name",
-      "fecha_inicio_rutina": "24-06-2025",
-      "fecha_fin_rutina": "30-06-2025",
-      "dia": 1,
-      "rutina_compartida": true,
-      "observaciones": "...",
-      "nivel": "Intermedio",
-      "metodo_nombre": "Fullbody",
-      "tiempo_aerobicos": 10,
-      "tiempo_anaerobicos": 20,
-      "descanso": 60,
-      "metodo_observaciones": "...",
-      "ejercicios": [
-        {
-          "orden": 1,
-          "nombre": "Press banca",
-          "tipo": "Pecho",
-          "step_1": "...",
-          "step_2": "...",
-          "grupos_musculares": "Pectoral",
-          "series": 4,
-          "repeticiones": 10,
-          "comentario": "..."
-        }
-        // ...
-      ]
-    }
-    // ...
-  ]
-  ```
-- **Possible errors**:
-  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
-  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
-  - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
-  - **404 Not Found**: `{ "message": "No shared routines found" }` — The user has no shared routines.
-  - **500 Internal Server Error**: `{ "message": "Error formatting routine with exercises" }` — There was a problem formatting a routine with its exercises.
   - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
 
 ### Save a user routine
@@ -618,42 +568,92 @@
   - **404 Not Found**: `{ "message": "Goal not found" }` — The goal does not exist.
   - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
 
-## Rutines
+## Routines
 
-### Get all rutines
+### Get shared routines (excluding those of the logged-in user)
 - **Method**: GET
-- **URL**: /api/rutines
+- **URL**: /api/routines/shared?page=1&limit=5
 - **Headers**: Authorization: `{token}`
-- **Response**: An array with all the rutines
+- **Query Parameters**:
+  - `page` (number, optional): Page number of the results. Default: 1.
+  - `limit` (number, optional): Maximum number of routines per page. Default: 5.
+- **Response**: An array of shared routines (not created by the logged-in user), paginated. Each routine has the same structure as in the other routines endpoints, for example:
+  ```json
+  [
+    {
+      "rutina_id": 123,
+      "nombre": "Routine name",
+      "fecha_inicio_rutina": "24-06-2025",
+      "fecha_fin_rutina": "30-06-2025",
+      "dia": 1,
+      "rutina_compartida": true,
+      "observaciones": "...",
+      "nivel": "Intermedio",
+      "metodo_nombre": "Fullbody",
+      "tiempo_aerobicos": 10,
+      "tiempo_anaerobicos": 20,
+      "descanso": 60,
+      "metodo_observaciones": "...",
+      "ejercicios": [
+        {
+          "orden": 1,
+          "nombre": "Press banca",
+          "tipo": "Pecho",
+          "step_1": "...",
+          "step_2": "...",
+          "grupos_musculares": "Pectoral",
+          "series": 4,
+          "repeticiones": 10,
+          "comentario": "..."
+        }
+        // ...
+      ]
+    }
+    // ...
+  ]
+  ```
+- **Possible errors**:
+  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
+  - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
+  - **404 Not Found**: `{ "message": "No shared routines found" }` — No shared routines were found.
+  - **500 Internal Server Error**: `{ "message": "Error formatting routine with exercises" }` — There was a problem formatting a routine with its exercises.
+  - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
+
+### Get all routines
+- **Method**: GET
+- **URL**: /api/routines
+- **Headers**: Authorization: `{token}`
+- **Response**: An array with all the routines
 - **Possible errors**:
   - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
   - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
   - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
 
-### Get rutine by ID
+### Get routine by ID
 - **Method**: GET
-- **URL**: /api/rutines/rutina/`{id}`
+- **URL**: /api/routines/rutina/`{id}`
 - **Headers**: Authorization: `{token}`
-- **Response**: The rutine object with the specified ID, including its associated exercises
+- **Response**: The routine object with the specified ID, including its associated exercises
 - **Possible errors**:
   - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
   - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
-  - **404 Not Found**: `{ "message": "Rutine not found" }` — The rutine does not exist.
+  - **404 Not Found**: `{ "message": "Routine not found" }` — The routine does not exist.
   - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
 
-### Get rutines by goals, difficulty and method
+### Get routines by goals, difficulty and method
 - **Method**: GET
-- **URL**: /api/rutines/filter?objetivos_id=`{id}`&dificultad_id=`{id}`&metodos_id=`{id}`
+- **URL**: /api/routines/filter?objetivos_id=`{id}`&dificultad_id=`{id}`&metodos_id=`{id}`
 - **Headers**: Authorization: `{token}`
 - **Query Parameters**:
   - `objetivos_id` (int): The ID of the goal
   - `dificultad_id` (int): The ID of the difficulty
   - `metodos_id` (int): The ID of the method
-  - **Response**: An array with the rutines matching the specified filters, each including their associated exercises
+  - **Response**: An array with the routines matching the specified filters, each including their associated exercises
 - **Possible errors**:
   - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
   - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
-  - **404 Not Found**: `{ "message": "No rutines found for the given criteria" }` — No rutines match the given criteria.
+  - **404 Not Found**: `{ "message": "No routines found for the given criteria" }` — No routines match the given criteria.
   - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
 
   

@@ -61,35 +61,6 @@ const getRoutineById = async (req, res) => {
     res.json(formattedRoutine);
 }
 
-const getSharedRoutines = async (req, res) => {
-    const user = req.user;
-    const { page = 1, limit = 5 } = req.query;
-    const sharedRoutines = await User.selectSharedRoutinesByUserId(user.id, Number(page), Number(limit));
-    if (!sharedRoutines || sharedRoutines.length === 0) {
-        return res.status(404).json({ message: 'No shared routines found' });
-    }
-    // Get the total number of shared routines and total pages
-    const totalSharedRoutines = await User.countSharedRoutinesByUserId(user.id);
-    const totalPages = Math.ceil(totalSharedRoutines / limit);
-    user.total_shared_routines = totalSharedRoutines;
-    user.current_page = Number(page);
-    user.total_pages = totalPages;
-    const formattedRoutines = [];
-    for (const routine of sharedRoutines) {
-        try {
-            const formattedRoutine = await formatRoutineWithExercises(routine);
-            if (formattedRoutine) {
-                formattedRoutines.push(formattedRoutine);
-            } else {
-                return res.status(500).json({ message: 'Error formatting routine with exercises' });
-            }
-        } catch (error) {
-            res.status(500).json({ message: 'Error formatting routine with exercises' });
-        }
-    }
-    res.json(formattedRoutines);
-}
-
 const updateUserRoutine = async (req, res) => {
     const user = req.user;
     const { userRoutineId } = req.params;
@@ -473,7 +444,6 @@ const generatePdfFromUserRoutine = async (req, res) => {
 module.exports = {
     getRoutinesByUserId,
     getRoutineById,
-    getSharedRoutines,
     updateUserRoutine,
     updateUserRoutineExercise,
     saveUserRoutine,

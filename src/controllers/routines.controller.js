@@ -1,9 +1,9 @@
-const Rutines = require('../models/rutines.model');
+const Routines = require('../models/routines.model');
 
 const getAll = async (req, res) => {
   try {
-    const rutines = await Rutines.selectAll();
-    res.json(rutines);
+    const routines = await Routines.selectAll();
+    res.json(routines);
   } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -12,13 +12,13 @@ const getAll = async (req, res) => {
 const getById = async (req, res) => {
   const { id } = req.params;
   try {
-    const rutinaResult = await Rutines.getById(id);
+    const rutinaResult = await Routines.getById(id);
     if (!rutinaResult || rutinaResult.length === 0) {
-      return res.status(404).json({ message: 'Rutine not found' });
+      return res.status(404).json({ message: 'Routine not found' });
     }
     const rutina = rutinaResult[0];
 
-    const ejercicios = await Rutines.getEjerciciosByRutinaId(id);
+    const ejercicios = await Routines.getEjerciciosByRutinaId(id);
     rutina.ejercicios = ejercicios || [];
 
     res.json(rutina);
@@ -31,7 +31,7 @@ const getById = async (req, res) => {
 const getFilteredRoutines = async (req, res) => {
   try {
     const { objetivos_id, dificultad_id, metodos_id } = req.query;
-    const rows = await Rutines.rutinesFiltered(objetivos_id, dificultad_id, metodos_id);
+    const rows = await Routines.routinesFiltered(objetivos_id, dificultad_id, metodos_id);
 
     const rutinasMap = {};
 
@@ -76,9 +76,10 @@ const getFilteredRoutines = async (req, res) => {
   }
 };
 
-const getRutineShared = async (req, res) => {
+const getRoutineShared = async (req, res) => {
+  const user = req.user;
   try {
-    const rows = await Rutines.rutineShared();
+    const rows = await Routines.routinesShared(user.id);
 
     const rutinasMap = {};
 
@@ -132,5 +133,5 @@ module.exports = {
   getAll,
   getById,
   getFilteredRoutines,
-  getRutineShared
+  getRoutineShared
 };
