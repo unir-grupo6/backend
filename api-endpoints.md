@@ -15,6 +15,7 @@
   - [User Routines](#user-routines)
     - [Get logged-in user's routines (paginated)](#get-logged-in-users-routines-paginated)
     - [Get a specific routine of the logged-in user](#get-a-specific-routine-of-the-logged-in-user)
+    - [Get shared routines excluding those of the logged-in user](#get-shared-routines-excluding-those-of-the-logged-in-user)
     - [Save a user routine](#save-a-user-routine)
     - [Delete a user routine](#delete-a-user-routine)
     - [Update a user routine](#update-a-user-routine)
@@ -262,6 +263,56 @@
   - **404 Not Found**: `{ "message": "Routine not found" }` — The routine does not exist or does not belong to the user.
   - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
 
+### Get shared routines excluding those of the logged-in user
+- **Method**: GET
+- **URL**: /api/user-routines/shared?page=1&limit=5
+- **Headers**: Authorization: `{token}`
+- **Query Parameters**:
+  - `page` (number, optional): Page number of the results. Default: 1.
+  - `limit` (number, optional): Maximum number of routines per page. Default: 5.
+- **Response**: An array of shared routines belonging to the authenticated user (paginated). Each routine has the same structure as in the paginated routines endpoint, for example:
+  ```json
+  [
+    {
+      "rutina_id": 123,
+      "nombre": "Routine name",
+      "fecha_inicio_rutina": "24-06-2025",
+      "fecha_fin_rutina": "30-06-2025",
+      "dia": 1,
+      "rutina_compartida": true,
+      "observaciones": "...",
+      "nivel": "Intermedio",
+      "metodo_nombre": "Fullbody",
+      "tiempo_aerobicos": 10,
+      "tiempo_anaerobicos": 20,
+      "descanso": 60,
+      "metodo_observaciones": "...",
+      "ejercicios": [
+        {
+          "orden": 1,
+          "nombre": "Press banca",
+          "tipo": "Pecho",
+          "step_1": "...",
+          "step_2": "...",
+          "grupos_musculares": "Pectoral",
+          "series": 4,
+          "repeticiones": 10,
+          "comentario": "..."
+        }
+        // ...
+      ]
+    }
+    // ...
+  ]
+  ```
+- **Possible errors**:
+  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
+  - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
+  - **404 Not Found**: `{ "message": "No shared routines found" }` — The user has no shared routines.
+  - **500 Internal Server Error**: `{ "message": "Error formatting routine with exercises" }` — There was a problem formatting a routine with its exercises.
+  - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
+
 ### Save a user routine
 - **Method**: POST
 - **URL**: /api/user-routines/`{userRoutineId}`/save
@@ -336,6 +387,7 @@
   - `fecha_inicio_rutina` (string, nullable, formato `YYYY-MM-DD`)
   - `fecha_fin_rutina` (string, nullable, formato `YYYY-MM-DD`)
   - `rutina_compartida` (boolean, nullable)
+  - `dia` (number, nullable): New value for the day of the routine
   - (At least one of these fields must be present)
 - **Response**: On success, returns the updated routine object (including exercises)
 - **Possible errors**:
@@ -346,6 +398,7 @@
   - **400 Bad Request**: `{ "message": "Invalid date format or non-existent date" }` — The date is not in `YYYY-MM-DD` format or is not una fecha real.
   - **400 Bad Request**: `{ "message": "Start date cannot be after end date" }` — The start date is after the end date.
   - **400 Bad Request**: `{ "message": "Invalid value for rutina_compartida, must be a boolean" }` — The value for `rutina_compartida` is not boolean.
+  - **400 Bad Request**: `{ "message": "Invalid value for dia, must be a number between 1 and 7" }` — The value for `dia` is not a number between 1 and 7.
   - **400 Bad Request**: `{ "message": "No fields to update" }` — No valid fields were provided in the request body.
   - **404 Not Found**: `{ "message": "No routines found for the specified user." }` — The routine does not exist or does not belong to the user.
   - **404 Not Found**: `{ "message": "Updated routine not found" }` — The routine could not be retrieved after updating.

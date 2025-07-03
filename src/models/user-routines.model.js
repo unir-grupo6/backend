@@ -91,6 +91,39 @@ const selectRoutineByRoutineId = async (routineId) => {
     return result[0];
 }
 
+const selectSharedRoutinesByUserId = async (userId, page, limit) => {
+    const [result] = await db.query(
+        `
+        SELECT RU.id as rutina_id, R.nombre, 
+            RU.inicio as fecha_inicio_rutina, RU.fin as fecha_fin_rutina, RU.dia, RU.compartida as rutina_compartida,
+            R.observaciones as rutina_observaciones, D.nivel,
+            M.nombre as metodo_nombre, M.tiempo_aerobicos, M.tiempo_anaerobicos, M.descanso, M.observaciones as metodo_observaciones
+        FROM rutinas_usuarios RU
+            INNER JOIN rutinas R ON R.id = RU.rutinas_id
+            INNER JOIN metodos M ON M.id = R.metodos_id
+            INNER JOIN dificultad D ON D.id = R.dificultad_id
+        WHERE RU.compartida = 1 AND RU.usuarios_id != ?
+        LIMIT ? OFFSET ?
+        `,
+        [userId, limit, (page - 1) * limit]
+    );
+    return result;
+}
+
+const countSharedRoutinesByUserId = async (userId) => {
+    const [result] = await db.query(
+        `
+        SELECT COUNT(*) as total
+        FROM rutinas_usuarios RU
+            INNER JOIN rutinas R ON R.id = RU.rutinas_id
+        WHERE RU.compartida = 1 AND RU.usuarios_id != ?
+        `,
+        [userId]
+    );
+    if (result.length === 0) return 0;
+    return result[0].total;
+}
+
 const selectRoutineByUserIdRoutineId = async (userId, routineId) => {
     const [result] = await db.query(
         `
@@ -236,6 +269,8 @@ module.exports = {
     selectUserRoutineByIdUserId,
     selectActiveRoutinesByUserId,
     selectRoutineByRoutineId,
+    countSharedRoutinesByUserId,
+    selectSharedRoutinesByUserId,
     selectRoutineByUserIdRoutineId,
     selectExercisesByUserRoutineId,
     selectExerciseById,

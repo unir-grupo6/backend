@@ -24,7 +24,7 @@ POST {{host}}/api/users/login
 Content-Type: application/json
 
 {
-    "email": "rana.gustavo@example.com",
+    "email": "markelkortajarena@gmail.com",
     "password": "Abcd1234*"
 }
 
@@ -130,23 +130,27 @@ Authorization: {{token}}
 GET {{host}}/api/user-routines?active=false
 Authorization: {{token}}
 ###
-GET {{host}}/api/user-routines/2
+GET {{host}}/api/user-routines/shared
+Authorization: {{token}}
+###
+GET {{host}}/api/user-routines/18
 Authorization: {{token}}
 ###
 POST {{host}}/api/user-routines/13/save
 Authorization: {{token}}
 ###
-DELETE {{host}}/api/user-routines/11
+DELETE {{host}}/api/user-routines/18
 Authorization: {{token}}
 ###
-PATCH {{host}}/api/user-routines/17
+PATCH {{host}}/api/user-routines/18
 Authorization: {{token}}
 Content-Type: application/json
 
 {
     "fecha_inicio_rutina": "22-09-2023",
     "fecha_fin_rutina": "30-09-2025",
-    "rutina_compartida": true
+    "rutina_compartida": true,
+    "dia": 1
 }
 ###
 POST {{host}}/api/user-routines/17/exercises

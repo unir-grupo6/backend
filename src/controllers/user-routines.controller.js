@@ -61,10 +61,39 @@ const getRoutineById = async (req, res) => {
     res.json(formattedRoutine);
 }
 
+const getSharedRoutines = async (req, res) => {
+    const user = req.user;
+    const { page = 1, limit = 5 } = req.query;
+    const sharedRoutines = await User.selectSharedRoutinesByUserId(user.id, Number(page), Number(limit));
+    if (!sharedRoutines || sharedRoutines.length === 0) {
+        return res.status(404).json({ message: 'No shared routines found' });
+    }
+    // Get the total number of shared routines and total pages
+    const totalSharedRoutines = await User.countSharedRoutinesByUserId(user.id);
+    const totalPages = Math.ceil(totalSharedRoutines / limit);
+    user.total_shared_routines = totalSharedRoutines;
+    user.current_page = Number(page);
+    user.total_pages = totalPages;
+    const formattedRoutines = [];
+    for (const routine of sharedRoutines) {
+        try {
+            const formattedRoutine = await formatRoutineWithExercises(routine);
+            if (formattedRoutine) {
+                formattedRoutines.push(formattedRoutine);
+            } else {
+                return res.status(500).json({ message: 'Error formatting routine with exercises' });
+            }
+        } catch (error) {
+            res.status(500).json({ message: 'Error formatting routine with exercises' });
+        }
+    }
+    res.json(formattedRoutines);
+}
+
 const updateUserRoutine = async (req, res) => {
     const user = req.user;
     const { userRoutineId } = req.params;
-    const { fecha_inicio_rutina, fecha_fin_rutina, rutina_compartida } = req.body;
+    const { fecha_inicio_rutina, fecha_fin_rutina, rutina_compartida, dia } = req.body;
     if ((fecha_inicio_rutina && !fecha_fin_rutina) || (!fecha_inicio_rutina && fecha_fin_rutina)) {
         return res.status(400).json({ message: 'Both start and end dates are required in case one is provided' });
     }
@@ -84,6 +113,9 @@ const updateUserRoutine = async (req, res) => {
     if( rutina_compartida !== undefined && typeof rutina_compartida !== 'boolean') {
         return res.status(400).json({ message: 'Invalid value for rutina_compartida, must be a boolean' });
     }
+    if (dia && (typeof dia !== 'number' || dia < 1 || dia > 7)) {
+        return res.status(400).json({ message: 'Invalid value for dia, must be a number between 1 and 7' });
+    }
 
     // Check if the user routine exists
     const userRoutine = await User.selectUserRoutineByIdUserId(user.id, userRoutineId);
@@ -99,6 +131,9 @@ const updateUserRoutine = async (req, res) => {
     }
     if (rutina_compartida === true || rutina_compartida === false) {
         updateFields.compartida = rutina_compartida ? 1 : 0;
+    }
+    if (dia) {
+        updateFields.dia = dia;
     }
 
     if (updateFields.length === 0) {
@@ -116,8 +151,6 @@ const updateUserRoutine = async (req, res) => {
     if (!updateResult || updateResult.affectedRows === 0) {
         return res.status(404).json({ message: 'No routines found for the specified user.' });
     }
-
-    console.log(updateFields);
 
     // Retrieve the updated routine
     const updatedRoutine = await User.selectRoutineByUserIdRoutineId(user.id, userRoutineId);
@@ -440,6 +473,7 @@ const generatePdfFromUserRoutine = async (req, res) => {
 module.exports = {
     getRoutinesByUserId,
     getRoutineById,
+    getSharedRoutines,
     updateUserRoutine,
     updateUserRoutineExercise,
     saveUserRoutine,
