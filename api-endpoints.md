@@ -34,10 +34,11 @@
   - [Goals](#goals)
     - [Get all goals](#get-all-goals)
     - [Get goal by ID](#get-goal-by-id)
-  - [Rutines](#rutines)
-    - [Get all rutines](#get-all-rutines)
-    - [Get rutine by ID](#get-rutine-by-id)
-    - [Get rutines by goals, difficulty and method](#get-rutines-by-goals-difficulty-and-method)
+  - [Routines](#routines)
+    - [Get shared routines (excluding those of the logged-in user)](#get-shared-routines-excluding-those-of-the-logged-in-user)
+    - [Get all routines](#get-all-routines)
+    - [Get routine by ID](#get-routine-by-id)
+    - [Get routines by goals, difficulty and method](#get-routines-by-goals-difficulty-and-method)
   - [Exercises](#exercises)
     - [Get all exercises](#get-all-exercises)
     - [Get exercises by muscle group and difficulty](#get-exercises-by-muscle-group-and-difficulty)
@@ -103,16 +104,19 @@
   - `apellidos` (string, required)
   - `email` (string, required)
   - `password` (string, required)
-  - `sexo` (string, required)
-  - `sexo` (number, required)
-    - 1: Hombre
-    - 2: Mujer
-    - 3: Otro / Prefiero no responder
-  - `fecha_nacimiento` (string, required, format: YYYY-MM-DD)
+  - `fecha_nacimiento` (string, required, format: DD-MM-YYYY)
   - `peso` (number, required)
   - `altura` (number, required)
+  - `objetivo_id` (number, required)
 - **Response**: The created user object
 - **Possible errors**:
+  - **400 Bad Request**: `{ "message": "Nombre, apellidos, email, password, fecha_nacimiento, peso, altura and objetivo_id are required" }` — One or more required fields are missing in the request body.
+  - **400 Bad Request**: `{ "message": "Nombre, apellidos, and email must be strings" }` — One or more of these fields are not strings.
+  - **400 Bad Request**: `{ "message": "Peso must be a number" }` — The value for `peso` is not a number.
+  - **400 Bad Request**: `{ "message": "Altura must be a number" }` — The value for `altura` is not a number.
+  - **400 Bad Request**: `{ "message": "Fecha de nacimiento must be a valid date" }` — The value for `fecha_nacimiento` is not a valid date.
+  - **400 Bad Request**: `{ "message": "Objetivo ID must be a number" }` — The value for `objetivo_id` is not a number.
+  - **400 Bad Request**: `{ "message": "Invalid objetivo_id" }` — The value for `objetivo_id` does not exist.
   - **400 Bad Request**: `{ "message": "Password is required." }` — The password field is missing (middleware).
   - **400 Bad Request**: `{ "message": "Password must be a string." }` — The password is not a string (middleware).
   - **400 Bad Request**: `{ "message": "Password cannot be empty." }` — The password is an empty string (middleware).
@@ -122,7 +126,10 @@
   - **400 Bad Request**: `{ "message": "Password must contain at least one number." }` — The password does not have a number (middleware).
   - **400 Bad Request**: `{ "message": "Password must contain at least one special character." }` — The password does not have a special character (middleware).
   - **403 Forbidden**: `{ "message": "Email already exists" }` — The email is already registered in the system.
-  - **400 Bad Request**: `{ "message": "Failed to update reset token" }` — There was a problem updating the reset token (rare, internal error).
+  - **400 Bad Request**: `{ "message": "Failed to register user" }` — There was a problem inserting the user in the database.
+  - **400 Bad Request**: `{ "message": "Failed to register user metrics" }` — There was a problem inserting user metrics in the database.
+  - **400 Bad Request**: `{ "message": "Failed to register user objective" }` — There was a problem inserting the user objective in the database.
+  - **400 Bad Request**: `{ "message": "Failed to retrieve new user" }` — There was a problem retrieving the new user after registration.
   - **404 Not Found**: `{ "message": "Not found" }` — The endpoint does not exist.
   - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
 
@@ -330,6 +337,7 @@
   - `fecha_inicio_rutina` (string, nullable, formato `YYYY-MM-DD`)
   - `fecha_fin_rutina` (string, nullable, formato `YYYY-MM-DD`)
   - `rutina_compartida` (boolean, nullable)
+  - `dia` (number, nullable): New value for the day of the routine
   - (At least one of these fields must be present)
 - **Response**: On success, returns the updated routine object (including exercises)
 - **Possible errors**:
@@ -340,6 +348,7 @@
   - **400 Bad Request**: `{ "message": "Invalid date format or non-existent date" }` — The date is not in `YYYY-MM-DD` format or is not una fecha real.
   - **400 Bad Request**: `{ "message": "Start date cannot be after end date" }` — The start date is after the end date.
   - **400 Bad Request**: `{ "message": "Invalid value for rutina_compartida, must be a boolean" }` — The value for `rutina_compartida` is not boolean.
+  - **400 Bad Request**: `{ "message": "Invalid value for dia, must be a number between 1 and 7" }` — The value for `dia` is not a number between 1 and 7.
   - **400 Bad Request**: `{ "message": "No fields to update" }` — No valid fields were provided in the request body.
   - **404 Not Found**: `{ "message": "No routines found for the specified user." }` — The routine does not exist or does not belong to the user.
   - **404 Not Found**: `{ "message": "Updated routine not found" }` — The routine could not be retrieved after updating.
@@ -559,57 +568,118 @@
   - **404 Not Found**: `{ "message": "Goal not found" }` — The goal does not exist.
   - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
 
-## Rutines
+## Routines
 
-### Get all rutines
+### Get shared routines (excluding those of the logged-in user)
 - **Method**: GET
-- **URL**: /api/rutines
-- **Headers**: None
-- **Response**: An array with all the rutines
-- **Possible errors**:
-  - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
-
-### Get rutine by ID
-- **Method**: GET
-- **URL**: /api/rutines/rutina/`{id}`
-- **Headers**: None
-- **Response**: The rutine object with the specified ID
-- **Possible errors**:
-  - **404 Not Found**: `{ "message": "Rutine not found" }` — The rutine does not exist.
-  - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
-
-### Get rutines by goals, difficulty and method
-- **Method**: GET
-- **URL**: /api/rutines/filter?objetivos_id=`{id}`&dificultad_id=`{id}`&metodos_id=`{id}`
-- **Headers**: None
+- **URL**: /api/routines/shared?page=1&limit=5
+- **Headers**: Authorization: `{token}`
 - **Query Parameters**:
-  - `objetivos_id` (int, required): The ID of the goal
-  - `dificultad_id` (int, required): The ID of the difficulty
-  - `metodos_id` (int, required): The ID of the method
-- **Response**: An array with the rutines matching the specified filters
+  - `page` (number, optional): Page number of the results. Default: 1.
+  - `limit` (number, optional): Maximum number of routines per page. Default: 5.
+- **Response**: An array of shared routines (not created by the logged-in user), paginated. Each routine has the same structure as in the other routines endpoints, for example:
+  ```json
+  [
+    {
+      "rutina_id": 123,
+      "nombre": "Routine name",
+      "fecha_inicio_rutina": "24-06-2025",
+      "fecha_fin_rutina": "30-06-2025",
+      "dia": 1,
+      "rutina_compartida": true,
+      "observaciones": "...",
+      "nivel": "Intermedio",
+      "metodo_nombre": "Fullbody",
+      "tiempo_aerobicos": 10,
+      "tiempo_anaerobicos": 20,
+      "descanso": 60,
+      "metodo_observaciones": "...",
+      "ejercicios": [
+        {
+          "orden": 1,
+          "nombre": "Press banca",
+          "tipo": "Pecho",
+          "step_1": "...",
+          "step_2": "...",
+          "grupos_musculares": "Pectoral",
+          "series": 4,
+          "repeticiones": 10,
+          "comentario": "..."
+        }
+        // ...
+      ]
+    }
+    // ...
+  ]
+  ```
 - **Possible errors**:
-  - **404 Not Found**: `{ "message": "No rutines found for the given criteria" }` — No rutines match the given criteria.
+  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
+  - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
+  - **404 Not Found**: `{ "message": "No shared routines found" }` — No shared routines were found.
+  - **500 Internal Server Error**: `{ "message": "Error formatting routine with exercises" }` — There was a problem formatting a routine with its exercises.
+  - **500 Internal Server Error**: `{ "message": "<error message>" }` — An unexpected server error occurred.
+
+### Get all routines
+- **Method**: GET
+- **URL**: /api/routines
+- **Headers**: Authorization: `{token}`
+- **Response**: An array with all the routines
+- **Possible errors**:
+  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
   - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
+
+### Get routine by ID
+- **Method**: GET
+- **URL**: /api/routines/rutina/`{id}`
+- **Headers**: Authorization: `{token}`
+- **Response**: The routine object with the specified ID, including its associated exercises
+- **Possible errors**:
+  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
+  - **404 Not Found**: `{ "message": "Routine not found" }` — The routine does not exist.
+  - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
+
+### Get routines by goals, difficulty and method
+- **Method**: GET
+- **URL**: /api/routines/filter?objetivos_id=`{id}`&dificultad_id=`{id}`&metodos_id=`{id}`
+- **Headers**: Authorization: `{token}`
+- **Query Parameters**:
+  - `objetivos_id` (int): The ID of the goal
+  - `dificultad_id` (int): The ID of the difficulty
+  - `metodos_id` (int): The ID of the method
+  - **Response**: An array with the routines matching the specified filters, each including their associated exercises
+- **Possible errors**:
+  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
+  - **404 Not Found**: `{ "message": "No routines found for the given criteria" }` — No routines match the given criteria.
+  - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
+
+  
 
 ## Exercises
 
 ### Get all exercises
 - **Method**: GET
 - **URL**: /api/exercises
-- **Headers**: None
+- **Headers**: Authorization: `{token}`
 - **Response**: An array with all the exercises
 - **Possible errors**:
+  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
   - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
 
 ### Get exercises by muscle group and difficulty
 - **Method**: GET
 - **URL**: /api/exercises/filter?grupos_musculares_id=`{id}`&dificultad_id=`{id}`
-- **Headers**: None
+- **Headers**: Authorization: `{token}`
 - **Query Parameters**:
-  - `grupos_musculares_id` (int, required): The ID of the muscle group
-  - `dificultad_id` (int, required): The ID of the difficulty
+  - `grupos_musculares_id` (int): The ID of the muscle group
+  - `dificultad_id` (int): The ID of the difficulty
 - **Response**: An array with the exercises matching the specified muscle group and difficulty
 - **Possible errors**:
-  - **400 Bad Request**: `{ "message": "muscleGroupId and difficultyId are required" }` — One or both query parameters are missing.
+  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
   - **404 Not Found**: `{ "message": "No exercises found for the given criteria" }` — No exercises match the given criteria.
   - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.

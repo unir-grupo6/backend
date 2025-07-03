@@ -7,6 +7,6 @@ router.use('/difficulties', require('./api/difficulties.routes'));
 router.use('/methods', require('./api/methods.routes'));
 router.use('/goals', require('./api/goals.routes'));
 router.use('/exercises', require('./api/exercises.routes'));
-router.use('/rutines', require('./api/rutines.routes'));
+router.use('/routines', require('./api/routines.routes'));
 
 module.exports = router;

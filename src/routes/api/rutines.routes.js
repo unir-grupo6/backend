@@ -14,6 +14,6 @@ router.get('/:rutineId', checkToken, rutinesController.getRutineById);
 router.post('/', checkToken, rutinesController.createRutine);
 router.put('/:rutineId', checkToken, rutinesController.updateRutine);
 router.post('/:rutineId/exercises', checkToken, rutinesController.addExerciseToRutine);
-// Define your routes here
+// Define your routes heres
 
 module.exports = router;

@@ -6,8 +6,8 @@ const router = require('express').Router();
 
 // USER RUTINES
 router.get('/', checkToken, getById);
-router.get('/rutines', checkToken, getRutinesByUserId);
-router.get('/rutines/:rutineId', checkToken, getRutineById);
+router.get('/routines', checkToken, getRutinesByUserId);
+router.get('/routines/:routineId', checkToken, getRutineById);
 
 router.post('/register', checkPassword, registro);
 router.post('/login', login);

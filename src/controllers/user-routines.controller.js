@@ -40,8 +40,8 @@ const getRoutinesByUserId = async (req, res) => {
     }
     user.rutinas = formattedRoutines;
 
-    user.fecha_nacimiento = dayjs(user.fecha_nacimiento).format('YYYY-MM-DD');
-    user.fecha_alta = dayjs(user.fecha_alta).format('YYYY-MM-DD HH:mm:ss');
+    user.fecha_nacimiento = dayjs(user.fecha_nacimiento).format('DD-MM-YYYY');
+    user.fecha_alta = dayjs(user.fecha_alta).format('DD-MM-YYYY HH:mm:ss');
 
     res.json(user);
 }
@@ -64,25 +64,28 @@ const getRoutineById = async (req, res) => {
 const updateUserRoutine = async (req, res) => {
     const user = req.user;
     const { userRoutineId } = req.params;
-    const { fecha_inicio_rutina, fecha_fin_rutina, rutina_compartida } = req.body;
+    const { fecha_inicio_rutina, fecha_fin_rutina, rutina_compartida, dia } = req.body;
     if ((fecha_inicio_rutina && !fecha_fin_rutina) || (!fecha_inicio_rutina && fecha_fin_rutina)) {
         return res.status(400).json({ message: 'Both start and end dates are required in case one is provided' });
     }
 
     // Validations
     if (
-        (fecha_inicio_rutina && !dayjs(fecha_inicio_rutina, 'YYYY-MM-DD', true).isValid()) ||
-        (fecha_fin_rutina && !dayjs(fecha_fin_rutina, 'YYYY-MM-DD', true).isValid())
+        (fecha_inicio_rutina && !dayjs(fecha_inicio_rutina, 'DD-MM-YYYY', true).isValid()) ||
+        (fecha_fin_rutina && !dayjs(fecha_fin_rutina, 'DD-MM-YYYY', true).isValid())
     ) {
         return res.status(400).json({ message: 'Invalid date format or non-existent date' });
     }
     if (
         (fecha_inicio_rutina && fecha_fin_rutina) && 
-        dayjs(fecha_inicio_rutina, 'YYYY-MM-DD', true).isAfter(dayjs(fecha_fin_rutina, 'YYYY-MM-DD', true))) {
+        dayjs(fecha_inicio_rutina, 'DD-MM-YYYY', true).isAfter(dayjs(fecha_fin_rutina, 'DD-MM-YYYY', true))) {
         return res.status(400).json({ message: 'Start date cannot be after end date' });
     }
     if( rutina_compartida !== undefined && typeof rutina_compartida !== 'boolean') {
         return res.status(400).json({ message: 'Invalid value for rutina_compartida, must be a boolean' });
+    }
+    if (dia && (typeof dia !== 'number' || dia < 1 || dia > 7)) {
+        return res.status(400).json({ message: 'Invalid value for dia, must be a number between 1 and 7' });
     }
 
     // Check if the user routine exists
@@ -94,11 +97,14 @@ const updateUserRoutine = async (req, res) => {
     // Add fields to update
     const updateFields = {};
     if (fecha_inicio_rutina  && fecha_fin_rutina) {
-        updateFields.inicio = dayjs(fecha_inicio_rutina, 'YYYY-MM-DD', true).format('YYYY-MM-DD');
-        updateFields.fin = dayjs(fecha_fin_rutina, 'YYYY-MM-DD', true).format('YYYY-MM-DD');
+        updateFields.inicio = dayjs(fecha_inicio_rutina, 'DD-MM-YYYY', true).format('DD-MM-YYYY');
+        updateFields.fin = dayjs(fecha_fin_rutina, 'DD-MM-YYYY', true).format('DD-MM-YYYY');
     }
     if (rutina_compartida === true || rutina_compartida === false) {
         updateFields.compartida = rutina_compartida ? 1 : 0;
+    }
+    if (dia) {
+        updateFields.dia = dia;
     }
 
     if (updateFields.length === 0) {
@@ -116,8 +122,6 @@ const updateUserRoutine = async (req, res) => {
     if (!updateResult || updateResult.affectedRows === 0) {
         return res.status(404).json({ message: 'No routines found for the specified user.' });
     }
-
-    console.log(updateFields);
 
     // Retrieve the updated routine
     const updatedRoutine = await User.selectRoutineByUserIdRoutineId(user.id, userRoutineId);
@@ -276,8 +280,8 @@ const saveUserRoutine = async (req, res) => {
     const fechaFin = dayjs(savedRoutine.fecha_fin_rutina);
     const today = dayjs();
     savedRoutine.rutina_activa = today >= fechaInicio && today <= fechaFin;
-    savedRoutine.fecha_inicio_rutina = fechaInicio.format('YYYY-MM-DD');
-    savedRoutine.fecha_fin_rutina = fechaFin.format('YYYY-MM-DD');
+    savedRoutine.fecha_inicio_rutina = fechaInicio.format('DD-MM-YYYY');
+    savedRoutine.fecha_fin_rutina = fechaFin.format('DD-MM-YYYY');
     // BOOLEANS
     savedRoutine.rutina_compartida = savedRoutine.rutina_compartida === 1;
     savedRoutine.ejercicios = [];
@@ -437,18 +441,6 @@ const generatePdfFromUserRoutine = async (req, res) => {
 
 }
 
-module.exports = {
-    getRoutinesByUserId,
-    getRoutineById,
-    updateUserRoutine,
-    updateUserRoutineExercise,
-    saveUserRoutine,
-    addExerciseToRoutine,
-    removeUserRoutine,
-    removeExerciseFromRoutine
-    ,generatePdfFromUserRoutine
-};
-
 const copyExecrisesToRoutine = async (res, userRoutineId, generatedUserRoutineId) => {
     const exercises = await User.selectExercisesByUserRoutineId(userRoutineId);
     if (!exercises || exercises.length === 0) {
@@ -467,12 +459,12 @@ const copyExecrisesToRoutine = async (res, userRoutineId, generatedUserRoutineId
 
 const formatRoutineWithExercises = async (userRoutine) => {
 
-    const fechaInicio = userRoutine.fecha_inicio_rutina ? dayjs(userRoutine.fecha_inicio_rutina).format('YYYY-MM-DD') : null;
-    const fechaFin = userRoutine.fecha_fin_rutina ? dayjs(userRoutine.fecha_fin_rutina).format('YYYY-MM-DD') : null;
+    const fechaInicio = userRoutine.fecha_inicio_rutina ? dayjs(userRoutine.fecha_inicio_rutina).format('DD-MM-YYYY') : null;
+    const fechaFin = userRoutine.fecha_fin_rutina ? dayjs(userRoutine.fecha_fin_rutina).format('DD-MM-YYYY') : null;
 
     const rutina_activa = fechaInicio && fechaFin
-        ? dayjs().isAfter(dayjs(fechaInicio, 'YYYY-MM-DD').subtract(1, 'day')) &&
-          dayjs().isBefore(dayjs(fechaFin, 'YYYY-MM-DD').add(1, 'day'))
+        ? dayjs().isAfter(dayjs(fechaInicio, 'DD-MM-YYYY').subtract(1, 'day')) &&
+          dayjs().isBefore(dayjs(fechaFin, 'DD-MM-YYYY').add(1, 'day'))
         : false;
 
     const formattedRoutine = {
@@ -519,3 +511,18 @@ const formatRoutineWithExercises = async (userRoutine) => {
     
     return formattedRoutine;
 }
+
+module.exports = {
+    getRoutinesByUserId,
+    getRoutineById,
+    updateUserRoutine,
+    updateUserRoutineExercise,
+    saveUserRoutine,
+    addExerciseToRoutine,
+    removeUserRoutine,
+    removeExerciseFromRoutine,
+    generatePdfFromUserRoutine,
+    copyExecrisesToRoutine,
+    formatRoutineWithExercises
+};
+

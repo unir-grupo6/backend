@@ -22,9 +22,12 @@
     "dayjs": "^1.11.13",
     "dotenv": "^16.3.1",
     "express": "^5.0.0",
+    "express-rate-limit": "^7.5.1",
+    "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "mjml": "^4.15.3",
     "mysql2": "^3.14.1",
+    "node-cron": "^4.2.0",
     "nodemailer": "^7.0.3",
     "pdfkit": "^0.17.1"
   },
