@@ -33,7 +33,6 @@ const getFilteredRoutines = async (req, res) => {
     const { objetivos_id, dificultad_id, metodos_id } = req.query;
     const rows = await Rutines.rutinesFiltered(objetivos_id, dificultad_id, metodos_id);
 
-    // Agrupar por rutina_id
     const rutinasMap = {};
 
     for (const row of rows) {
@@ -41,20 +40,22 @@ const getFilteredRoutines = async (req, res) => {
 
       if (!rutinasMap[rutinaId]) {
         rutinasMap[rutinaId] = {
-          id: row.rutina_id,
+          id_rutina: rutinaId,
           nombre: row.rutina_nombre,
-          objetivos_id: row.objetivos_id,
-          dificultad_id: row.dificultad_id,
-          metodos_id: row.metodos_id,
           observaciones: row.rutina_observaciones,
           realizada: row.realizada,
+
+          objetivo: row.objetivo_nombre,
+          dificultad: row.dificultad_nombre,
+          metodo: row.metodo_nombre,
+
           ejercicios: []
         };
       }
 
       if (row.ejercicio_id) {
         rutinasMap[rutinaId].ejercicios.push({
-          id: row.ejercicio_id,
+          id_ejercicio: row.ejercicio_id,
           orden: row.orden,
           series: row.series,
           repeticiones: row.repeticiones,
@@ -63,7 +64,7 @@ const getFilteredRoutines = async (req, res) => {
           tipo: row.ejercicio_tipo,
           step_1: row.step_1,
           step_2: row.step_2,
-          grupos_musculares: row.grupos_musculares_id
+          grupos_musculares: row.grupo_muscular_nombre
         });
       }
     }
@@ -75,8 +76,61 @@ const getFilteredRoutines = async (req, res) => {
   }
 };
 
+const getRutineShared = async (req, res) => {
+  try {
+    const rows = await Rutines.rutineShared();
+
+    const rutinasMap = {};
+
+    for (const row of rows) {
+      const rutinaId = row.rutina_usuario_id; // ← corregido
+
+      if (!rutinasMap[rutinaId]) {
+        rutinasMap[rutinaId] = {
+          id_rutina: rutinaId,
+          nombre: row.rutina_nombre,
+          observaciones: row.rutina_observaciones,
+          compartida: row.compartida === 1, // ← buena práctica mantenerlo como booleano
+
+          objetivo: row.objetivo_nombre,
+          dificultad: row.dificultad_nombre,
+          metodo: row.metodo_nombre,
+
+          ejercicios: []
+        };
+      }
+
+      if (row.ejercicio_id) {
+        rutinasMap[rutinaId].ejercicios.push({
+          id_ejercicio: row.ejercicio_id,
+          orden: row.orden,
+          series: row.series,
+          repeticiones: row.repeticiones,
+          dia: row.dia,
+          comentario: row.ejercicio_comentario,
+          nombre: row.ejercicio_nombre,
+          tipo: row.ejercicio_tipo,
+          step_1: row.step_1,
+          step_2: row.step_2,
+          grupos_musculares: row.grupo_muscular_nombre
+        });
+      }
+    }
+
+    res.json(Object.values(rutinasMap));
+  } catch (error) {
+    console.error('Error al obtener rutinas compartidas:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
+
+
+
+
 module.exports = {
   getAll,
   getById,
   getFilteredRoutines,
+  getRutineShared
 };

@@ -177,3 +177,8 @@ Content-Type: application/json
 ###
 GET {{host}}/api/user-routines/generate/2425
 Authorization: {{token}}
+
+
+### Rutinas compartidas
+GET {{host}}/api/rutines/shared
+Authorization: {{token}}

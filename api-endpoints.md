@@ -570,52 +570,63 @@
 ### Get all rutines
 - **Method**: GET
 - **URL**: /api/rutines
-- **Headers**: None
+- **Headers**: Authorization: `{token}`
 - **Response**: An array with all the rutines
 - **Possible errors**:
+  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
   - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
 
 ### Get rutine by ID
 - **Method**: GET
 - **URL**: /api/rutines/rutina/`{id}`
-- **Headers**: None
-- **Response**: The rutine object with the specified ID
+- **Headers**: Authorization: `{token}`
+- **Response**: The rutine object with the specified ID, including its associated exercises
 - **Possible errors**:
+  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
   - **404 Not Found**: `{ "message": "Rutine not found" }` — The rutine does not exist.
   - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
 
 ### Get rutines by goals, difficulty and method
 - **Method**: GET
 - **URL**: /api/rutines/filter?objetivos_id=`{id}`&dificultad_id=`{id}`&metodos_id=`{id}`
-- **Headers**: None
+- **Headers**: Authorization: `{token}`
 - **Query Parameters**:
-  - `objetivos_id` (int, required): The ID of the goal
-  - `dificultad_id` (int, required): The ID of the difficulty
-  - `metodos_id` (int, required): The ID of the method
-- **Response**: An array with the rutines matching the specified filters
+  - `objetivos_id` (int): The ID of the goal
+  - `dificultad_id` (int): The ID of the difficulty
+  - `metodos_id` (int): The ID of the method
+  - **Response**: An array with the rutines matching the specified filters, each including their associated exercises
 - **Possible errors**:
+  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
   - **404 Not Found**: `{ "message": "No rutines found for the given criteria" }` — No rutines match the given criteria.
   - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
+
+  
 
 ## Exercises
 
 ### Get all exercises
 - **Method**: GET
 - **URL**: /api/exercises
-- **Headers**: None
+- **Headers**: Authorization: `{token}`
 - **Response**: An array with all the exercises
 - **Possible errors**:
+  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
   - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
 
 ### Get exercises by muscle group and difficulty
 - **Method**: GET
 - **URL**: /api/exercises/filter?grupos_musculares_id=`{id}`&dificultad_id=`{id}`
-- **Headers**: None
+- **Headers**: Authorization: `{token}`
 - **Query Parameters**:
-  - `grupos_musculares_id` (int, required): The ID of the muscle group
-  - `dificultad_id` (int, required): The ID of the difficulty
+  - `grupos_musculares_id` (int): The ID of the muscle group
+  - `dificultad_id` (int): The ID of the difficulty
 - **Response**: An array with the exercises matching the specified muscle group and difficulty
 - **Possible errors**:
-  - **400 Bad Request**: `{ "message": "muscleGroupId and difficultyId are required" }` — One or both query parameters are missing.
+  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
   - **404 Not Found**: `{ "message": "No exercises found for the given criteria" }` — No exercises match the given criteria.
   - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
