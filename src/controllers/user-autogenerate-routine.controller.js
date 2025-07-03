@@ -2,7 +2,6 @@ const auto = require('../models/user-autogenerate-routine.model');
 
 
 const generarJson = (headerObj,exercisesObj) => {
-// "nivel": nivel,
 
     const {rutina_id, nombre, rutina_observaciones, realizada, metodo, objetivo, tiempo_aerobicos, 
         tiempo_anaerobicos, metodo_observaciones, descanso, } = headerObj
@@ -52,7 +51,6 @@ const autoGenerate = async (req, res) => {
         usuarioObjetivos.rutinas_realizadas = rutinasIds;
         
         result = await auto.rutinasAutogeneradas(id);
-        
         
         // Extraer los IDs de las rutinas autogeneradas y filtrar duplicados
         const rutinasAutogeneradasIds = result.map(obj => obj.idrutina);

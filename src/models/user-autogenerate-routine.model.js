@@ -97,27 +97,25 @@ const getByIdExercises = async (id) => {
             ert.repeticiones,
             ert.dia,
             ert.comentario
-            from ejercicios_rutinas as ert
-            JOIN ejercicios as eje ON eje.id = ert.ejercicios_id
-            JOIN dificultad as dif ON eje.dificultad_id = dif.id
-            WHERE rutinas_id = ?
-            ORDER BY orden asc;`, [id]);    
+        from ejercicios_rutinas as ert
+        JOIN ejercicios as eje ON eje.id = ert.ejercicios_id
+        JOIN dificultad as dif ON eje.dificultad_id = dif.id
+        WHERE rutinas_id = ?
+        ORDER BY orden asc;`, [id]);    
 
     console.log(result, ' - RESULTADO DE EJERCICIOS POR ID - ARRAY COMPLETO');
     return result;
 }
 
-const autoGenerate = async (id) => {
-   
+/*
+const autoGenerate = async (id) => {   
     //Obtener el objetivo del usuario
-    const result = objetivosUsuario(id)
-
-    console.log(result, ' - VALOR DE RESULTADO EN MODELO');
+    const result = objetivosUsuario(id)    
     return result;
 }
+*/
 
-module.exports = {
-    autoGenerate, 
+module.exports = {    
     rutinasRealizadas, 
     objetivosUsuario,
     rutinasAutogeneradas,
