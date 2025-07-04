@@ -12,10 +12,10 @@ const buildPdfFromUserRoutine = (dataCallback, endCallback, user_routine) => {
     doc.moveDown();
     
     doc.font('Helvetica-Bold').text('Fecha de inicio: ', { continued: true });
-    doc.font('Helvetica').text(user_routine.fecha_inicio_rutina);
+    doc.font('Helvetica').text(user_routine.fecha_inicio_rutina ? user_routine.fecha_inicio_rutina : 'No especificada');
 
     doc.font('Helvetica-Bold').text('Fecha de fin: ', { continued: true });
-    doc.font('Helvetica').text(user_routine.fecha_fin_rutina);
+    doc.font('Helvetica').text(user_routine.fecha_fin_rutina ? user_routine.fecha_fin_rutina : 'No especificada');
 
     doc.font('Helvetica-Bold').text('Activa: ', { continued: true });
     doc.font('Helvetica').text(user_routine.activa ? 'Sí' : 'No');
