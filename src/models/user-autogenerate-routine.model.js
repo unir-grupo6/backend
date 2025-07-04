@@ -79,7 +79,10 @@ const getById = async (id) => {
         m.tiempo_anaerobicos,
         m.observaciones AS metodo_observaciones,
         o.nombre as objetivo,
-        m.descanso
+        m.descanso,
+        r.objetivos_id,
+        r.dificultad_id,
+        r.metodos_id
       FROM rutinas r
       JOIN dificultad d ON r.dificultad_id = d.id
       JOIN metodos m ON r.metodos_id = m.id
@@ -96,17 +99,63 @@ const getByIdExercises = async (id) => {
             ert.series,
             ert.repeticiones,
             ert.dia,
-            ert.comentario
+            ert.comentario,
+            eje.id AS ejercicios_id
         from ejercicios_rutinas as ert
         JOIN ejercicios as eje ON eje.id = ert.ejercicios_id
         JOIN dificultad as dif ON eje.dificultad_id = dif.id
         WHERE rutinas_id = ?
         ORDER BY orden asc;`, [id]);    
 
-    console.log(result, ' - RESULTADO DE EJERCICIOS POR ID - ARRAY COMPLETO');
+    
     return result;
 }
 
+const insertRutinaUsuario = async (rutinaId, usuarioId) => {
+    //Insertar la rutina realizada por el usuario    
+    const [result] = await db.query(
+        `INSERT INTO rutinas_usuarios (
+            rutinas_id,
+            usuarios_id,
+            inicio,
+            fin,
+            compartida
+        )
+        VALUES (
+            ?,
+            ?,
+            NOW(), -- Fecha y hora actual para 'inicio'
+            DATE_ADD(NOW(), INTERVAL 7 DAY), -- Fecha y hora actual + 7 días para 'fin'
+            0
+        );`, [rutinaId, usuarioId]);    
+
+    
+    return result.insertId;
+};
+
+const retunRutinaRDN = async (id) => {
+
+    const [result] = await db.query( 
+            `SELECT
+                    id
+                FROM
+                    rutinas_usuarios
+                WHERE
+                    usuarios_id = ?
+                ORDER BY
+                    RAND()
+                LIMIT 1;`, [id]);        
+    
+    return result;
+}
+
+const returnUser = async (id) => {
+    //Obtener el usuario por id
+    const [result] = await db.query(
+        `SELECT id FROM usuarios WHERE id = ?;`, [id]);    
+   
+    return result;
+}
 /*
 const autoGenerate = async (id) => {   
     //Obtener el objetivo del usuario
@@ -121,5 +170,9 @@ module.exports = {
     rutinasAutogeneradas,
     rutinaSugerida,
     getById,
-    getByIdExercises
+    getByIdExercises,
+    insertRutinaUsuario,
+    retunRutinaRDN,
+    returnUser
+
 };
