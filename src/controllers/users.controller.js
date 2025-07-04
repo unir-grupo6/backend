@@ -316,7 +316,7 @@ const updateUser = async (req, res) => {
             (dayjs(currentMetrics.fecha).format('YYYY-MM-DD') !== dayjs().format('YYYY-MM-DD')) &&
             (currentMetrics.peso !== peso || currentMetrics.altura !== altura || currentMetrics.imc !== newImc)
         ) {
-            const metricsResult = await User.insertUserMetrics(user.id, newPeso, newAaltura, newImc);
+            const metricsResult = await User.insertUserMetrics(user.id, newPeso, newAltura, newImc);
 
             if (!metricsResult.affectedRows) {
                 return res.status(400).json({ message: 'Failed to insert new user metrics' });
@@ -331,6 +331,9 @@ const updateUser = async (req, res) => {
         }
 
         const updatedUser = await User.getById(user.id);
+        updatedUser.fecha_nacimiento = dayjs(updatedUser.fecha_nacimiento).format('DD-MM-YYYY');
+        updatedUser.fecha_alta = dayjs(updatedUser.fecha_alta).format('DD-MM-YYYY HH:mm:ss');
+
         return res.json(updatedUser);
 
     } catch (error) {

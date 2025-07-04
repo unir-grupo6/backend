@@ -455,9 +455,9 @@ module.exports = {
 
 const copyExecrisesToRoutine = async (res, userRoutineId, generatedUserRoutineId) => {
     const exercises = await User.selectExercisesByUserRoutineId(userRoutineId);
-    if (!exercises || exercises.length === 0) {
-        res.status(404).json({ message: 'No exercises found for the specified routine.' });
-    }
+    // if (!exercises || exercises.length === 0) {
+    //     res.status(404).json({ message: 'No exercises found for the specified routine.' });
+    // }
     for (const exercise of exercises) {
         const {ejercicios_id, series, repeticiones, dia, orden, comentario } = exercise;
         try {

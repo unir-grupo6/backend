@@ -43,6 +43,8 @@ Este proyecto es el backend de una aplicación desarrollada con Express.js.
 
    GMAIL_APP_USER=your_gmail_user
    GMAIL_APP_PASSWORD=your_gmail_app_password
+
+   REQUEST_MINUTES_LIMIT=15
    ```
 
 >[!TIP]
