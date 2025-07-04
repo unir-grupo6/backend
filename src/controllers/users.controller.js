@@ -146,7 +146,7 @@ const changePassword = async (req, res) => {
 
     //check if the old password is correct
     try {
-        const isValidPassword = bcrypt.compareSync(password, user.password);
+        const isValidPassword = bcrypt.compareSync(oldPassword, user.password);
         if (!isValidPassword) {
             return res.status(401).json({ message: 'Error in email and/or password' });
         }

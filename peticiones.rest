@@ -44,12 +44,13 @@ Content-Type: application/json
 }
 
 ###
-put {{host}}/api/users/update-password
+PUT {{host}}/api/users/update-password
 Authorization: {{token}}
 Content-Type: application/json
 
 {
-    "password": "123456"
+  "oldPassword": "Abcd12345*",
+  "password": "Abcd1234*"
 }
 
 ###
@@ -57,26 +58,25 @@ PUT {{host}}/api/users/forgot-password
 Content-Type: application/json
 
 {
-    "email": "email@example.com"
+  "email": "email@example.com"
 }
-
 
 ###
 PUT {{host}}/api/users/reset-password
 Content-Type: application/json
 
 {
-    "newPassword": "newPassword"
+  "newPassword": "newPassword"
 }
 
-
-### Todos los ejercicios
+###
 GET {{host}}/api/exercises/filter
 Authorization: {{token}}
 
-### Ejercicios por grupo muscular
+###
 GET {{host}}/api/exercises/filter?grupos_musculares_id=1
 Authorization: {{token}}
+
 
 ### Ejercicios por dificultad
 GET {{host}}/api/exercises/filter?dificultad_id=2
