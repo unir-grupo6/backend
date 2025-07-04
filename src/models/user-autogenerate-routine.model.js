@@ -47,7 +47,7 @@ const rutinasAutogeneradas = async (id) => {
 
 const rutinaSugerida = async (obj) => {
     //Sugerimos el id de una rutina que el usuario no ha realizado y que tiene el mismo objetivo
-    const { objetivo, rutinas_realizadas } = obj;
+    const { rutinas_realizadas } = obj;
    
     const [result] = await db.query(
         `SELECT
@@ -55,13 +55,13 @@ const rutinaSugerida = async (obj) => {
         FROM
             rutinas     
         WHERE
-            objetivos_id = ? and id NOT IN (?) 
+            id NOT IN (?) 
         ORDER BY
             RAND()    
-        LIMIT 1; `, [objetivo,rutinas_realizadas]);    
+        LIMIT 1; `, [rutinas_realizadas]);    
     
     
-    return result[0];
+    return result;
 }
 
 const getById = async (id) => {
@@ -89,7 +89,7 @@ const getById = async (id) => {
       INNER JOIN objetivos AS o ON r.objetivos_id = o.id 
       WHERE r.id = ?`, [id]);    
     
-    return result[0];
+    return result;
 }
 
 const getByIdExercises = async (id) => {
@@ -133,20 +133,18 @@ const insertRutinaUsuario = async (rutinaId, usuarioId) => {
     return result.insertId;
 };
 
-const retunRutinaRDN = async (id) => {
-
+const retunRutinaRDN = async () => {
+/*
     const [result] = await db.query( 
             `SELECT
-                    id
-                FROM
-                    rutinas_usuarios
-                WHERE
-                    usuarios_id = ?
-                ORDER BY
-                    RAND()
-                LIMIT 1;`, [id]);        
-    
-    return result;
+                id
+            FROM
+                rutinas_usuarios
+            ORDER BY
+                RAND()
+            LIMIT 1;`);        
+  */  
+    return [ { "rutinas_id": 0 } ];
 }
 
 const returnUser = async (id) => {

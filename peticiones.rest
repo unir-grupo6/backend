@@ -3,7 +3,7 @@
 
 
 ###
-POST {{host}}/api/autogenerate/2
+POST {{host}}/api/autogenerate/16
 Authorization: {{token}}
 
 ###

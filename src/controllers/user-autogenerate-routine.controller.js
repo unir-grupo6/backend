@@ -5,7 +5,7 @@ const generarJson = (headerObj,exercisesObj) => {
 
     const {rutina_id, nombre, rutina_observaciones, realizada, metodo, objetivo, tiempo_aerobicos, 
         tiempo_anaerobicos, metodo_observaciones, descanso, 
-        objetivos_id, dificultad_id, metodos_id} = headerObj
+        objetivos_id, dificultad_id, metodos_id} = headerObj;
 
     const obj = {
         "rutina_id": rutina_id,
@@ -28,6 +28,7 @@ const generarJson = (headerObj,exercisesObj) => {
 
 const autoGenerate = async (req, res) => {
     const user = req.user; //Obtenemos el usuario del token
+    const id =  Number(req.params.id);
 
 
     let usuarioObjetivos = {
@@ -41,7 +42,7 @@ const autoGenerate = async (req, res) => {
     
 
     try{
-        const id = user.id// Number(req.params.id);
+        
         if (isNaN(id)) {
             return res.status(400).json({ message: 'Invalid idUser' });
         }
@@ -50,9 +51,8 @@ const autoGenerate = async (req, res) => {
         result = await auto.returnUser(id);
         if (result.length === 0) {     
             return res.status(400).json({ message: 'The user does not exist Juan Jose' });;
-        }
-       
-        console.log(req.user, ' - id del usuario');
+        }       
+        
         result = await auto.objetivosUsuario(id);
         if (result.length === 0) {     
             return res.status(400).json({ message: 'The user has no defined objectives' });;
@@ -66,38 +66,41 @@ const autoGenerate = async (req, res) => {
             result = await auto.retunRutinaRDN(id);
         }
         
-        console.log(1, "rutinasRealizadas");
+        
             rutinasIds = result.map(obj => obj.rutinas_id);
             usuarioObjetivos.rutinas_realizadas = rutinasIds;
        
-        result = await auto.rutinasAutogeneradas(id);
+        result = await auto.rutinasAutogeneradas(id);        
         if (result.length === 0) {     
-            result = await auto.retunRutinaRDN(id);
+            result = await auto.retunRutinaRDN();
         }
         
-        console.log(2, "rutinasAutogeneradas");
-        // Extraer los IDs de las rutinas autogeneradas y filtrar duplicados
-        const rutinasAutogeneradasIds = result.map(obj => obj.idrutina);
+       
+        const rutinasAutogeneradasIds = result.map(obj => obj.rutinas_id);
         const nuevosIds = rutinasAutogeneradasIds.filter(id => !rutinasIds.includes(id));
         rutinasIds.push(...nuevosIds);
         
-        console.log(usuarioObjetivos, ' - usuarioObjetivos');
         // Actualizar el objeto con todos los IDs combinados
         usuarioObjetivos.rutinas_realizadas = rutinasIds;        
-        console.log(3, "rutinaSugerida");
+        
         result = await auto.rutinaSugerida(usuarioObjetivos);        
-        console.log(4, "rutinaSugerida");
+        
         if (!result) {
             return res.status(409).json({ message: 'No se han sugerido rutinas' });
         }
         
-        rutina = await auto.getById(result.id);  
-        const arrEjercicios = await auto.getByIdExercises(result.id); 
+       
+        const idNewRotutine = result[0].id; 
+        
+        rutina = await auto.getById(idNewRotutine);
+        
+        const arrEjercicios = await auto.getByIdExercises(idNewRotutine); 
 
-        const rutinaCompleta = generarJson(rutina, arrEjercicios); //Devolvemos la cabecera de la rutina JSON
+        const rutinaObject = rutina[0];
+        const rutinaCompleta = generarJson(rutinaObject, arrEjercicios); //Devolvemos la cabecera de la rutina JSON
         
         const inserHeader = await auto.insertRutinaUsuario(rutinaCompleta.rutina_id, id); //Insertamos la rutina en la tabla de rutinas_autogeneradas
-        console.log(inserHeader, ' - Inserción de rutina en rutinas_autogeneradas');
+        
         const ejercicios = rutinaCompleta.ejercicios;
 
             // Recorrer el array de ejercicios y eliminar la clave 'ejercicios_id' de cada objeto
