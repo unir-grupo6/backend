@@ -101,13 +101,16 @@ const autoGenerate = async (req, res) => {
         
         const inserHeader = await auto.insertRutinaUsuario(rutinaCompleta.rutina_id, id); //Insertamos la rutina en la tabla de rutinas_autogeneradas
         
-        const ejercicios = rutinaCompleta.ejercicios;
+        //const ejercicios = rutinaCompleta.ejercicios;
 
-            // Recorrer el array de ejercicios y eliminar la clave 'ejercicios_id' de cada objeto
-            for (let i = 0; i < ejercicios.length; i++) {
-                // Usar el operador 'delete' para eliminar la propiedad
-                delete ejercicios[i].ejercicios_id;
-            }
+        
+        // Insertar cada ejercicio individualmente
+        for (let i = 0; i < arrEjercicios.length; i++) {
+            const objEjercicios = arrEjercicios[i];
+            await auto.insertEjerciciosUsuario(objEjercicios, inserHeader);
+            console.log(objEjercicios, 'objEjercicios insertado');
+        }
+                        
 
         return res.status(201).json(rutinaCompleta);
     
