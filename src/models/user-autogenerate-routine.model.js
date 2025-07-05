@@ -96,11 +96,15 @@ const getByIdExercises = async (id) => {
             ert.series,
             ert.repeticiones,
             ert.comentario,            
-            eje.id as id_Ejercicio,
-            ert.orden
+            eje.id as id_ejercicio,
+            ert.orden,
+            eje.inicio as step_1,
+            eje.fin as step_2,
+            gm.nombre AS grupo_muscular
         from ejercicios_rutinas as ert        
         JOIN ejercicios as eje ON eje.id = ert.ejercicios_id
         JOIN dificultad as dif ON eje.dificultad_id = dif.id
+        JOIN grupos_musculares as gm ON eje.grupos_musculares_id = gm.id
         WHERE rutinas_id = ?
         ORDER BY orden asc;`, [id]);    
 
@@ -130,7 +134,7 @@ const insertRutinaUsuario = async (rutinaId, usuarioId) => {
 
 const insertEjerciciosUsuario = async (ejerciciosObj, id_rutina) => {
     
-    const { id_Ejercicio, series, repeticiones, orden,comentario } = ejerciciosObj;
+    const { id_ejercicio, series, repeticiones, orden,comentario } = ejerciciosObj;
 
     const [result] = await db.query(
         `INSERT INTO ejercicios_usuarios (            
@@ -141,7 +145,7 @@ const insertEjerciciosUsuario = async (ejerciciosObj, id_rutina) => {
             orden,
             comentario)
         VALUES (?, ?, ?, ?, ?, ?);`, 
-        [id_Ejercicio, id_rutina, series, repeticiones, orden,comentario]);    
+        [id_ejercicio, id_rutina, series, repeticiones, orden,comentario]);    
 
     
     return result;
