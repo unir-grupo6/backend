@@ -317,6 +317,59 @@
   - **500 Internal Server Error**: `{ "message": "Error saving exercise for the routine" }` — There was un error saving an exercise for the routine.
   - **404 Not Found**: `{ "message": "Saved routine not found" }` — The saved routine could not be retrieved after saving.
 
+### Create a new user routine from an existing routine
+- **Method**: POST
+- **URL**: /api/user-routines/
+- **Headers**: Authorization: `{token}`
+- **Body**:
+  - `id_rutina` (number, required): The ID of the routine to copy and assign to the user
+- **Response**: On success, returns the full saved user routine object (including exercises) assigned to the logged-in user, for example:
+  ```json
+  {
+    "rutina_id": 123,
+    "nombre": "Routine name",
+    "fecha_inicio_rutina": "24-06-2025",
+    "fecha_fin_rutina": "30-06-2025",
+    "dia": 1,
+    "rutina_compartida": false,
+    "rutina_activa": true,
+    "observaciones": "...",
+    "nivel": "Intermedio",
+    "metodo_nombre": "Fullbody",
+    "tiempo_aerobicos": 10,
+    "tiempo_anaerobicos": 20,
+    "descanso": 60,
+    "metodo_observaciones": "...",
+    "ejercicios": [
+      {
+        "orden": 1,
+        "nombre": "Press banca",
+        "tipo": "Pecho",
+        "step_1": "...",
+        "step_2": "...",
+        "grupos_musculares": "Pectoral",
+        "series": 4,
+        "repeticiones": 10,
+        "comentario": "..."
+      }
+      // ...
+    ]
+  }
+  ```
+- **Possible errors**:
+  - **403 Forbidden**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **403 Forbidden**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
+  - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
+  - **400 Bad Request**: `{ "message": "rutina_id is required" }` — The routine ID is missing in the request body.
+  - **404 Not Found**: `{ "message": "Routine not found" }` — The specified routine does not exist.
+  - **500 Internal Server Error**: `{ "message": "Error saving user routine" }` — There was a problem saving the user routine.
+  - **500 Internal Server Error**: `{ "message": "Error generating user routine" }` — There was a problem generating the user routine.
+  - **404 Not Found**: `{ "message": "No exercises found for the specified routine." }` — The routine does not have exercises to copy.
+  - **500 Internal Server Error**: `{ "message": "Error saving exercise for the routine" }` — There was a problem saving an exercise for the routine.
+  - **404 Not Found**: `{ "message": "Saved routine not found" }` — The saved routine could not be retrieved after saving.
+  - **500 Internal Server Error**: `{ "message": "Error formatting routine with exercises" }` — There was a problem formatting the saved routine.
+  - **500 Internal Server Error**: `{ "message": "Error saving new user routine" }` — An unexpected error occurred while saving the new user routine.
+
 ### Delete a user routine
 - **Method**: DELETE
 - **URL**: /api/user-routines/`{userRoutineId}`
