@@ -308,10 +308,10 @@ const resetPassword = async (req, res) => {
 
 const updateUser = async (req, res) => {
     const user = req.user;
-    const { nombre, apellidos, email, peso, altura, fecha_nacimiento, id_objetivo } = req.body;
+    const { nombre, apellidos, email, peso, altura, fecha_nacimiento, sexo, id_objetivo } = req.body;
 
-    if (!nombre || !apellidos || !email || !fecha_nacimiento || !id_objetivo) {
-        return res.status(400).json({ message: 'Nombre, apellidos, email, fecha_nacimiento and id_objetivo are required' });
+    if (!nombre || !apellidos || !email || !fecha_nacimiento || !sexo || !id_objetivo) {
+        return res.status(400).json({ message: 'Nombre, apellidos, email, fecha_nacimiento, sexo and id_objetivo are required' });
     }
 
     if (typeof nombre !== 'string' || typeof apellidos !== 'string' || typeof email !== 'string') {
@@ -326,6 +326,9 @@ const updateUser = async (req, res) => {
     }
     if (fecha_nacimiento && !dayjs(fecha_nacimiento, 'YYYY-MM-DD', true).isValid()) {
         return res.status(400).json({ message: 'Fecha de nacimiento must be a valid date' });
+    }
+    if (sexo && ![1, 2, 3].includes(sexo)) {
+        return res.status(400).json({ message: 'Sexo must be 1 (Hombre), 2 (Mujer) or 3 (Otro)' });
     }
     if (id_objetivo && isNaN(id_objetivo)) {
         return res.status(400).json({ message: 'Objetivo ID must be a number' });
@@ -346,7 +349,7 @@ const updateUser = async (req, res) => {
     const newFechaNacimiento = dayjs(fecha_nacimiento, 'YYYY-MM-DD', true).format('YYYY-MM-DD');
 
     try {
-        const result = await User.updateUserData(user.id, { nombre, apellidos, email, fecha_nacimiento: newFechaNacimiento });
+        const result = await User.updateUserData(user.id, { nombre, apellidos, email, fecha_nacimiento: newFechaNacimiento, sexo });
 
         if (!result.affectedRows) {
             return res.status(400).json({ message: 'Failed to update user data' });
