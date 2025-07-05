@@ -407,16 +407,15 @@ const addNewUserRoutineFromRoutine = async (req, res) => {
     
         // Get exercises from the routine
         const exercises = await Routine.getExercisesByRoutineId(id_rutina);
-        if (!exercises || exercises.length === 0) {
-            return res.status(404).json({ message: 'No exercises found for the specified routine.' });
-        }
-        // Insert the exercises into the user routine
-        for (const exercise of exercises) {
-            const { id: ejercicio_id, series, repeticiones, dia, orden, comentario } = exercise;
-            try {
-                await UserRoutine.insertUserRoutineExercise(ejercicio_id, generatedUserRoutine.insertId, series, repeticiones, dia, orden, comentario);
-            } catch (error) {
-                return res.status(500).json({ message: 'Error saving exercise for the routine' });
+        if (exercises || exercises.length > 0) {
+            // Insert the exercises into the user routine
+            for (const exercise of exercises) {
+                const { id: ejercicio_id, series, repeticiones, comentario } = exercise;
+                try {
+                    await UserRoutine.insertUserRoutineExercise(ejercicio_id, generatedUserRoutine.insertId, exercises.indexOf(exercise) + 1, series, repeticiones, comentario);
+                } catch (error) {
+                    return res.status(500).json({ message: 'Error saving exercise for the routine' });
+                }
             }
         }
 
