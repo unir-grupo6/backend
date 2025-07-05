@@ -22,6 +22,8 @@
     - [Remove exercise from a user routine](#remove-exercise-from-a-user-routine)
     - [Update an exercise in a user routine](#update-an-exercise-in-a-user-routine)
     - [Generate PDF for a user routine](#generate-pdf-for-a-user-routine)
+  - [Autogenerate Routines](#autogenerate-routines)
+    - [Generate routine automatically for the logged-in user](#generate-routine-automatically-for-the-logged-in-user)
   - [Muscle Groups](#muscle-groups)
     - [Get all muscle groups](#get-all-muscle-groups)
     - [Get muscle group by ID](#get-muscle-group-by-id)
@@ -42,6 +44,8 @@
   - [Exercises](#exercises)
     - [Get all exercises](#get-all-exercises)
     - [Get exercises by muscle group and difficulty](#get-exercises-by-muscle-group-and-difficulty)
+  - [Autogenerate Routines](#autogenerate-routines)
+    - [Generate routine automatically for the logged-in user](#generate-routine-automatically-for-the-logged-in-user)
 
 
 
@@ -677,4 +681,62 @@
   - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
   - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
   - **404 Not Found**: `{ "message": "No exercises found for the given criteria" }` — No exercises match the given criteria.
+  - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
+
+## Autogenerate Routines
+
+### Generate routine automatically for the logged-in user
+- **Method**: POST
+- **URL**: /api/autogenerate
+- **Headers**: Authorization: `{token}`
+- **Body**: None
+- **Response**: On success, returns a complete routine object automatically generated for the user based on their objectives and routine history, for example:
+  ```json
+  {
+    "rutina_id": 123,
+    "nombre": "Routine name",
+    "rutina_observaciones": "Generated routine observations",
+    "realizada": 0,
+    "metodo": "Fullbody",
+    "objetivo": "Strength",
+    "tiempo_aerobicos": 10,
+    "tiempo_anaerobicos": 20,
+    "metodo_observaciones": "Method specific observations",
+    "descanso": 60,
+    "objetivos_id": 1,
+    "dificultad_id": 2,
+    "metodos_id": 1,
+    "ejercicios": [
+      {
+        "nombre": "Press banca",
+        "series": 4,
+        "repeticiones": 8,
+        "dia": 1,
+        "comentario": "Focus on proper form",
+        "orden": 1
+      },
+      {
+        "nombre": "Sentadilla",
+        "series": 3,
+        "repeticiones": 12,
+        "dia": 1,
+        "comentario": "Control the descent",
+        "orden": 2
+      }
+      // ...more exercises
+    ]
+  }
+  ```
+- **Notes**: This endpoint automatically generates a personalized routine for the logged-in user based on:
+  - User's defined objectives
+  - Previously completed routines
+  - Previously suggested routines
+  - Available routines that match the user's goals
+  
+  The system ensures that the suggested routine hasn't been previously assigned to the user. If no suitable routine is found, an error is returned.
+- **Possible errors**:
+  - **401 Unauthorized**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
+  - **401 Unauthorized**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
+  - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
+  - **400 Bad Request**: `{ "message": " The user has no defined objectives" }` — The user has no defined objectives.  
   - **500 Internal Server Error**: `{ "message": "Internal server error" }` — An unexpected server error occurred.
