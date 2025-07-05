@@ -40,8 +40,7 @@ const autoGenerate = async (req, res) => {
     let result;
     
 
-    try{
-        
+    try{        
         
         result = await auto.objetivosUsuario(id);
         if (result.length === 0) {     
@@ -56,7 +55,6 @@ const autoGenerate = async (req, res) => {
             result = await auto.retunRutinaRDN(id);
         }
         
-        
             rutinasIds = result.map(obj => obj.rutinas_id);
             usuarioObjetivos.rutinas_realizadas = rutinasIds;
        
@@ -64,8 +62,7 @@ const autoGenerate = async (req, res) => {
         if (result.length === 0) {     
             result = await auto.retunRutinaRDN();
         }
-        
-       
+               
         const rutinasAutogeneradasIds = result.map(obj => obj.rutinas_id);
         const nuevosIds = rutinasAutogeneradasIds.filter(id => !rutinasIds.includes(id));
         rutinasIds.push(...nuevosIds);
@@ -78,7 +75,6 @@ const autoGenerate = async (req, res) => {
             result =await auto.rutinaSugerida(0);
         }
        
-
         const idNewRotutine = result[0].id; 
         
         rutina = await auto.getById(idNewRotutine);
