@@ -1,9 +1,9 @@
 @host = http://localhost:3000
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJleHAiOjE3NTE2NTgxMTAsImlhdCI6MTc1MTU3MTcxMH0.eF-c0L0q2qf_iDL5LDaWks8nS7uG8FzGuyJWHZkSvsU
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMywiZXhwIjoxNzUxNzgyOTY3LCJpYXQiOjE3NTE2OTY1Njd9.cERfrKZAcIzOTxXsd13U3r3-RDqx31dePbQ7A6k7kIQ
 
 
 ###
-POST {{host}}/api/autogenerate/16
+POST {{host}}/api/autogenerate
 Authorization: {{token}}
 
 ###
@@ -30,7 +30,7 @@ POST {{host}}/api/users/login
 Content-Type: application/json
 
 {
-    "email": "rana.gustavo@example.com",
+    "email": "markelkortajarena@gmail.com",
     "password": "Abcd1234*"
 }
 

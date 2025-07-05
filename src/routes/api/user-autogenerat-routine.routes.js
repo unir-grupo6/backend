@@ -3,7 +3,6 @@ const { checkToken } = require('../../middlewares/auth.middlewares');
 const router = require('express').Router();
 
 
-//router.post('/:id',checkToken, autoGenerate);
-router.post('/:id', autoGenerate);
+router.post('/',checkToken, autoGenerate);
         
 module.exports = router;
