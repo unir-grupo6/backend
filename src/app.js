@@ -1,15 +1,15 @@
 // Creation and configuration of the Express APP
 const express = require("express");
 const cors = require("cors");
-const helmet = require("helmet");
-const rateLimit = require("express-rate-limit");
+// const helmet = require("helmet");
+// const rateLimit = require("express-rate-limit");
 
 require('dotenv').config();
-const { REQUEST_MINUTES_LIMIT } = process.env;
+// const { REQUEST_MINUTES_LIMIT } = process.env;
 
 const app = express();
 
-app.use(helmet());
+// app.use(helmet());
 
 app.use(express.json());
 app.use(cors());
@@ -19,15 +19,16 @@ app.use(express.static("public/logo"));
 // add node-cron for scheduled tasks
 require('./config/cron');
 
-const apiLimiter = rateLimit({
-    windowMs: REQUEST_MINUTES_LIMIT * 60 * 1000,
-    max: 100,
-    standardHeaders: true,
-    legacyHeaders: false,
-    message: "Too many requests from this IP, please try again after 15 minutes.",
-});
+// const apiLimiter = rateLimit({
+//     windowMs: REQUEST_MINUTES_LIMIT * 60 * 1000,
+//     max: 100,
+//     standardHeaders: true,
+//     legacyHeaders: false,
+//     message: "Too many requests from this IP, please try again after 15 minutes.",
+// });
 
-app.use('/api', apiLimiter, require('./routes/api.routes'));
+// app.use('/api', apiLimiter, require('./routes/api.routes'));
+app.use('/api', require('./routes/api.routes'));
 
 // 404 handler
 app.use((req, res, next) => {
