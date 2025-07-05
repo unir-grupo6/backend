@@ -11,6 +11,17 @@ const getAll = async (req, res) => {
     // Implement your logic here
 }
 
+const getAllExercises = async (req, res) => {
+    const exercises = await Exercises.getAll();
+    res.json(exercises);
+};
+
+const getExerciseById = async (req, res) => {
+    const { ejercicioId } = req.params;
+    const exercise = await Exercises.getById(ejercicioId);
+    if (!exercise) return res.status(404).json({ message: 'Ejercicio no encontrado' });
+    res.json(exercise);
+};
 
 const getByMuscleAndDifficulty = async (req, res) => {
     const { grupos_musculares_id, dificultad_id } = req.query;
@@ -25,6 +36,4 @@ const getByMuscleAndDifficulty = async (req, res) => {
     }
 }
 
-
-
-module.exports = { getAll, getByMuscleAndDifficulty };
+module.exports = { getAll, getByMuscleAndDifficulty, getAllExercises, getExerciseById };

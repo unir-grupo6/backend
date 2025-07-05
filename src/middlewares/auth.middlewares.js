@@ -16,13 +16,16 @@ const checkToken = async (req, res, next) => {
         return res.status(403).json({ message: 'Invalid token' });
     }
 
-    const user = await User.getById(payload.user_id);
-    if (!user) {
-        return res.status(403).json({ message: 'User not found' });
+    try {
+        const user = await User.getById(payload.user_id);
+        if (!user) {
+            return res.status(403).json({ message: 'User not found' });
+        }
+        req.user = user;
+        next();
+    } catch (error) {
+        return res.status(500).json({ message: 'Error searching user' });
     }
-
-    req.user = user;
-    next();
 }
 
 module.exports = {
