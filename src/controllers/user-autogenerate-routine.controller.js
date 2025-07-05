@@ -86,14 +86,14 @@ const autoGenerate = async (req, res) => {
         const rutinaObject = rutina[0];
         const rutinaCompleta = generarJson(rutinaObject, arrEjercicios); 
         
-        const inserHeader = await auto.insertRutinaUsuario(rutinaCompleta.rutina_id, id); 
+        // const inserHeader = await auto.insertRutinaUsuario(rutinaCompleta.rutina_id, id); 
 
-        for (let i = 0; i < arrEjercicios.length; i++) {
-            const objEjercicios = arrEjercicios[i];
-            await auto.insertEjerciciosUsuario(objEjercicios, inserHeader);           
-        }
+        // for (let i = 0; i < arrEjercicios.length; i++) {
+        //     const objEjercicios = arrEjercicios[i];
+        //     await auto.insertEjerciciosUsuario(objEjercicios, inserHeader);           
+        // }
                         
-        auto.insertLogRutine(inserHeader, id);
+        // auto.insertLogRutine(inserHeader, id);
         
         return res.status(201).json(rutinaCompleta);
     
