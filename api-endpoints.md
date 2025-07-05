@@ -72,6 +72,7 @@
   - `apellidos` (string, required): New last name
   - `email` (string, required): New email address
   - `fecha_nacimiento` (string, required, format: DD-MM-YYYY): New birth date
+  - `sexo` (number, required): New gender (1 (Hombre), 2 (Mujer) or 3 (Otro))
   - `objetivo_id` (number, optional): New goal ID
   - `peso` (number, optional): New weight (must be a number if provided)
   - `altura` (number, optional): New height (must be a number if provided)
@@ -108,6 +109,7 @@
   - `email` (string, required)
   - `password` (string, required)
   - `fecha_nacimiento` (string, required, format: DD-MM-YYYY)
+  - `sexo` (number, required): Gender (1 (Hombre), 2 (Mujer) or 3 (Otro))
   - `peso` (number, required)
   - `altura` (number, required)
   - `objetivo_id` (number, required)
