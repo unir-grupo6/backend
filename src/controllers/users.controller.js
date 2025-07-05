@@ -14,6 +14,7 @@ const User = require('../models/users.model');
 const getById = async (req, res) => {
     req.user.fecha_nacimiento = dayjs(req.user.fecha_nacimiento).format('DD-MM-YYYY');
     req.user.fecha_alta = dayjs(req.user.fecha_alta).format('DD-MM-YYYY HH:mm:ss');
+    delete req.user.password;
     res.json(req.user);
 }
 
