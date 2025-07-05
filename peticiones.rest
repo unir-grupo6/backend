@@ -1,5 +1,12 @@
 @host = http://localhost:3000
-@token = 
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMywiZXhwIjoxNzUxNzgyOTY3LCJpYXQiOjE3NTE2OTY1Njd9.cERfrKZAcIzOTxXsd13U3r3-RDqx31dePbQ7A6k7kIQ
+
+
+###
+POST {{host}}/api/autogenerate
+Authorization: {{token}}
+
+###
 GET {{host}}/api/users
 Authorization: {{token}}
 ###
