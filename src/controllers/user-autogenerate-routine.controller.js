@@ -21,6 +21,7 @@ const generarJson = (headerObj,exercisesObj) => {
         "objetivos_id": objetivos_id,
         "dificultad_id": dificultad_id,
         "metodos_id": metodos_id,
+        "dia": null,
         "ejercicios": exercisesObj
     };
     return obj 

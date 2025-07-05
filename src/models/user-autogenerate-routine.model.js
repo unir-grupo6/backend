@@ -95,7 +95,6 @@ const getByIdExercises = async (id) => {
         `SELECT DISTINCT eje.nombre,
             ert.series,
             ert.repeticiones,
-            ert.dia,
             ert.comentario,            
             eje.id as id_Ejercicio,
             ert.orden
