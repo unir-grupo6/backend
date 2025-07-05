@@ -305,9 +305,9 @@ const saveUserRoutine = async (req, res) => {
 const addExerciseToRoutine = async (req, res) => {
     const user = req.user;
     const { userRoutineId } = req.params;
-    const { ejercicio_id, series, repeticiones, orden, comentario } = req.body;
-    if (!ejercicio_id || !series || !repeticiones || !orden) {
-        return res.status(400).json({ message: 'All fields are required' });
+    const { ejercicio_id } = req.body;
+    if (!ejercicio_id) {
+        return res.status(400).json({ message: 'ejercicio_id is required' });
     }
     // Check if the user routine exists
     const userRoutine = await User.selectUserRoutineByIdUserId(user.id, userRoutineId);
@@ -329,7 +329,7 @@ const addExerciseToRoutine = async (req, res) => {
 
     // Insert the exercise into the user routine
     try {
-        await User.insertUserRoutineExercise(ejercicio_id, userRoutine.id, series, repeticiones, lastOrder + 1, comentario);
+        await User.insertUserRoutineExercise(ejercicio_id, userRoutine.id, lastOrder + 1);
     } catch (error) {
         return res.status(500).json({ message: 'Error saving exercise for the routine' });
     }

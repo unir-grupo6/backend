@@ -1,5 +1,5 @@
 @host = http://localhost:3000
-@token = 
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJleHAiOjE3NTIxNzA5NDAsImlhdCI6MTc1MTU2NjE0MH0.dRwBAWLyp6vJGEdMAaFDNrcqXlfBBtscNkyHaRf2wso
 
 GET {{host}}/api/users
 Authorization: {{token}}
@@ -153,16 +153,12 @@ Content-Type: application/json
     "dia": 1
 }
 ###
-POST {{host}}/api/user-routines/17/exercises
+POST {{host}}/api/user-routines/20/exercises
 Authorization: {{token}}
 Content-Type: application/json
 
 {
-    "ejercicio_id": 3,
-    "series": 3,
-    "repeticiones": 10,
-    "orden": 5,
-    "comentario": "Comentario del ejercicio"
+    "ejercicio_id": 3
 }
 ###
 DELETE {{host}}/api/user-routines/17/exercises/67150
