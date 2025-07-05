@@ -69,7 +69,7 @@ const getById = async (id) => {
         r.nombre,
         r.observaciones AS rutina_observaciones,
         r.realizada,
-        d.nivel,
+        d.nivel As dificultad,
         m.nombre AS metodo,
         r.nombre AS objetivo,       
         m.tiempo_aerobicos,

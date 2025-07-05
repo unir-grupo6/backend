@@ -129,8 +129,8 @@ const updateUserRoutine = async (req, res) => {
     // Add fields to update
     const updateFields = {};
     if (fecha_inicio_rutina  && fecha_fin_rutina) {
-        updateFields.inicio = dayjs(fecha_inicio_rutina, 'DD-MM-YYYY', true).format('DD-MM-YYYY');
-        updateFields.fin = dayjs(fecha_fin_rutina, 'DD-MM-YYYY', true).format('DD-MM-YYYY');
+        updateFields.inicio = dayjs(fecha_inicio_rutina, 'DD-MM-YYYY', true).format('YYYY-MM-DD');
+        updateFields.fin = dayjs(fecha_fin_rutina, 'DD-MM-YYYY', true).format('YYYY-MM-DD');
     }
     if (rutina_compartida === true || rutina_compartida === false) {
         updateFields.compartida = rutina_compartida ? 1 : 0;
