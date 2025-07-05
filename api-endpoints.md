@@ -16,14 +16,13 @@
     - [Get logged-in user's routines (paginated)](#get-logged-in-users-routines-paginated)
     - [Get a specific routine of the logged-in user](#get-a-specific-routine-of-the-logged-in-user)
     - [Save a user routine](#save-a-user-routine)
+    - [Create a new user routine from an existing routine](#create-a-new-user-routine-from-an-existing-routine)
     - [Delete a user routine](#delete-a-user-routine)
     - [Update a user routine](#update-a-user-routine)
     - [Add exercise to a user routine](#add-exercise-to-a-user-routine)
     - [Remove exercise from a user routine](#remove-exercise-from-a-user-routine)
     - [Update an exercise in a user routine](#update-an-exercise-in-a-user-routine)
     - [Generate PDF for a user routine](#generate-pdf-for-a-user-routine)
-  - [Autogenerate Routines](#autogenerate-routines)
-    - [Generate routine automatically for the logged-in user](#generate-routine-automatically-for-the-logged-in-user)
   - [Muscle Groups](#muscle-groups)
     - [Get all muscle groups](#get-all-muscle-groups)
     - [Get muscle group by ID](#get-muscle-group-by-id)
@@ -391,8 +390,8 @@
 - **URL**: /api/user-routines/`{userRoutineId}`
 - **Headers**: Authorization: `{token}`
 - **Body**:
-  - `fecha_inicio_rutina` (string, nullable, formato `YYYY-MM-DD`)
-  - `fecha_fin_rutina` (string, nullable, formato `YYYY-MM-DD`)
+  - `fecha_inicio_rutina` (string, nullable, formato `DD-MM-YYYY`)
+  - `fecha_fin_rutina` (string, nullable, formato `DD-MM-YYYY`)
   - `rutina_compartida` (boolean, nullable)
   - `dia` (number, nullable): New value for the day of the routine
   - (At least one of these fields must be present)
@@ -402,7 +401,7 @@
   - **403 Forbidden**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
   - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
   - **400 Bad Request**: `{ "message": "Both start and end dates are required in case one is provided" }` — Only one of the dates was provided.
-  - **400 Bad Request**: `{ "message": "Invalid date format or non-existent date" }` — The date is not in `YYYY-MM-DD` format or is not una fecha real.
+  - **400 Bad Request**: `{ "message": "Invalid date format or non-existent date" }` — The date is not in `DD-MM-YYYY` format or is not una fecha real.
   - **400 Bad Request**: `{ "message": "Start date cannot be after end date" }` — The start date is after the end date.
   - **400 Bad Request**: `{ "message": "Invalid value for rutina_compartida, must be a boolean" }` — The value for `rutina_compartida` is not boolean.
   - **400 Bad Request**: `{ "message": "Invalid value for dia, must be a number between 1 and 7" }` — The value for `dia` is not a number between 1 and 7.
