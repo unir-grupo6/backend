@@ -202,13 +202,13 @@ const insertUserRoutine = async (routineId, user_id) => {
     return result;
 }
 
-const insertUserRoutineExercise = async (exercise_id, user_routine_id, series, repetitions, order, comment) => {
+const insertUserRoutineExercise = async (exercise_id, user_routine_id, order) => {
     const [result] = await db.query(
         `
-        INSERT INTO ejercicios_usuarios (ejercicios_id, rutinas_usuarios_id, orden, series, repeticiones, comentario)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO ejercicios_usuarios (ejercicios_id, rutinas_usuarios_id, orden)
+        VALUES (?, ?, ?)
         `,
-        [exercise_id, user_routine_id, order, series, repetitions, comment]
+        [exercise_id, user_routine_id, order]
     );
     return result;
 }

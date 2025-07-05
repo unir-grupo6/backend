@@ -361,21 +361,16 @@
 - **Headers**: Authorization: `{token}`
 - **Body**:
   - `ejercicio_id` (number, required): Exercise ID to add
-  - `series` (number, required)
-  - `repeticiones` (number, required)
-  - `orden` (number, optional)
-  - `comentario` (string, optional)
 - **Response**: On success, returns the updated routine object (including exercises)
 - **Possible errors**:
   - **403 Forbidden**: `{ "message": "Authorization header is required" }` — The Authorization header is missing.
   - **403 Forbidden**: `{ "message": "Invalid token" }` — The provided token is invalid or expired.
   - **403 Forbidden**: `{ "message": "User not found" }` — The user associated with the token does not exist.
-  - **400 Bad Request**: `{ "message": "Missing required fields" }` — One or more required fields are missing in the request body.
-  - **400 Bad Request**: `{ "message": "Invalid value for field" }` — One or more fields have invalid values or types.
+  - **400 Bad Request**: `{ "message": "ejercicio_id is required" }` — The exercise ID is missing in the request body.
   - **404 Not Found**: `{ "message": "No routines found for the specified user." }` — The routine does not exist or does not belong to the user.
   - **404 Not Found**: `{ "message": "Exercise not found" }` — The exercise does not exist.
-  - **409 Conflict**: `{ "message": "Exercise already exists in routine" }` — The exercise is already assigned to the routine.
-  - **500 Internal Server Error**: `{ "message": "Error adding exercise to routine" }` — There was a problem adding the exercise.
+  - **500 Internal Server Error**: `{ "message": "Error saving exercise for the routine" }` — There was a problem adding the exercise to the routine.
+  - **404 Not Found**: `{ "message": "Updated routine not found" }` — The routine could not be retrieved after adding the exercise.
   - **500 Internal Server Error**: `{ "message": "Error formatting routine with exercises" }` — There was a problem formatting the updated routine.
 
 ### Remove exercise from a user routine

@@ -2,7 +2,10 @@
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
-const rateLimit = require("express-rate-limit"); 
+const rateLimit = require("express-rate-limit");
+
+require('dotenv').config();
+const { REQUEST_MINUTES_LIMIT } = process.env;
 
 const app = express();
 
@@ -17,7 +20,7 @@ app.use(express.static("public/logo"));
 require('./config/cron');
 
 const apiLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
+    windowMs: REQUEST_MINUTES_LIMIT * 60 * 1000,
     max: 100,
     standardHeaders: true,
     legacyHeaders: false,

@@ -4,7 +4,7 @@ const getById = async (userId) => {
     // Primero intenta obtener los datos completos con join
     const [result] = await db.query(
         `
-            SELECT U.id, U.nombre, U.apellidos, U.email, U.fecha_nacimiento, U.fecha_alta, MU.peso, MU.altura, MU.imc, O.id AS objetivo_id, O.nombre AS objetivo
+            SELECT U.id, U.nombre, U.apellidos, U.email, U.fecha_nacimiento, U.fecha_alta,U.password, MU.peso, MU.altura, MU.imc, O.id AS objetivo_id, O.nombre AS objetivo
             FROM usuarios U
             LEFT JOIN medidas_usuarios MU ON U.id = MU.id_usuario
             LEFT JOIN objetivos_usuarios OU ON OU.id_usuarios = U.id

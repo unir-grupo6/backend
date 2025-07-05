@@ -49,7 +49,7 @@ Content-Type: application/json
 }
 
 ###
-put {{host}}/api/users/update-password
+PUT {{host}}/api/users/update-password
 Authorization: {{token}}
 Content-Type: application/json
 
@@ -66,14 +66,13 @@ Content-Type: application/json
     "email": "alvaro.gustavo@example.com"
 }
 
-
 ###
 PUT {{host}}/api/users/reset-password
 reset-token: 
 Content-Type: application/json
 
 {
-    "newPassword": "newPassword"
+  "newPassword": "newPassword"
 }
 
 ### Catálogo de ejercicios
@@ -144,9 +143,10 @@ Content-Type: application/json
 GET {{host}}/api/exercises/filter
 Authorization: {{token}}
 
-### Ejercicios por grupo muscular
+###
 GET {{host}}/api/exercises/filter?grupos_musculares_id=1
 Authorization: {{token}}
+
 
 ### Ejercicios por dificultad
 GET {{host}}/api/exercises/filter?dificultad_id=2
@@ -228,11 +228,7 @@ Authorization: {{token}}
 Content-Type: application/json
 
 {
-    "ejercicio_id": 3,
-    "series": 3,
-    "repeticiones": 10,
-    "orden": 5,
-    "comentario": "Comentario del ejercicio"
+    "ejercicio_id": 3
 }
 ###
 DELETE {{host}}/api/user-routines/17/exercises/67150
