@@ -81,8 +81,8 @@ const registro = async (req, res) => {
     const existingUser = await User.getByEmail(req.body.email);
 
     // Check than all fields are present
-    if (!req.body.nombre || !req.body.apellidos || !req.body.email || !req.body.password || !req.body.fecha_nacimiento || !req.body.peso || !req.body.altura || !req.body.objetivo_id) {
-        return res.status(400).json({ message: 'Nombre, apellidos, email, password, fecha_nacimiento, peso, altura and objetivo_id are required' });
+    if (!req.body.nombre || !req.body.apellidos || !req.body.email || !req.body.password || !req.body.fecha_nacimiento || !req.body.sexo || !req.body.peso || !req.body.altura || !req.body.objetivo_id) {
+        return res.status(400).json({ message: 'Nombre, apellidos, email, password, fecha_nacimiento, sexo, peso, altura and objetivo_id are required' });
     }
 
     if (typeof req.body.nombre !== 'string' || typeof req.body.apellidos !== 'string' || typeof req.body.email !== 'string') {
@@ -98,6 +98,9 @@ const registro = async (req, res) => {
     if (!dayjs(req.body.fecha_nacimiento, 'YYYY-MM-DD', true).isValid()) {
         return res.status(400).json({ message: 'Fecha de nacimiento must be a valid date' });
     }
+    if (req.body.sexo && ![1, 2, 3].includes(req.body.sexo)) {
+        return res.status(400).json({ message: 'Sexo must be 1 (Hombre), 2 (Mujer) or 3 (Otro)' });
+    }
     if (req.body.objetivo_id && isNaN(req.body.objetivo_id)) {
         return res.status(400).json({ message: 'Objetivo ID must be a number' });
     }
@@ -107,7 +110,7 @@ const registro = async (req, res) => {
     }
 
     // check if obtetyivo_id is valid
-    const objetivoExists = await User.getObjectiveById(id_objetivo);
+    const objetivoExists = await User.getObjectiveById(req.body.objetivo_id);
     if (!objetivoExists) {
         return res.status(400).json({ message: 'Invalid objetivo_id' });
     }
@@ -150,7 +153,8 @@ const registro = async (req, res) => {
     }
 
     newUser.fecha_nacimiento = dayjs(newUser.fecha_nacimiento).format('YYYY-MM-DD');
-    newUser.fecha_alta = dayjs(newUser.fecha_alta).format('YYYY-MM-DD');
+    newUser.fecha_alta = dayjs(newUser.fecha_alta).format('YYYY-MM-DD HH:mm:ss');
+    delete newUser.password;
 
     const token = jwt.sign(
         { user_id: newUser.id },
