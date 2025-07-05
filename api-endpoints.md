@@ -699,6 +699,7 @@
     "realizada": 0,
     "metodo": "Fullbody",
     "objetivo": "Strength",
+    "dificultad": "Principiante",
     "tiempo_aerobicos": 10,
     "tiempo_anaerobicos": 20,
     "metodo_observaciones": "Method specific observations",

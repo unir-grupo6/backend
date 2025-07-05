@@ -5,7 +5,7 @@ const generarJson = (headerObj,exercisesObj) => {
 
     const {rutina_id, nombre, rutina_observaciones, realizada, metodo, objetivo, tiempo_aerobicos, 
         tiempo_anaerobicos, metodo_observaciones, descanso, 
-        objetivos_id, dificultad_id, metodos_id} = headerObj;
+        objetivos_id, dificultad_id, metodos_id, dificultad} = headerObj;
 
     const obj = {
         "rutina_id": rutina_id,
@@ -14,6 +14,7 @@ const generarJson = (headerObj,exercisesObj) => {
         "realizada": realizada,        
         "metodo": metodo,
         "objetivo": objetivo,
+        "dificultad": dificultad,
         "tiempo_aerobicos": tiempo_aerobicos,
         "tiempo_anaerobicos": tiempo_anaerobicos,
         "metodo_observaciones": metodo_observaciones,
