@@ -3,7 +3,9 @@ const dayjs = require('dayjs');
 const customParseFormat = require("dayjs/plugin/customParseFormat");
 dayjs.extend(customParseFormat);
 
-const User = require('../models/user-routines.model');
+const UserRoutine = require('../models/user-routines.model');
+const Routine = require('../models/routines.model');
+
 const pdfBuilder = require('../doc-generator/pdf-kit');
 
 const getRoutinesByUserId = async (req, res) => {
@@ -11,16 +13,16 @@ const getRoutinesByUserId = async (req, res) => {
     const { page = 1, limit = 5, active = false } = req.query;
     
     const userRoutines = active === 'true' ?
-        await User.selectActiveRoutinesByUserId(user.id, Number(page), Number(limit))
+        await UserRoutine.selectActiveRoutinesByUserId(user.id, Number(page), Number(limit))
         :
-        await User.selectRoutinesByUserId(user.id, Number(page), Number(limit));
+        await UserRoutine.selectRoutinesByUserId(user.id, Number(page), Number(limit));
 
     if (!userRoutines || userRoutines.length === 0) {
         return res.status(404).json({ message: 'No routines found for this user' });
     }
     
     // Get the total number of routines and total pages
-    const totalRoutines = await User.countRoutinesByUserId(user.id);
+    const totalRoutines = await UserRoutine.countRoutinesByUserId(user.id);
     const totalPages = Math.ceil(totalRoutines / limit);
     user.total_routines = totalRoutines;
     user.current_page = Number(page);
@@ -52,7 +54,7 @@ const getAllUserExercises = async (req, res) => {
     const user = req.user;
     try {
         // Método que debe estar implementado en el modelo user-routines.model.js
-        const allExercises = await User.selectAllExercisesByUserId(user.id);
+        const allExercises = await UserRoutine.selectAllExercisesByUserId(user.id);
         if (!allExercises || allExercises.length === 0) {
             return res.status(404).json({ message: 'No se encontraron ejercicios para las rutinas del usuario.' });
         }
@@ -81,7 +83,7 @@ const getAllUserExercises = async (req, res) => {
 const getRoutineById = async (req, res) => {
     const user = req.user;
     const { routineId } = req.params;
-    const userRoutine = await User.selectRoutineByUserIdRoutineId(user.id, routineId);
+    const userRoutine = await UserRoutine.selectRoutineByUserIdRoutineId(user.id, routineId);
     if (!userRoutine) {
         return res.status(404).json({ message: 'Routine not found for this user' });
     }
@@ -121,7 +123,7 @@ const updateUserRoutine = async (req, res) => {
     }
 
     // Check if the user routine exists
-    const userRoutine = await User.selectUserRoutineByIdUserId(user.id, userRoutineId);
+    const userRoutine = await UserRoutine.selectUserRoutineByIdUserId(user.id, userRoutineId);
     if (!userRoutine) {
         return res.status(404).json({ message: 'No routines found for the specified user.' });
     }
@@ -146,7 +148,7 @@ const updateUserRoutine = async (req, res) => {
     // Update the user routine
     let updateResult;
     try {
-        updateResult = await User.updateRoutineById(userRoutineId, updateFields);
+        updateResult = await UserRoutine.updateRoutineById(userRoutineId, updateFields);
     } catch (error) {
         return res.status(500).json({ message: 'Error updating user routine' });
     }
@@ -156,7 +158,7 @@ const updateUserRoutine = async (req, res) => {
     }
 
     // Retrieve the updated routine
-    const updatedRoutine = await User.selectRoutineByUserIdRoutineId(user.id, userRoutineId);
+    const updatedRoutine = await UserRoutine.selectRoutineByUserIdRoutineId(user.id, userRoutineId);
     if (!updatedRoutine) {
         return res.status(404).json({ message: 'Updated routine not found' });
     }
@@ -192,13 +194,13 @@ const updateUserRoutineExercise = async (req, res) => {
     }
 
     // Check if the user routine exists
-    const userRoutine = await User.selectUserRoutineByIdUserId(user.id, userRoutineId);
+    const userRoutine = await UserRoutine.selectUserRoutineByIdUserId(user.id, userRoutineId);
     if (!userRoutine) {
         return res.status(404).json({ message: 'No routines found for the specified user.' });
     }
 
     // Check if the exercise exists
-    const exercise = await User.selectUserExerciseById(exerciseId, userRoutineId);
+    const exercise = await UserRoutine.selectUserExerciseById(exerciseId, userRoutineId);
     if (!exercise) {
         return res.status(404).json({ message: 'Exercise not found in the specified routine' });
     }
@@ -210,7 +212,7 @@ const updateUserRoutineExercise = async (req, res) => {
     if (orden) updateFields.orden = orden;
     if (comentario) updateFields.comentario = comentario;
 
-    const exercisesInRoutine = await User.selectExercisesByUserRoutineId(userRoutineId);
+    const exercisesInRoutine = await UserRoutine.selectExercisesByUserRoutineId(userRoutineId);
 
     // Check if orden is not less than 1 and not greater than the number of exercises in the routine
     if (orden) {
@@ -225,7 +227,7 @@ const updateUserRoutineExercise = async (req, res) => {
     // Update the user routine exercise
     let updateResult;
     try {
-        updateResult = await User.updateUserRoutineExerciseById(exerciseId, userRoutineId, updateFields);
+        updateResult = await UserRoutine.updateUserRoutineExerciseById(exerciseId, userRoutineId, updateFields);
     } catch (error) {
         return res.status(500).json({ message: 'Error updating user routine exercise' });
     }
@@ -236,7 +238,7 @@ const updateUserRoutineExercise = async (req, res) => {
 
     // Check if the orden has changed and update the order of other exercises if necessary
     if (orden) {
-        const exercisesInRoutine = await User.selectExercisesByUserRoutineId(userRoutineId);
+        const exercisesInRoutine = await UserRoutine.selectExercisesByUserRoutineId(userRoutineId);
         if (exercisesInRoutine && exercisesInRoutine.length > 0) {
             // Move the updated exercise to the desired position and reorder the rest
             // Find the index of the exercise being updated
@@ -256,7 +258,7 @@ const updateUserRoutineExercise = async (req, res) => {
                 const exerciseToUpdate = exercisesInRoutine[j];
                 if (exerciseToUpdate.orden !== j + 1) {
                     try {
-                        await User.updateExerciseOrder(exerciseToUpdate.id, userRoutineId, j + 1);
+                        await UserRoutine.updateExerciseOrder(exerciseToUpdate.id, userRoutineId, j + 1);
                     } catch (error) {
                         return res.status(500).json({ message: 'Error updating exercise order in user routine' });
                     }
@@ -266,7 +268,7 @@ const updateUserRoutineExercise = async (req, res) => {
     }
     
     // Retrieve the updated routine with exercises
-    const updatedRoutine = await User.selectRoutineByUserIdRoutineId(user.id, userRoutineId);
+    const updatedRoutine = await UserRoutine.selectRoutineByUserIdRoutineId(user.id, userRoutineId);
     if (!updatedRoutine) {
         return res.status(404).json({ message: 'Updated routine not found' });
     }
@@ -280,7 +282,7 @@ const updateUserRoutineExercise = async (req, res) => {
 const saveUserRoutine = async (req, res) => {
     const user = req.user;
     const { userRoutineId } = req.params;
-    const selectedRoutine = await User.selectUserRoutineById(userRoutineId);
+    const selectedRoutine = await UserRoutine.selectUserRoutineById(userRoutineId);
     if (!selectedRoutine) {
         return res.status(404).json({ message: 'No routines found for the specified ID.' });
     }
@@ -288,7 +290,7 @@ const saveUserRoutine = async (req, res) => {
     // Insert the user routine
     let generatedUserRoutine;
     try {
-        generatedUserRoutine = await User.insertUserRoutine(selectedRoutine.rutinas_id, user.id);
+        generatedUserRoutine = await UserRoutine.insertUserRoutine(selectedRoutine.rutinas_id, user.id);
     } catch (error) {
         return res.status(500).json({ message: 'Error saving user routine' });
     }
@@ -303,7 +305,7 @@ const saveUserRoutine = async (req, res) => {
     }
 
     // Retrieve the saved routine with exercises
-    const savedRoutine = await User.selectRoutineByUserIdRoutineId(user.id, generatedUserRoutine.insertId);
+    const savedRoutine = await UserRoutine.selectRoutineByUserIdRoutineId(user.id, generatedUserRoutine.insertId);
     if (!savedRoutine) {
         return res.status(404).json({ message: 'Saved routine not found' });
     }
@@ -317,7 +319,7 @@ const saveUserRoutine = async (req, res) => {
     // BOOLEANS
     savedRoutine.rutina_compartida = savedRoutine.rutina_compartida === 1;
     savedRoutine.ejercicios = [];
-    const exercisesForRoutine = await User.selectExercisesByUserRoutineId(savedRoutine.rutina_id);
+    const exercisesForRoutine = await UserRoutine.selectExercisesByUserRoutineId(savedRoutine.rutina_id);
     for (const exercise of exercisesForRoutine) {
         savedRoutine.ejercicios.push({
             orden: exercise.orden,
@@ -342,32 +344,32 @@ const addExerciseToRoutine = async (req, res) => {
         return res.status(400).json({ message: 'ejercicio_id is required' });
     }
     // Check if the user routine exists
-    const userRoutine = await User.selectUserRoutineByIdUserId(user.id, userRoutineId);
+    const userRoutine = await UserRoutine.selectUserRoutineByIdUserId(user.id, userRoutineId);
     if (!userRoutine) {
         return res.status(404).json({ message: 'No routines found for the specified user.' });
     }
     // Check if the exercise exists
-    const exercise = await User.selectExerciseById(ejercicio_id);
+    const exercise = await UserRoutine.selectExerciseById(ejercicio_id);
     if (!exercise) {
         return res.status(404).json({ message: 'Exercise not found' });
     }
 
     // Get the last order of the exercises in the routine
     let lastOrder = 0;
-    const exercisesInRoutine = await User.selectExercisesByUserRoutineId(userRoutine.id);
+    const exercisesInRoutine = await UserRoutine.selectExercisesByUserRoutineId(userRoutine.id);
     if (exercisesInRoutine && exercisesInRoutine.length > 0) {
         lastOrder = Math.max(...exercisesInRoutine.map(ex => ex.orden));
     }
 
     // Insert the exercise into the user routine
     try {
-        await User.insertUserRoutineExercise(ejercicio_id, userRoutine.id, lastOrder + 1);
+        await UserRoutine.insertUserRoutineExercise(ejercicio_id, userRoutine.id, lastOrder + 1);
     } catch (error) {
         return res.status(500).json({ message: 'Error saving exercise for the routine' });
     }
 
     // Retrieve the updated routine with exercises
-    const updatedRoutine = await User.selectRoutineByUserIdRoutineId(user.id, userRoutineId);
+    const updatedRoutine = await UserRoutine.selectRoutineByUserIdRoutineId(user.id, userRoutineId);
     if (!updatedRoutine) {
         return res.status(404).json({ message: 'Updated routine not found' });
     }
@@ -378,16 +380,73 @@ const addExerciseToRoutine = async (req, res) => {
     res.json(formattedRoutine);
 }
 
+const addNewUserRoutineFromRoutine = async (req, res) => {
+    const user = req.user;
+    const { id_rutina } = req.body;
+    if (!id_rutina) {
+        return res.status(400).json({ message: 'rutina_id is required' });
+    }
+    try {
+        // Check if the routine exists
+        const routine = await Routine.getById(id_rutina);
+        if (!routine) {
+            return res.status(404).json({ message: 'Routine not found' });
+        }
+    
+        // Insert the user routine
+        let generatedUserRoutine;
+        try {
+            generatedUserRoutine = await UserRoutine.insertUserRoutine(id_rutina, user.id);
+        } catch (error) {
+            return res.status(500).json({ message: 'Error saving user routine' });
+        }
+    
+        if (!generatedUserRoutine || !generatedUserRoutine.insertId) {
+            return res.status(500).json({ message: 'Error generating user routine' });
+        }
+    
+        // Get exercises from the routine
+        const exercises = await Routine.getExercisesByRoutineId(id_rutina);
+        if (!exercises || exercises.length === 0) {
+            return res.status(404).json({ message: 'No exercises found for the specified routine.' });
+        }
+        // Insert the exercises into the user routine
+        for (const exercise of exercises) {
+            const { id: ejercicio_id, series, repeticiones, dia, orden, comentario } = exercise;
+            try {
+                await UserRoutine.insertUserRoutineExercise(ejercicio_id, generatedUserRoutine.insertId, series, repeticiones, dia, orden, comentario);
+            } catch (error) {
+                return res.status(500).json({ message: 'Error saving exercise for the routine' });
+            }
+        }
+
+        // Retrieve the saved routine with exercises
+        const savedRoutine = await UserRoutine.selectRoutineByUserIdRoutineId(user.id, generatedUserRoutine.insertId);
+        if (!savedRoutine) {
+            return res.status(404).json({ message: 'Saved routine not found' });
+        }
+    
+        // format new routine
+        const formattedRoutine = await formatRoutineWithExercises(savedRoutine);
+        if (!formattedRoutine) {
+            return res.status(500).json({ message: 'Error formatting routine with exercises' });
+        }
+        res.json(formattedRoutine);
+    } catch (error) {
+        res.status(500).json({ message: 'Error saving new user routine', error });
+    }
+}
+
 const removeUserRoutine  = async (req, res) => {
     const user = req.user;
     const { userRoutineId } = req.params;
-    const routineId = await User.selectUserRoutineByIdUserId( user.id, userRoutineId);
+    const routineId = await UserRoutine.selectUserRoutineByIdUserId( user.id, userRoutineId);
     if (!routineId) {
         return res.status(404).json({ message: 'The specified routine was not found for the user.' });
     }
 
     try {
-        await User.deleteUserRoutine(userRoutineId);
+        await UserRoutine.deleteUserRoutine(userRoutineId);
     } catch (error) {
         return res.status(500).json({ message: 'Error deleting user routine' });
     }
@@ -397,22 +456,22 @@ const removeUserRoutine  = async (req, res) => {
 const removeExerciseFromRoutine = async (req, res) => {
     const user = req.user;
     const { userRoutineId, exerciseId } = req.params;
-    const userRoutine = await User.selectUserRoutineByIdUserId(user.id, userRoutineId);
+    const userRoutine = await UserRoutine.selectUserRoutineByIdUserId(user.id, userRoutineId);
     if (!userRoutine) {
         return res.status(404).json({ message: 'The specified routine was not found for the user.' });
     }
 
-    const exercise = await User.selectUserExerciseById(exerciseId, userRoutineId);
+    const exercise = await UserRoutine.selectUserExerciseById(exerciseId, userRoutineId);
     if (!exercise) {
         return res.status(404).json({ message: 'The specified exercise was not found.' });
     }
     try {
-        await User.deleteUserRoutineExercise(exerciseId);
+        await UserRoutine.deleteUserRoutineExercise(exerciseId);
     } catch (error) {
         return res.status(500).json({ message: 'Error deleting exercise from user routine' });
     }
 
-    const exercisesInRoutine = await User.selectExercisesByUserRoutineId(userRoutineId);
+    const exercisesInRoutine = await UserRoutine.selectExercisesByUserRoutineId(userRoutineId);
     if (exercisesInRoutine && exercisesInRoutine.length > 0) {
         for (let i = 0; i < exercisesInRoutine.length; i++) {
             const exerciseToUpdate = exercisesInRoutine[i];
@@ -422,7 +481,7 @@ const removeExerciseFromRoutine = async (req, res) => {
             }
 
             try {
-                await User.updateExerciseOrder(exerciseToUpdate.id, userRoutineId, i + 1);
+                await UserRoutine.updateExerciseOrder(exerciseToUpdate.id, userRoutineId, i + 1);
             } catch (error) {
                 return res.status(500).json({ message: 'Error updating exercise order in user routine' });
             }
@@ -430,7 +489,7 @@ const removeExerciseFromRoutine = async (req, res) => {
     }
 
     // Retrieve the updated routine with exercises
-    const updatedRoutine = await User.selectRoutineByUserIdRoutineId(user.id, userRoutineId);
+    const updatedRoutine = await UserRoutine.selectRoutineByUserIdRoutineId(user.id, userRoutineId);
     if (!updatedRoutine) {
         return res.status(404).json({ message: 'Updated routine not found' });
     }
@@ -445,7 +504,7 @@ const generatePdfFromUserRoutine = async (req, res) => {
     const user = req.user;
 
     const { userRoutineId } = req.params;
-    const userRoutine = await User.selectRoutineByUserIdRoutineId(user.id, userRoutineId);
+    const userRoutine = await UserRoutine.selectRoutineByUserIdRoutineId(user.id, userRoutineId);
     if (!userRoutine) {
         return res.status(404).json({ message: 'Routine not found for the the specified user' });
     }
@@ -474,14 +533,14 @@ const generatePdfFromUserRoutine = async (req, res) => {
 }
 
 const copyExecrisesToRoutine = async (res, userRoutineId, generatedUserRoutineId) => {
-    const exercises = await User.selectExercisesByUserRoutineId(userRoutineId);
+    const exercises = await UserRoutine.selectExercisesByUserRoutineId(userRoutineId);
     // if (!exercises || exercises.length === 0) {
     //     res.status(404).json({ message: 'No exercises found for the specified routine.' });
     // }
     for (const exercise of exercises) {
         const {ejercicios_id, series, repeticiones, dia, orden, comentario } = exercise;
         try {
-            await User.insertUserRoutineExercise(ejercicios_id, generatedUserRoutineId, series, repeticiones, orden, comentario);
+            await UserRoutine.insertUserRoutineExercise(ejercicios_id, generatedUserRoutineId, series, repeticiones, orden, comentario);
         } catch (error) {
             res.status(500).json({ message: 'Error saving exercise for the routine' });
         }
@@ -518,7 +577,7 @@ const formatRoutineWithExercises = async (userRoutine) => {
     };
 
     try {
-        const exercises = await User.selectExercisesByUserRoutineId(userRoutine.rutina_id);
+        const exercises = await UserRoutine.selectExercisesByUserRoutineId(userRoutine.rutina_id);
         if (exercises && exercises.length > 0) {
             for (const exercise of exercises) {
                 formattedRoutine.ejercicios.push({
@@ -551,6 +610,7 @@ module.exports = {
     updateUserRoutineExercise,
     saveUserRoutine,
     addExerciseToRoutine,
+    addNewUserRoutineFromRoutine,
     removeUserRoutine,
     removeExerciseFromRoutine,
     generatePdfFromUserRoutine,
