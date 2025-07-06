@@ -12,8 +12,8 @@ const { JWT_SECRET_KEY, JWT_RESET_SECRET_KEY, JWT_EXPIRES_IN_UNIT, JWT_RESET_EXP
 const User = require('../models/users.model');
 
 const getById = async (req, res) => {
-    req.user.fecha_nacimiento = dayjs(req.user.fecha_nacimiento).format('DD-MM-YYYY');
-    req.user.fecha_alta = dayjs(req.user.fecha_alta).format('DD-MM-YYYY HH:mm:ss');
+    req.user.fecha_nacimiento = dayjs(req.user.fecha_nacimiento).format('YYYY-MM-DD');
+    req.user.fecha_alta = dayjs(req.user.fecha_alta).format('YYYY-MM-DD HH:mm:ss');
     delete req.user.password;
     res.json(req.user);
 }
@@ -404,8 +404,8 @@ const updateUser = async (req, res) => {
         }
 
         const updatedUser = await User.getById(user.id);
-        updatedUser.fecha_nacimiento = dayjs(updatedUser.fecha_nacimiento).format('DD-MM-YYYY');
-        updatedUser.fecha_alta = dayjs(updatedUser.fecha_alta).format('DD-MM-YYYY HH:mm:ss');
+        updatedUser.fecha_nacimiento = dayjs(updatedUser.fecha_nacimiento).format('YYYY-MM-DD');
+        updatedUser.fecha_alta = dayjs(updatedUser.fecha_alta).format('YYYY-MM-DD HH:mm:ss');
 
         return res.json(updatedUser);
 
