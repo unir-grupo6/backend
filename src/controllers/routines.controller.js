@@ -30,7 +30,6 @@ const getById = async (req, res) => {
 
     res.json(rutina);
   } catch (error) {
-    console.error('Error en obtener rutina por id con ejercicios:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
@@ -91,7 +90,6 @@ const getFilteredRoutines = async (req, res) => {
 
     res.json(Object.values(rutinasMap));
   } catch (error) {
-    console.error('Error al obtener rutinas:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
@@ -173,18 +171,16 @@ const getRoutineShared = async (req, res) => {
   const user = req.user;
   try {
     const rows = await Routines.routinesShared(user.id);
-
     const rutinasMap = {};
-
     for (const row of rows) {
-      const rutinaId = row.rutina_usuario_id; // ← corregido
+      const rutinaId = row.rutina_usuario_id;
 
       if (!rutinasMap[rutinaId]) {
         rutinasMap[rutinaId] = {
           id_rutina: rutinaId,
           nombre: row.rutina_nombre,
           observaciones: row.rutina_observaciones,
-          compartida: row.compartida === 1, // ← buena práctica mantenerlo como booleano
+          compartida: row.compartida === 1, 
 
           objetivo: row.objetivo_nombre,
           dificultad: row.dificultad_nombre,
@@ -213,7 +209,6 @@ const getRoutineShared = async (req, res) => {
 
     res.json(Object.values(rutinasMap));
   } catch (error) {
-    console.error('Error al obtener rutinas compartidas:', error);
     res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
