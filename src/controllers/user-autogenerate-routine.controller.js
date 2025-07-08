@@ -55,16 +55,14 @@ const autoGenerate = async (req, res) => {
         result = await auto.rutinasRealizadas(id);
         if (result.length === 0) {     
             result = await auto.retunRutinaRDN(id);
-        }
-        
+        }        
             rutinasIds = result.map(obj => obj.rutinas_id);
             usuarioObjetivos.rutinas_realizadas = rutinasIds;
        
         result = await auto.rutinasAutogeneradas(id);        
         if (result.length === 0) {     
             result = await auto.retunRutinaRDN();
-        }
-               
+        }              
         const rutinasAutogeneradasIds = result.map(obj => obj.rutinas_id);
         const nuevosIds = rutinasAutogeneradasIds.filter(id => !rutinasIds.includes(id));
         rutinasIds.push(...nuevosIds);
@@ -99,7 +97,6 @@ const autoGenerate = async (req, res) => {
     
     }
     catch (error) {
-        console.error('Error in autoGenerate controller:', error);
         return res.status(500).json({ message: 'Internal server error' });
     }
    
