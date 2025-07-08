@@ -28,7 +28,7 @@ const getById = async (userId) => {
 
 const getByEmail = async (email) => {
     const [result] = await db.query(
-        'SELECT id, email, password FROM usuarios WHERE email = ?',
+        'SELECT id, nombre, email, password FROM usuarios WHERE email = ?',
         [email]
     );
     if (result.length === 0) return null;
